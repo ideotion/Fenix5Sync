@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Local data (raw FIT store, SQLite DB, logs, exports) — never commit user data
+data/
+*.sqlite
+*.sqlite3
+*.db
+logs/
+*.log
+exports/
+
+# Local config (the committed template is config.example.yaml)
+/config.yaml
+
+# Editor / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Vendored assets are intentionally committed (web/vendor/*) so the app works offline.
+# Do NOT ignore them.
