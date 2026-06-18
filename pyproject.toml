@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fenix5sync"
+version = "0.1.0"
+description = "Local-first, offline tool to extract and browse Garmin Fenix 5 activity data over USB. No account, no cloud, read-only device."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "GPL-3.0-or-later" }
+authors = [{ name = "ideotion" }]
+keywords = ["garmin", "fenix5", "fit", "fitness", "local-first", "offline"]
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Utilities",
+]
+
+# Standard library first; this is the minimal third-party set required.
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "fitparse>=1.2",
+    "pyyaml>=6.0",
+    "typer>=0.12",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
+    "httpx>=0.27",   # required by fastapi.testclient
+]
+
+[project.scripts]
+fenix5sync = "cli.main:app"
+
+[project.urls]
+Homepage = "https://github.com/ideotion/Fenix5Sync"
+Repository = "https://github.com/ideotion/Fenix5Sync"
+
+[tool.setuptools]
+packages = ["core", "server", "cli"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
