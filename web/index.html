@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Fenix5Sync</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ff5a1f'/%3E%3Cpath d='M6 21l6-9 5 6 3-4 6 7z' fill='white'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-7 4 5 3-4 6 8z"/><circle cx="17.5" cy="6.5" r="1.6"/></svg>
+        </div>
+        <div class="name">Fenix5Sync<small>local · offline</small></div>
+      </div>
+
+      <nav class="nav" id="nav">
+        <a href="#/dashboard" data-route="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          <span class="lbl">Dashboard</span>
+        </a>
+        <a href="#/sync" data-route="sync">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9c-2.4 0-4.6-.94-6.2-2.5L3 16"/><path d="M3 12a9 9 0 0 1 9-9c2.4 0 4.6.94 6.2 2.5L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/></svg>
+          <span class="lbl">Import / Sync</span>
+        </a>
+        <a href="#/export" data-route="export">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          <span class="lbl">Export</span>
+        </a>
+        <a href="#/logs" data-route="logs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/><path d="M4 10h16"/><path d="M4 15h10"/><path d="M4 20h7"/></svg>
+          <span class="lbl">Logs</span>
+        </a>
+      </nav>
+
+      <div class="spacer"></div>
+
+      <div class="side-foot">
+        <div class="row">
+          <button class="btn ghost sm" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+            <svg id="theme-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/></svg>
+            <span>Theme</span>
+          </button>
+        </div>
+        <div class="row creds">
+          <span id="app-version">v—</span>
+          <span>read-only · no cloud</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main" id="view" aria-live="polite">
+      <!-- views rendered here by app.js -->
+    </main>
+  </div>
+
+  <div class="toast-wrap" id="toasts" aria-live="assertive"></div>
+
+  <!-- Vendored libraries (offline; no CDN) -->
+  <script src="/vendor/chart.umd.js"></script>
+  <!-- App scripts (plain scripts, ordered; share a small global namespace) -->
+  <script src="/js/api.js"></script>
+  <script src="/js/util.js"></script>
+  <script src="/js/charts.js"></script>
+  <script src="/js/track.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/activity.js"></script>
+  <script src="/js/sync.js"></script>
+  <script src="/js/export.js"></script>
+  <script src="/js/logs.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

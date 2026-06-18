@@ -1,0 +1,142 @@
+/* Import / Sync view: trigger acquisition+parse, stream live progress over SSE,
+   and show the final run summary (found / imported / skipped / failed). */
+const SyncView = (() => {
+  let es = null;
+
+  function cleanup() {
+    if (es) { try { es.close(); } catch (_) {} es = null; }
+  }
+
+  async function render() {
+    cleanup();
+    const root = U.el("div");
+    root.appendChild(U.el("div", { class: "page-head" }, [
+      U.el("div", {}, [
+        U.el("h1", { text: "Import / Sync" }),
+        U.el("div", { class: "sub", text: "Read new activities from your connected Fenix 5. The device is never modified." }),
+      ]),
+    ]));
+
+    const btn = U.el("button", { class: "btn primary", id: "sync-btn", html:
+      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg> Sync now',
+      onclick: start });
+
+    root.appendChild(U.el("div", { class: "card pad sync-hero" }, [
+      U.el("div", { style: "display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap" }, [
+        btn,
+        U.el("span", { class: "sub", text: "Auto-detects USB mass-storage or MTP. Configure a source path in Logs/Config if needed." }),
+      ]),
+      U.el("div", { class: "progress" }, [U.el("div", { class: "bar", id: "sync-bar" })]),
+      U.el("div", { class: "sync-status", id: "sync-status", text: "Idle." }),
+    ]));
+
+    const summary = U.el("div", { id: "sync-summary", style: "margin-top:var(--sp-5);display:none" });
+    root.appendChild(summary);
+
+    U.setView(root);
+
+    // Resume a sync already in progress (e.g. navigated away and back).
+    try {
+      const active = await API.activeSync();
+      if (active && active.status === "running") attach(active.job_id);
+    } catch (_) {}
+  }
+
+  async function start() {
+    const btn = document.getElementById("sync-btn");
+    btn.disabled = true;
+    setStatus("Starting…");
+    setBar(4);
+    try {
+      const job = await API.startSync();
+      attach(job.job_id);
+    } catch (e) {
+      U.toast("Sync failed to start: " + e.message, "bad");
+      btn.disabled = false;
+      setStatus("Idle.");
+    }
+  }
+
+  function attach(jobId) {
+    cleanup();
+    const btn = document.getElementById("sync-btn");
+    if (btn) btn.disabled = true;
+    es = new EventSource(API.syncStreamUrl(jobId));
+    es.onmessage = (ev) => {
+      try { onEvent(JSON.parse(ev.data)); } catch (_) {}
+    };
+    es.addEventListener("end", (ev) => {
+      try { onEnd(JSON.parse(ev.data)); } catch (_) {}
+      cleanup();
+    });
+    es.onerror = () => {
+      // Stream closed; fall back to a one-shot status poll.
+      cleanup();
+      API.syncStatus(jobId).then((s) => { if (s.status !== "running") onEnd(s); }).catch(() => {});
+      const b = document.getElementById("sync-btn");
+      if (b) b.disabled = false;
+    };
+  }
+
+  function onEvent(e) {
+    if (e.phase === "locating") { setStatus("Locating device…"); setBar(6); return; }
+    if (e.phase === "scanning") { setStatus(`Found ${e.total} file(s). Importing…`); setBar(e.total ? 10 : 100); return; }
+    if (e.total) {
+      const pct = Math.max(10, Math.round((e.current / e.total) * 100));
+      setBar(pct);
+    }
+    if (e.phase === "file") setStatus(`(${e.current}/${e.total}) reading ${e.filename}…`);
+    if (e.phase === "file_done") setStatus(`(${e.current}/${e.total}) ${e.filename} — ${e.status}`);
+  }
+
+  function onEnd(snap) {
+    const btn = document.getElementById("sync-btn");
+    if (btn) btn.disabled = false;
+    setBar(100);
+    if (snap.status === "error") {
+      setStatus("Error: " + (snap.error || "unknown"));
+      U.toast("Sync error: " + (snap.error || "unknown"), "bad");
+      return;
+    }
+    const s = snap.summary || {};
+    setStatus(`Done — found ${s.found || 0}, imported ${s.imported || 0}, skipped ${s.skipped || 0}, failed ${s.failed || 0}.`);
+    showSummary(s);
+    if (s.imported > 0) U.toast(`Imported ${s.imported} new activit${s.imported === 1 ? "y" : "ies"}.`, "good");
+    else if (s.found === 0) U.toast("No device or files found.", "");
+    else U.toast("No new activities (all up to date).", "");
+  }
+
+  function showSummary(s) {
+    const wrap = document.getElementById("sync-summary");
+    if (!wrap) return;
+    wrap.style.display = "block";
+    wrap.innerHTML = "";
+    const cards = U.el("div", { class: "summary-cards" });
+    const card = (n, label, cls) =>
+      U.el("div", { class: "card scard " + cls }, [
+        U.el("div", { class: "n tnum", text: n ?? 0 }),
+        U.el("div", { class: "l", text: label }),
+      ]);
+    cards.appendChild(card(s.found, "Found", "found"));
+    cards.appendChild(card(s.imported, "Imported", "imported"));
+    cards.appendChild(card(s.skipped, "Skipped", "skipped"));
+    cards.appendChild(card(s.failed, "Failed", "failed"));
+    wrap.appendChild(cards);
+
+    if (s.errors && s.errors.length) {
+      wrap.appendChild(U.el("div", { class: "card pad", style: "margin-top:var(--sp-4)" }, [
+        U.el("h3", { style: "font-size:14px;color:var(--bad);margin-bottom:var(--sp-2)", text: "Errors" }),
+        U.el("ul", { style: "margin:0;padding-left:18px;color:var(--text-dim)" },
+          s.errors.map((e) => U.el("li", { text: e }))),
+      ]));
+    }
+    if (s.imported > 0) {
+      wrap.appendChild(U.el("a", { class: "btn primary", href: "#/dashboard", text: "View activities", style: "margin-top:var(--sp-4)" }));
+    }
+  }
+
+  const setBar = (pct) => { const b = document.getElementById("sync-bar"); if (b) b.style.width = pct + "%"; };
+  const setStatus = (t) => { const s = document.getElementById("sync-status"); if (s) s.textContent = t; };
+
+  return { render, cleanup };
+})();
