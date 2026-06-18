@@ -20,6 +20,7 @@ from core.config import Config, write_config
 from core.export import (
     ExportError,
     activities_json,
+    activities_ndjson,
     activities_summary_csv,
     activity_gpx,
     activity_json,
@@ -45,6 +46,7 @@ router = APIRouter(prefix="/api")
 _MEDIA = {
     "csv": "text/csv",
     "json": "application/json",
+    "ndjson": "application/x-ndjson",
     "gpx": "application/gpx+xml",
 }
 
@@ -150,11 +152,17 @@ def export_activity(
 # ---- bulk export -----------------------------------------------------------
 @router.get("/export")
 def export_bulk(
-    format: str = Query("csv", pattern="^(csv|json)$"),
+    format: str = Query("csv", pattern="^(csv|json|ndjson)$"),
+    full: bool = Query(False, description="Include laps + trackpoints (json/ndjson)."),
     store: Store = Depends(get_store),
 ) -> Response:
-    activities = store.all_activities(with_series=False)
-    body = activities_json(activities) if format == "json" else activities_summary_csv(activities)
+    activities = store.all_activities(with_series=full)
+    if format == "ndjson":
+        body = activities_ndjson(activities, include_series=full)
+    elif format == "json":
+        body = activities_json(activities, include_series=full)
+    else:
+        body = activities_summary_csv(activities)
     return _download(body, f"activities.{format}", format)
 
 

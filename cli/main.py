@@ -32,7 +32,7 @@ from core import (
     write_config,
 )
 from core.config import _expand
-from core.export import write_activity_export, write_bulk_export
+from core.export import write_activity_export, write_archive, write_bulk_export
 
 app = typer.Typer(
     add_completion=False,
@@ -165,6 +165,25 @@ def export(
                 raise typer.Exit(1)
             path = write_activity_export(a, fmt, out_dir, cfg.export.gpsbabel_bin)
     typer.secho(f"Wrote {path}", fg=typer.colors.GREEN)
+
+
+@app.command()
+def archive(
+    ctx: typer.Context,
+    out: Optional[Path] = typer.Option(None, help="Output dir (defaults to config export dir)."),
+) -> None:
+    """Write a full-fidelity NDJSON archive of all activities for long-term keeping.
+
+    Complements the raw .FIT store and the SQLite DB: one complete activity per
+    line (laps + full time series + all preserved FIT fields), ready for future
+    analysis. The raw .FIT files remain the canonical, lossless source.
+    """
+    cfg = _cfg(ctx)
+    out_dir = str(out) if out else cfg.export.output_dir
+    with Store(cfg.storage.db_path) as store:
+        activities = store.all_activities(with_series=True)
+        path = write_archive(activities, out_dir)
+    typer.secho(f"Archived {len(activities)} activit{'y' if len(activities)==1 else 'ies'} -> {path}", fg=typer.colors.GREEN)
 
 
 @app.command()

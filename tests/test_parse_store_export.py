@@ -6,10 +6,13 @@ from pathlib import Path
 
 import pytest
 
+import json
+
 from core import (
     ActivityFilter,
     ParseError,
     Store,
+    activities_ndjson,
     activities_summary_csv,
     activity_gpx,
     activity_json,
@@ -17,6 +20,7 @@ from core import (
     import_activities,
     parse_fit_file,
     sha256_file,
+    write_archive,
 )
 
 
@@ -103,3 +107,27 @@ def test_exports(tmp_path: Path, sample_fit_path: Path):
     assert gpx.startswith("<?xml")
     assert gpx.count("<trkpt") == 12
     assert "<gpx" in gpx and "</gpx>" in gpx
+
+
+def test_archive_ndjson(tmp_path, sample_fit_path):
+    """The long-term archive is full-fidelity NDJSON: one activity per line."""
+    a = parse_fit_file(sample_fit_path, sha256_file(sample_fit_path), str(sample_fit_path))
+    with Store(tmp_path / "db.sqlite") as store:
+        store.add_activity(a)
+        activities = store.all_activities(with_series=True)
+
+    # NDJSON string: one JSON object per line, parseable, with full series.
+    nd = activities_ndjson(activities, include_series=True)
+    lines = nd.strip().splitlines()
+    assert len(lines) == 1
+    record = json.loads(lines[0])
+    assert record["sport"] == "running"
+    assert len(record["trackpoints"]) == 12
+    assert len(record["laps"]) == 1
+    # units preserved for downstream mining
+    assert record["extra"]["total_distance"]["units"] == "m"
+
+    # write_archive produces a timestamped .ndjson file
+    path = write_archive(activities, tmp_path / "archive")
+    assert path.suffix == ".ndjson" and path.is_file()
+    assert json.loads(path.read_text().strip())["total_distance_m"] == pytest.approx(308.0)

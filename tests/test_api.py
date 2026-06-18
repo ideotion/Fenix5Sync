@@ -82,6 +82,16 @@ def test_sync_then_browse_and_export(client: TestClient):
     assert bulk.status_code == 200
     assert "total_distance_m" in bulk.text.splitlines()[0]
 
+    # Full-fidelity NDJSON archive export (one activity per line, with series)
+    archive = client.get("/api/export", params={"format": "ndjson", "full": "true"})
+    assert archive.status_code == 200
+    assert "application/x-ndjson" in archive.headers["content-type"]
+    lines = archive.text.strip().splitlines()
+    assert len(lines) == 1
+    import json as _json
+    rec = _json.loads(lines[0])
+    assert len(rec["trackpoints"]) == 12
+
     # 404 for unknown activity
     assert client.get("/api/activities/9999").status_code == 404
 

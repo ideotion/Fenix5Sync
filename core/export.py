@@ -14,6 +14,7 @@ them without touching disk; thin ``write_*`` helpers persist to a directory.
 from __future__ import annotations
 
 import csv
+import datetime as _dt
 import io
 import json
 import shutil
@@ -117,6 +118,18 @@ def activities_json(activities: Iterable[Activity], include_series: bool = False
     return json.dumps(
         [activity_to_dict(a, include_series) for a in activities], indent=2
     )
+
+
+def activities_ndjson(activities: Iterable[Activity], include_series: bool = True) -> str:
+    """Newline-delimited JSON: one complete activity object per line.
+
+    This is the long-term archive format: append/stream friendly, line-oriented
+    (so it ingests directly into pandas/DuckDB/jq and converts cleanly to Parquet
+    later), and full-fidelity when ``include_series`` is True (laps + trackpoints
+    + every preserved FIT field with units).
+    """
+    lines = [json.dumps(activity_to_dict(a, include_series)) for a in activities]
+    return ("\n".join(lines) + "\n") if lines else ""
 
 
 # --------------------------------------------------------------------------- #
@@ -282,16 +295,38 @@ def write_bulk_export(
     activities: Sequence[Activity],
     fmt: str,
     output_dir: str | Path,
+    full: bool = False,
 ) -> Path:
-    """Write a bulk summary of ``activities`` to ``output_dir`` in csv|json."""
+    """Write a bulk export of ``activities`` to ``output_dir``.
+
+    ``full`` includes laps + trackpoints (ignored for flat CSV). Formats:
+    csv (summary table), json, ndjson.
+    """
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     fmt = fmt.lower()
     if fmt == "json":
-        path, text = output_dir / "activities.json", activities_json(activities)
+        path, text = output_dir / "activities.json", activities_json(activities, full)
+    elif fmt == "ndjson":
+        path, text = output_dir / "activities.ndjson", activities_ndjson(activities, full)
     elif fmt == "csv":
         path, text = output_dir / "activities.csv", activities_summary_csv(activities)
     else:
-        raise ExportError(f"unsupported bulk format: {fmt!r} (use csv or json)")
+        raise ExportError(f"unsupported bulk format: {fmt!r} (use csv, json or ndjson)")
     path.write_text(text, encoding="utf-8")
+    return path
+
+
+def write_archive(activities: Sequence[Activity], output_dir: str | Path) -> Path:
+    """Write a timestamped, full-fidelity NDJSON archive of all activities.
+
+    This is the portable long-term archive (complementing the raw ``.FIT`` store
+    and the SQLite DB). Every activity is written with its full time series, laps
+    and preserved FIT fields, ready for future analysis/data-mining.
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    ts = _dt.datetime.now().strftime("%Y%m%d-%H%M%S")
+    path = output_dir / f"fenix5sync-archive-{ts}.ndjson"
+    path.write_text(activities_ndjson(activities, include_series=True), encoding="utf-8")
     return path

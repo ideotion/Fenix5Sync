@@ -24,6 +24,16 @@ const ExportView = (() => {
     ]));
 
     root.appendChild(U.el("div", { class: "card pad", style: "margin-top:var(--sp-4)" }, [
+      U.el("h3", { style: "margin-bottom:var(--sp-2)", text: "Long-term archive" }),
+      U.el("div", { class: "sub", style: "margin-bottom:var(--sp-4)",
+        text: "Full-fidelity NDJSON: every activity with its complete time series, laps and all preserved FIT fields (with units). One activity per line — ideal for archiving and later analysis. Your raw .FIT files remain the canonical, lossless source." }),
+      U.el("div", { class: "export-row" }, [
+        choice("NDJSON archive", "Complete dataset, one activity per line", () => dl("ndjson", true)),
+        choice("JSON (full)", "Complete dataset as a single JSON array", () => dl("json", true)),
+      ]),
+    ]));
+
+    root.appendChild(U.el("div", { class: "card pad", style: "margin-top:var(--sp-4)" }, [
       U.el("h3", { style: "margin-bottom:var(--sp-2)", text: "Per-activity export" }),
       U.el("div", { class: "sub", text: "Open any activity from the Dashboard and use the CSV / JSON / GPX buttons in its header. GPX includes the full GPS track (via gpsbabel when available, otherwise a built-in writer)." }),
     ]));
@@ -38,9 +48,9 @@ const ExportView = (() => {
     ]);
   }
 
-  function dl(fmt) {
-    U.download(API.bulkExportUrl(fmt), `activities.${fmt}`);
-    U.toast(`Exporting all activities as ${fmt.toUpperCase()}…`);
+  function dl(fmt, full) {
+    U.download(API.bulkExportUrl(fmt, full), `activities.${fmt}`);
+    U.toast(`Exporting ${full ? "full archive" : "all activities"} as ${fmt.toUpperCase()}…`);
   }
 
   return { render };

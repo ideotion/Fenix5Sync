@@ -24,6 +24,7 @@ from .dedupe import sha256_bytes, sha256_file
 from .export import (
     ExportError,
     activities_json,
+    activities_ndjson,
     activities_summary_csv,
     activity_gpx,
     activity_json,
@@ -31,6 +32,7 @@ from .export import (
     activity_trackpoints_csv,
     gpx_available,
     write_activity_export,
+    write_archive,
     write_bulk_export,
 )
 from .logging_setup import get_logger, read_recent_logs, setup_logging
@@ -71,12 +73,14 @@ __all__ = [
     "activity_to_dict",
     "activity_json",
     "activities_json",
+    "activities_ndjson",
     "activity_trackpoints_csv",
     "activities_summary_csv",
     "activity_gpx",
     "gpx_available",
     "write_activity_export",
     "write_bulk_export",
+    "write_archive",
     "ExportError",
     # logging
     "setup_logging",

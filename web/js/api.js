@@ -39,6 +39,6 @@ const API = (() => {
     // Streaming + download URLs (used directly by EventSource / <a download>).
     syncStreamUrl: (jobId) => base + "/sync/" + jobId + "/stream",
     activityExportUrl: (id, format) => base + "/activities/" + id + "/export" + qs({ format }),
-    bulkExportUrl: (format) => base + "/export" + qs({ format }),
+    bulkExportUrl: (format, full) => base + "/export" + qs({ format, full: full ? "true" : null }),
   };
 })();
