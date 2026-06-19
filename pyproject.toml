@@ -41,7 +41,7 @@ Homepage = "https://github.com/ideotion/Fenix5Sync"
 Repository = "https://github.com/ideotion/Fenix5Sync"
 
 [tool.setuptools]
-packages = ["core", "server", "cli"]
+packages = ["core", "core.importers", "server", "cli"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

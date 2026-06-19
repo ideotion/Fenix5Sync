@@ -248,7 +248,10 @@ def activity_gpx(
     Uses gpsbabel on the raw ``.FIT`` when available; otherwise the built-in
     writer. Raises :class:`ExportError` only if neither path can produce output.
     """
-    if prefer_gpsbabel and activity.raw_path and gpx_available(gpsbabel_bin):
+    # gpsbabel is invoked with ``-i garmin_fit``, so it only applies to FIT raw
+    # files; TCX/GPX-sourced activities use the built-in writer directly.
+    raw_is_fit = bool(activity.raw_path) and str(activity.raw_path).lower().endswith(".fit")
+    if prefer_gpsbabel and raw_is_fit and gpx_available(gpsbabel_bin):
         try:
             return _gpsbabel_gpx(activity.raw_path, gpsbabel_bin)
         except ExportError:

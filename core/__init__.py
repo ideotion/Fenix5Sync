@@ -35,6 +35,7 @@ from .export import (
     write_archive,
     write_bulk_export,
 )
+from .importers import detect_format, parse_activity_file
 from .logging_setup import get_logger, read_recent_logs, setup_logging
 from .models import Activity, Lap, RunSummary, Trackpoint
 from .parse import ParseError, parse_fit_file
@@ -59,8 +60,10 @@ __all__ = [
     # dedupe
     "sha256_file",
     "sha256_bytes",
-    # parse
+    # parse / importers
     "parse_fit_file",
+    "parse_activity_file",
+    "detect_format",
     "ParseError",
     # store / search
     "Store",

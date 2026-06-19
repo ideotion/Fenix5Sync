@@ -31,11 +31,13 @@ def _expand(p: str) -> str:
 
 @dataclass
 class SourceConfig:
-    mode: str = "auto"  # auto | mass_storage | mtp | path
+    mode: str = "auto"  # auto | mass_storage | mtp | path | folder | file | zip
     path: str = ""
     extra_mount_roots: list[str] = field(default_factory=list)
     activity_subdir: str = "GARMIN/Activity"
     mtp_mountpoint: str = "~/.cache/fenix5sync/mtp"
+    recursive: bool = False  # descend into subdirectories (folder/zip/path dirs)
+    formats: list[str] = field(default_factory=list)  # restrict to these; empty = all
 
 
 @dataclass
@@ -140,10 +142,22 @@ class Config:
 
     def validate(self) -> None:
         """Reject obviously-wrong values early (with a clear message)."""
-        if self.source.mode not in {"auto", "mass_storage", "mtp", "path"}:
+        valid_modes = {"auto", "mass_storage", "mtp", "path", "folder", "file", "zip"}
+        if self.source.mode not in valid_modes:
             raise ValueError(
-                f"source.mode must be auto|mass_storage|mtp|path, got {self.source.mode!r}"
+                "source.mode must be one of "
+                f"{'|'.join(sorted(valid_modes))}, got {self.source.mode!r}"
             )
+        if self.source.formats:
+            from .importers import formats as _known_formats
+
+            known = set(_known_formats())
+            unknown = [f for f in self.source.formats if f not in known]
+            if unknown:
+                raise ValueError(
+                    f"source.formats has unknown format(s): {sorted(unknown)}; "
+                    f"known formats: {sorted(known)}"
+                )
         # Security invariant: never bind to a non-loopback address by accident.
         if self.server.host not in {"127.0.0.1", "localhost", "::1"}:
             raise ValueError(

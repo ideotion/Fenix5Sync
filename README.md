@@ -23,6 +23,9 @@ Repository: <https://github.com/ideotion/Fenix5Sync>
 - **Lossless capture.** Raw `.FIT` files are stored alongside an indexed SQLite
   DB. Every FIT field is preserved with its units, so re-parsing and future
   analysis are always possible.
+- **More than FIT.** Imports `.FIT`, `.TCX` and `.GPX` from a folder, a single
+  file or a `.zip` — so exports from other watches/platforms (Coros, Suunto,
+  Wahoo, Polar, Strava, Komoot, …) land in the same local archive.
 - **Deduplicated** by SHA-256 of file *contents* (not filename), with an import
   ledger — re-running a sync only imports what's new.
 - **Resilient.** One corrupt or truncated file is logged and skipped; it never
@@ -156,7 +159,7 @@ for the fully-documented template). Key sections:
 
 | Section   | What it controls                                                        |
 |-----------|-------------------------------------------------------------------------|
-| `source`  | acquisition `mode` (`auto`/`mass_storage`/`mtp`/`path`), source path, activity subdir |
+| `source`  | acquisition `mode` (`auto`/`mass_storage`/`mtp`/`path`/`folder`/`file`/`zip`), source path, formats, recursion |
 | `storage` | data dir, raw `.FIT` subdir, SQLite DB path                             |
 | `export`  | output dir, path to the `gpsbabel` binary                               |
 | `dedupe`  | enable/disable content-hash dedupe                                      |
@@ -169,6 +172,30 @@ or via **MTP** (mounted on demand with `jmtpfs`). `mode: auto` tries mass storag
 then MTP. If auto-detection misses your setup, set `source.mode: path` and point
 `source.path` at the activity folder (or use `gio mount` and point at the gvfs
 path). Unlock the watch and allow file access when prompted.
+
+**Importing other formats & sources.** Fenix5Sync imports `.FIT`, `.TCX` and
+`.GPX`, detected by content (not just extension). Beyond a connected watch, point
+it at files you already have:
+
+```sh
+# a folder of mixed exports (optionally recursive)
+fenix5sync --config <(echo 'source: {mode: folder, path: ~/exports, recursive: true}') sync
+```
+
+Or set in `config.yaml`:
+
+```yaml
+source:
+  mode: folder        # folder | file | zip | path | auto | mass_storage | mtp
+  path: "~/exports"   # a directory, a single file, or a .zip
+  recursive: true     # descend into subdirectories
+  formats: []         # restrict to e.g. ["gpx"]; empty = all (fit, tcx, gpx)
+```
+
+TCX/GPX are mapped onto the same canonical model as FIT; values those formats
+omit (GPX has no distance/speed/ascent) are derived from the track. `.zip`
+archives are extracted to a temp dir with path-traversal protection. Everything
+is still content-deduplicated and stored losslessly under their original format.
 
 You can also edit config from the API (`GET`/`PUT /api/config`); a non-loopback
 `server.host` is rejected to keep the app local-only.
