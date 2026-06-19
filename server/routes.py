@@ -16,6 +16,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import Response, StreamingResponse
 
 from core import __version__
+from core.anonymize import anonymize_activity, effective_options
 from core.config import Config, write_config
 from core.export import (
     ExportError,
@@ -24,6 +25,7 @@ from core.export import (
     activities_summary_csv,
     activity_gpx,
     activity_json,
+    activity_tcx,
     activity_to_dict,
     activity_trackpoints_csv,
 )
@@ -48,6 +50,7 @@ _MEDIA = {
     "json": "application/json",
     "ndjson": "application/x-ndjson",
     "gpx": "application/gpx+xml",
+    "tcx": "application/vnd.garmin.tcx+xml",
 }
 
 
@@ -129,24 +132,47 @@ def get_activity(activity_id: int, store: Store = Depends(get_store)) -> Activit
 @router.get("/activities/{activity_id}/export")
 def export_activity(
     activity_id: int,
-    format: str = Query("json", pattern="^(csv|json|gpx)$"),
+    format: str = Query("json", pattern="^(csv|json|gpx|tcx|raw)$"),
+    anonymize: bool = Query(False, description="Scrub location & sensitive data."),
     store: Store = Depends(get_store),
     cfg: Config = Depends(get_config),
 ) -> Response:
     activity = store.get_activity(activity_id, with_series=True)
     if activity is None:
         raise HTTPException(status_code=404, detail="activity not found")
+
+    opts = effective_options(cfg.anonymize, anonymize)
+
+    if format == "raw":
+        if opts.enabled:
+            raise HTTPException(
+                status_code=422,
+                detail="raw export returns the original file and cannot be anonymized; "
+                "choose gpx, tcx, json or csv to anonymize",
+            )
+        src = Path(activity.raw_path)
+        if not src.is_file():
+            raise HTTPException(status_code=422, detail="original raw file is not available")
+        suffix = (src.suffix or ".fit").lower()
+        return Response(
+            content=src.read_bytes(),
+            media_type="application/octet-stream",
+            headers={"Content-Disposition": f'attachment; filename="activity-{activity_id}{suffix}"'},
+        )
+
+    activity = anonymize_activity(activity, opts)
     try:
         if format == "json":
             body = activity_json(activity)
         elif format == "csv":
             body = activity_trackpoints_csv(activity)
+        elif format == "tcx":
+            body = activity_tcx(activity)
         else:
             body = activity_gpx(activity, cfg.export.gpsbabel_bin)
     except ExportError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    stem = f"activity-{activity_id}"
-    return _download(body, f"{stem}.{format}", format)
+    return _download(body, f"activity-{activity_id}.{format}", format)
 
 
 # ---- bulk export -----------------------------------------------------------
@@ -154,9 +180,14 @@ def export_activity(
 def export_bulk(
     format: str = Query("csv", pattern="^(csv|json|ndjson)$"),
     full: bool = Query(False, description="Include laps + trackpoints (json/ndjson)."),
+    anonymize: bool = Query(False, description="Scrub location & sensitive data."),
     store: Store = Depends(get_store),
+    cfg: Config = Depends(get_config),
 ) -> Response:
     activities = store.all_activities(with_series=full)
+    opts = effective_options(cfg.anonymize, anonymize)
+    if opts.enabled:
+        activities = [anonymize_activity(a, opts) for a in activities]
     if format == "ndjson":
         body = activities_ndjson(activities, include_series=full)
     elif format == "json":

@@ -27,6 +27,8 @@ from core import (
     ActivityFilter,
     Config,
     Store,
+    anonymize_activity,
+    effective_options,
     import_activities,
     load_config,
     write_config,
@@ -147,22 +149,36 @@ def show(ctx: typer.Context, activity_id: int) -> None:
 def export(
     ctx: typer.Context,
     activity_id: Optional[int] = typer.Argument(None, help="Activity id; omit for bulk."),
-    fmt: str = typer.Option("json", "--format", "-f", help="csv | json | gpx"),
+    fmt: str = typer.Option("json", "--format", "-f", help="csv | json | gpx | tcx | raw"),
     bulk: bool = typer.Option(False, help="Export a summary of all activities."),
     out: Optional[Path] = typer.Option(None, help="Output dir (defaults to config)."),
+    anonymize: bool = typer.Option(
+        False, "--anonymize", help="Scrub location & sensitive data (non-destructive)."
+    ),
 ) -> None:
-    """Export one activity (csv/json/gpx) or a bulk summary (csv/json)."""
+    """Export one activity (csv/json/gpx/tcx/raw) or a bulk summary (csv/json)."""
     cfg = _cfg(ctx)
     out_dir = str(out) if out else cfg.export.output_dir
+    opts = effective_options(cfg.anonymize, anonymize)
     with Store(cfg.storage.db_path) as store:
         if bulk or activity_id is None:
             activities = store.all_activities(with_series=False)
+            if opts.enabled:
+                activities = [anonymize_activity(a, opts) for a in activities]
             path = write_bulk_export(activities, fmt, out_dir)
         else:
             a = store.get_activity(activity_id, with_series=True)
             if a is None:
                 typer.secho(f"Activity {activity_id} not found.", fg=typer.colors.RED)
                 raise typer.Exit(1)
+            if fmt.lower() == "raw" and opts.enabled:
+                typer.secho(
+                    "raw export returns the original file and cannot be anonymized; "
+                    "use gpx/tcx/json/csv to anonymize.",
+                    fg=typer.colors.RED,
+                )
+                raise typer.Exit(1)
+            a = anonymize_activity(a, opts)
             path = write_activity_export(a, fmt, out_dir, cfg.export.gpsbabel_bin)
     typer.secho(f"Wrote {path}", fg=typer.colors.GREEN)
 

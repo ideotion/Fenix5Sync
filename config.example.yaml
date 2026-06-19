@@ -55,10 +55,10 @@ storage:
 
 # ---- Export -----------------------------------------------------------------
 export:
-  # Default output directory for CSV/JSON/GPX exports.
+  # Default output directory for exports (CSV / JSON / GPX / TCX / raw).
   output_dir: "~/.local/share/fenix5sync/exports"
   # Path to the gpsbabel binary used for optional GPX export. If missing,
-  # GPX export is reported as unavailable rather than failing the app.
+  # GPX export falls back to a built-in writer (export still works offline).
   gpsbabel_bin: "gpsbabel"
 
 # ---- Dedupe -----------------------------------------------------------------
@@ -66,6 +66,22 @@ dedupe:
   # Files are keyed by SHA-256 of their content (not filename). When true,
   # already-imported hashes are skipped on subsequent syncs.
   enabled: true
+
+# ---- Anonymize (optional, opt-in) -------------------------------------------
+# Applied ONLY to the copy produced at export/share time -- your stored archive
+# stays lossless and is never modified. Turn on per-export (CLI --anonymize, the
+# GUI "Anonymize" toggle, or ?anonymize=true) or set enabled: true to always
+# anonymize exports. Note: the "raw" export (original file) can't be anonymized.
+anonymize:
+  enabled: false           # master switch for anonymizing exports
+  drop_gps: false          # remove ALL GPS positions
+  privacy_radius_m: 0      # null positions within this many metres of start & end
+                           #   (e.g. 200 hides home/finish); 0 = off
+  fuzz_gps_m: 0            # jitter each remaining position by up to this many m; 0 = off
+  strip_device: true       # drop device make/model and serial / unit / ANT ids
+  strip_personal: true     # drop user-profile fields (age, weight, gender, ...)
+  shift_dates: false       # rebase timestamps to hide when you exercised
+                           #   (durations & intervals are preserved)
 
 # ---- Server -----------------------------------------------------------------
 server:

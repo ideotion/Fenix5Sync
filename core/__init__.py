@@ -14,7 +14,9 @@ can be used directly::
 
 from __future__ import annotations
 
+from .anonymize import anonymize_activity, effective_options
 from .config import (
+    AnonymizeConfig,
     Config,
     find_config_path,
     load_config,
@@ -28,6 +30,7 @@ from .export import (
     activities_summary_csv,
     activity_gpx,
     activity_json,
+    activity_tcx,
     activity_to_dict,
     activity_trackpoints_csv,
     gpx_available,
@@ -49,6 +52,7 @@ __all__ = [
     "__version__",
     # config
     "Config",
+    "AnonymizeConfig",
     "load_config",
     "find_config_path",
     "write_config",
@@ -80,11 +84,15 @@ __all__ = [
     "activity_trackpoints_csv",
     "activities_summary_csv",
     "activity_gpx",
+    "activity_tcx",
     "gpx_available",
     "write_activity_export",
     "write_bulk_export",
     "write_archive",
     "ExportError",
+    # anonymize
+    "anonymize_activity",
+    "effective_options",
     # logging
     "setup_logging",
     "get_logger",
