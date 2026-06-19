@@ -150,6 +150,18 @@ def _loads(value: str | None) -> dict[str, Any]:
         return {}
 
 
+def _longest_daily_streak(days: list[str]) -> int:
+    """Longest run of consecutive calendar days from sorted distinct ``YYYY-MM-DD``."""
+    if not days:
+        return 0
+    parsed = [_dt.date.fromisoformat(d) for d in days]
+    longest = run = 1
+    for prev, cur in zip(parsed, parsed[1:]):
+        run = run + 1 if (cur - prev).days == 1 else 1
+        longest = max(longest, run)
+    return longest
+
+
 class Store:
     """A SQLite-backed activity store.
 
@@ -344,6 +356,108 @@ class Store:
             "count": int(row["count"]),
             "total_distance": float(row["total_distance"]),
             "total_duration": float(row["total_duration"]),
+        }
+
+    # ---- insights / analytics ---------------------------------------------
+    def _record(self, where: str, params: list, col: str, threshold_sql: str = "") -> dict | None:
+        """Top activity by ``col`` (the activity with the max value), or None."""
+        row = self.conn.execute(
+            f"SELECT id, start_time, sport, {col} AS v FROM activities{where} "
+            f"AND {col} IS NOT NULL{threshold_sql} ORDER BY {col} DESC LIMIT 1",
+            params,
+        ).fetchone()
+        if row is None:
+            return None
+        return {
+            "id": int(row["id"]),
+            "start_time": row["start_time"],
+            "sport": row["sport"],
+            "value": float(row["v"]),
+        }
+
+    def insights(self, sport: str | None = None) -> dict[str, Any]:
+        """Aggregate analytics over the local store (totals, trends, PRs, calendar).
+
+        Computed entirely in SQLite (no network). Pass ``sport`` to scope every
+        figure to a single sport. Timestamps are ISO strings, so grouping uses
+        ``substr`` over ``start_time`` (year/month/day prefixes).
+        """
+        where = " WHERE start_time IS NOT NULL"
+        params: list = []
+        if sport:
+            where += " AND sport = ?"
+            params.append(sport)
+
+        totals = self.conn.execute(
+            f"""SELECT COUNT(*) n,
+                       COALESCE(SUM(total_distance), 0) dist,
+                       COALESCE(SUM(total_timer_time), 0) dur,
+                       COALESCE(SUM(total_ascent), 0) ascent,
+                       COALESCE(SUM(total_calories), 0) cal
+                FROM activities{where}""",
+            params,
+        ).fetchone()
+
+        by_month = [
+            {"month": r["m"], "count": int(r["n"]), "distance_m": float(r["dist"]),
+             "duration_s": float(r["dur"]), "ascent_m": float(r["ascent"])}
+            for r in self.conn.execute(
+                f"""SELECT substr(start_time, 1, 7) m, COUNT(*) n,
+                           COALESCE(SUM(total_distance), 0) dist,
+                           COALESCE(SUM(total_timer_time), 0) dur,
+                           COALESCE(SUM(total_ascent), 0) ascent
+                    FROM activities{where} GROUP BY m ORDER BY m""",
+                params,
+            )
+        ]
+
+        by_sport = [
+            {"sport": r["sport"] or "unknown", "count": int(r["n"]),
+             "distance_m": float(r["dist"]), "duration_s": float(r["dur"])}
+            for r in self.conn.execute(
+                f"""SELECT sport, COUNT(*) n,
+                           COALESCE(SUM(total_distance), 0) dist,
+                           COALESCE(SUM(total_timer_time), 0) dur
+                    FROM activities{where} GROUP BY sport ORDER BY dist DESC""",
+                params,
+            )
+        ]
+
+        calendar = [
+            {"date": r["d"], "count": int(r["n"]), "distance_m": float(r["dist"])}
+            for r in self.conn.execute(
+                f"""SELECT substr(start_time, 1, 10) d, COUNT(*) n,
+                           COALESCE(SUM(total_distance), 0) dist
+                    FROM activities{where} GROUP BY d ORDER BY d""",
+                params,
+            )
+        ]
+
+        days = [c["date"] for c in calendar]
+        return {
+            "sport": sport,
+            "sports": self.sports(),
+            "years": sorted({d[:4] for d in days}),
+            "totals": {
+                "count": int(totals["n"]),
+                "distance_m": float(totals["dist"]),
+                "duration_s": float(totals["dur"]),
+                "ascent_m": float(totals["ascent"]),
+                "calories": float(totals["cal"]),
+                "active_days": len(days),
+                "longest_streak_days": _longest_daily_streak(days),
+            },
+            "by_month": by_month,
+            "by_sport": by_sport,
+            "calendar": calendar,
+            "records": {
+                "longest_distance": self._record(where, params, "total_distance"),
+                "longest_duration": self._record(where, params, "total_timer_time"),
+                "most_ascent": self._record(where, params, "total_ascent"),
+                "fastest_avg_speed": self._record(
+                    where, params, "avg_speed", " AND total_distance > 1000"
+                ),
+            },
         }
 
     # ---- row mapping helpers ----------------------------------------------
