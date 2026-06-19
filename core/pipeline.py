@@ -16,9 +16,10 @@ from typing import Callable
 from . import acquire
 from .config import Config
 from .dedupe import sha256_file
+from .importers import parse_activity_file
 from .logging_setup import get_logger, setup_logging
 from .models import RunSummary
-from .parse import ParseError, parse_fit_file
+from .parse import ParseError
 from .store import Store
 
 # Progress events are simple dicts so they serialise straight to JSON/SSE.
@@ -84,9 +85,9 @@ def import_activities(
         logger.info("Using source: %s", source.description)
         summary.messages.append(f"Source: {source.description}")
         try:
-            files = acquire.list_fit_files(source.activity_dir)
+            files = acquire.source_files(source, cfg)
             summary.found = len(files)
-            logger.info("Found %d .FIT file(s)", summary.found)
+            logger.info("Found %d activity file(s)", summary.found)
             _emit(on_progress, phase="scanning", total=summary.found)
 
             raw_dir = cfg.storage.raw_dir
@@ -113,11 +114,11 @@ def import_activities(
                           total=summary.found, filename=src.name, status="skipped")
                     continue
 
-                # Copy off the device into the local raw store (device read-only).
-                raw_path = acquire.copy_to_raw(src, raw_dir, file_hash)
+                # Copy off the device into the local raw store (source read-only).
+                raw_path = acquire.copy_to_raw(src, raw_dir, file_hash, src.suffix)
 
                 try:
-                    activity = parse_fit_file(raw_path, file_hash, str(raw_path))
+                    activity = parse_activity_file(raw_path, file_hash, str(raw_path))
                 except ParseError as exc:
                     summary.failed += 1
                     logger.error("Parse failed: %s", exc)

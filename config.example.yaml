@@ -7,17 +7,24 @@
 # All paths may use ~ (expanded to your home dir) and environment variables.
 # There are NO hard-coded paths in the code: everything is driven from here.
 
-# ---- Device acquisition -----------------------------------------------------
+# ---- Activity acquisition ---------------------------------------------------
+# Files of any supported format are imported: FIT, TCX and GPX. This means the
+# same pipeline ingests exports from other watches/platforms (Coros, Suunto,
+# Wahoo, Polar, Strava, Komoot, phone apps, ...), not just a Fenix 5 over USB.
 source:
-  # mode: how to reach the watch.
-  #   auto         -> try mass-storage mount points first, then MTP (jmtpfs/gio)
+  # mode: where to read activities from.
+  #   auto         -> try `path` hint, then mass-storage mount points, then MTP
   #   mass_storage -> the watch is mounted as a USB drive (look under mountpoints)
   #   mtp          -> mount via MTP (jmtpfs) before reading
-  #   path         -> read directly from `path` below (e.g. an already-mounted dir)
+  #   path         -> read `path` below; it may be a directory, a single file or
+  #                   a .zip, or a device root containing `activity_subdir`
+  #   folder       -> a directory of activity files (see `recursive`)
+  #   file         -> a single activity file (`path`)
+  #   zip          -> a .zip archive of activity files (`path`); extracted safely
   mode: auto
 
-  # Explicit path to the activity folder OR the device root. Used when mode=path,
-  # and as a fallback hint for auto-detection. Leave empty to rely on detection.
+  # Explicit path to a directory, file, .zip, or the device root. Used by
+  # path/folder/file/zip modes, and as a fallback hint for auto-detection.
   # Typical when mounted as mass storage: /media/<user>/GARMIN/GARMIN/Activity
   path: ""
 
@@ -30,6 +37,13 @@ source:
 
   # Temporary mountpoint used for MTP mode.
   mtp_mountpoint: "~/.cache/fenix5sync/mtp"
+
+  # Descend into subdirectories when scanning a folder/zip/path directory.
+  recursive: false
+
+  # Restrict importing to these formats (e.g. ["gpx"]). Empty = all supported
+  # formats (fit, tcx, gpx).
+  formats: []
 
 # ---- Local storage ----------------------------------------------------------
 storage:

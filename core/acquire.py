@@ -1,15 +1,23 @@
-"""Acquire .FIT files from a connected Garmin Fenix 5.
+"""Acquire activity files from a Garmin device or a local source.
 
-The device is treated as **strictly read-only**: this module only ever *reads*
-from the watch (locating the activity directory and copying files off it). It
-never creates, modifies or deletes anything on the device.
+The source is treated as **strictly read-only**: this module only ever *reads*
+(locating files and copying them into the local raw store). It never creates,
+modifies or deletes anything on a connected device.
 
-Two acquisition styles are supported, with auto-detection attempted first:
-  * mass storage -- the watch is mounted as a USB drive; we scan the usual
+Acquisition modes (``source.mode``):
+  * ``mass_storage`` -- the watch is mounted as a USB drive; we scan the usual
     mountpoint roots for ``GARMIN/Activity``.
-  * MTP -- mounted on demand with ``jmtpfs`` (FUSE), searched, then unmounted.
+  * ``mtp`` -- mounted on demand with ``jmtpfs`` (FUSE), searched, then unmounted.
     ``gio`` is documented as an alternative in the README.
-The source path/mode is configurable; ``mode: path`` reads a directory directly.
+  * ``path`` -- read directly from ``source.path`` (a directory, a single file
+    or a ``.zip``; a device root containing ``activity_subdir`` also works).
+  * ``folder`` -- a directory of activity files (optionally recursive).
+  * ``file`` -- a single activity file.
+  * ``zip`` -- a ``.zip`` archive of activity files (extracted to a temp dir).
+  * ``auto`` -- the ``path`` hint, then mass storage, then MTP.
+
+Files of any registered format (FIT/TCX/GPX) are discovered, so the same
+pipeline ingests exports from devices and platforms beyond the Fenix 5.
 """
 
 from __future__ import annotations
@@ -18,10 +26,13 @@ import getpass
 import os
 import shutil
 import subprocess
+import tempfile
+import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
+from . import importers
 from .config import Config, _expand
 from .logging_setup import get_logger
 
@@ -32,15 +43,51 @@ _FIT_SUFFIXES = {".fit"}
 
 @dataclass
 class Source:
-    """A located activity directory plus an optional cleanup (e.g. MTP unmount)."""
+    """A located source: a directory to scan and/or an explicit file list.
 
-    activity_dir: Path
+    ``cleanup`` (e.g. an MTP unmount or temp-dir removal) must be called when
+    done. When ``files`` is set it is the authoritative list to import;
+    otherwise files are discovered under ``activity_dir``.
+    """
+
+    activity_dir: Path | None = None
     description: str = ""
     cleanup: Callable[[], None] = field(default=lambda: None)
+    files: list[Path] | None = None
+    recursive: bool = False
+
+
+def known_extensions(formats: list[str] | None = None) -> set[str]:
+    """Activity file extensions handled by the importers (optionally filtered)."""
+    return importers.extensions(formats or None)
+
+
+def list_activity_files(
+    directory: str | Path,
+    recursive: bool = False,
+    formats: list[str] | None = None,
+) -> list[Path]:
+    """Return supported activity files in a directory (case-insensitive), sorted.
+
+    Recognises every registered format (FIT/TCX/GPX) by extension, optionally
+    restricted to ``formats``. Set ``recursive`` to descend into subdirectories.
+    """
+    directory = Path(directory)
+    if not directory.is_dir():
+        return []
+    exts = known_extensions(formats)
+    walker = directory.rglob("*") if recursive else directory.iterdir()
+    return sorted(
+        p for p in walker if p.is_file() and p.suffix.lower() in exts
+    )
 
 
 def list_fit_files(activity_dir: str | Path) -> list[Path]:
-    """Return the ``.FIT`` files in a directory (case-insensitive), sorted."""
+    """Return the ``.FIT`` files in a directory (case-insensitive), sorted.
+
+    Retained for callers that specifically want FIT files; the pipeline uses
+    :func:`list_activity_files` to discover all supported formats.
+    """
     activity_dir = Path(activity_dir)
     if not activity_dir.is_dir():
         return []
@@ -50,16 +97,37 @@ def list_fit_files(activity_dir: str | Path) -> list[Path]:
     )
 
 
-def copy_to_raw(src: str | Path, raw_dir: str | Path, file_hash: str) -> Path:
-    """Copy a source .FIT into the raw store, content-addressed by hash.
+def source_files(source: Source, cfg: Config) -> list[Path]:
+    """Resolve the list of files to import for a located :class:`Source`."""
+    if source.files is not None:
+        return list(source.files)
+    if source.activity_dir is None:
+        return []
+    return list_activity_files(
+        source.activity_dir,
+        recursive=source.recursive,
+        formats=cfg.source.formats or None,
+    )
 
-    Reads from ``src`` (the device) and writes only into the local ``raw_dir``;
-    the device is never written to. Returns the destination path. If a raw file
-    with this hash already exists, it is reused (no re-copy).
+
+def copy_to_raw(
+    src: str | Path, raw_dir: str | Path, file_hash: str, suffix: str | None = None
+) -> Path:
+    """Copy a source file into the raw store, content-addressed by hash.
+
+    Reads from ``src`` (the device/source) and writes only into the local
+    ``raw_dir``; the source is never written to. The original extension is
+    preserved (so the format is re-detectable and re-parseable) -- defaulting to
+    ``.fit`` when unknown. If a raw file with this hash already exists it is
+    reused (no re-copy). Returns the destination path.
     """
     raw_dir = Path(raw_dir)
     raw_dir.mkdir(parents=True, exist_ok=True)
-    dest = raw_dir / f"{file_hash}.fit"
+    suffix = (suffix if suffix is not None else Path(src).suffix) or ".fit"
+    suffix = suffix.lower()
+    if not suffix.startswith("."):
+        suffix = "." + suffix
+    dest = raw_dir / f"{file_hash}{suffix}"
     if not dest.exists():
         shutil.copy2(src, dest)  # copy2 reads src, writes dest; src untouched
     return dest
@@ -182,22 +250,102 @@ def _unmount_mtp(mountpoint: Path) -> None:
             continue
 
 
-def _source_from_path(cfg: Config) -> Source | None:
-    """Resolve an explicit ``source.path``.
+def _safe_extract_zip(zf: zipfile.ZipFile, dest: Path) -> None:
+    """Extract ``zf`` into ``dest``, refusing path-traversal ("zip slip") members."""
+    dest = dest.resolve()
+    for member in zf.infolist():
+        if member.is_dir():
+            continue
+        target = (dest / member.filename).resolve()
+        if target != dest and dest not in target.parents:
+            raise ValueError(f"unsafe path in zip archive: {member.filename!r}")
+    zf.extractall(dest)
 
-    Accepts either the activity directory itself or a device-root that contains
-    ``activity_subdir``.
-    """
+
+def _extract_zip_source(zip_path: Path, cfg: Config) -> Source | None:
+    """Extract a ``.zip`` of activity files to a temp dir and return a Source."""
+    try:
+        tmpdir = Path(tempfile.mkdtemp(prefix="fenix5sync-zip-"))
+    except OSError as exc:
+        logger.warning("could not create temp dir for zip extraction: %s", exc)
+        return None
+
+    def cleanup() -> None:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+
+    try:
+        with zipfile.ZipFile(zip_path) as zf:
+            _safe_extract_zip(zf, tmpdir)
+    except (zipfile.BadZipFile, OSError, ValueError) as exc:
+        logger.warning("failed to read zip %s: %s", zip_path, exc)
+        cleanup()
+        return None
+
+    files = list_activity_files(tmpdir, recursive=True, formats=cfg.source.formats or None)
+    logger.info("Extracted %d activity file(s) from %s", len(files), zip_path)
+    return Source(
+        activity_dir=tmpdir,
+        files=files,
+        recursive=True,
+        description=f"zip ({zip_path}, {len(files)} file(s))",
+        cleanup=cleanup,
+    )
+
+
+def _source_from_file(cfg: Config) -> Source | None:
+    """Resolve ``source.path`` as a single activity file."""
+    if not cfg.source.path:
+        return None
+    p = Path(_expand(cfg.source.path))
+    if not p.is_file():
+        logger.warning("source.path is not a file: %s", p)
+        return None
+    return Source(files=[p], description=f"file ({p})")
+
+
+def _source_from_folder(cfg: Config) -> Source | None:
+    """Resolve ``source.path`` as a folder of activity files."""
+    if not cfg.source.path:
+        return None
+    p = Path(_expand(cfg.source.path))
+    if not p.is_dir():
+        logger.warning("source.path is not a folder: %s", p)
+        return None
+    return Source(
+        activity_dir=p, recursive=cfg.source.recursive, description=f"folder ({p})"
+    )
+
+
+def _source_from_zip(cfg: Config) -> Source | None:
+    """Resolve ``source.path`` as a ``.zip`` archive of activity files."""
+    if not cfg.source.path:
+        return None
+    p = Path(_expand(cfg.source.path))
+    if not p.is_file():
+        logger.warning("source.path zip archive not found: %s", p)
+        return None
+    return _extract_zip_source(p, cfg)
+
+
+def _source_from_path(cfg: Config) -> Source | None:
+    """Resolve an explicit ``source.path`` (file, ``.zip``, folder or device root)."""
     if not cfg.source.path:
         return None
     base = Path(_expand(cfg.source.path))
     if not base.exists():
         logger.warning("Configured source.path does not exist: %s", base)
         return None
-    # Direct activity dir?
-    if list_fit_files(base):
-        return Source(activity_dir=base, description=f"path ({base})")
-    # Device root containing the activity subdir?
+    # A single file or a zip archive.
+    if base.is_file():
+        if base.suffix.lower() == ".zip":
+            return _extract_zip_source(base, cfg)
+        return Source(files=[base], description=f"path ({base})")
+    # A directory that already holds activity files (any supported format).
+    if list_activity_files(base, recursive=cfg.source.recursive, formats=cfg.source.formats or None):
+        return Source(
+            activity_dir=base, recursive=cfg.source.recursive, description=f"path ({base})"
+        )
+    # A device root containing the activity subdir.
     found = _find_activity_dir_under(base, cfg.source.activity_subdir)
     if found:
         return Source(activity_dir=found, description=f"path ({found})")
@@ -209,14 +357,20 @@ def _source_from_path(cfg: Config) -> Source | None:
 
 
 def locate_source(cfg: Config) -> Source | None:
-    """Locate the activity directory according to the configured mode.
+    """Locate the activity source according to the configured mode.
 
     Returns a :class:`Source` (whose ``cleanup`` must be called when done), or
-    ``None`` if no device/directory could be found.
+    ``None`` if nothing could be located.
     """
     mode = cfg.source.mode
     if mode == "path":
         return _source_from_path(cfg)
+    if mode == "folder":
+        return _source_from_folder(cfg)
+    if mode == "file":
+        return _source_from_file(cfg)
+    if mode == "zip":
+        return _source_from_zip(cfg)
     if mode == "mass_storage":
         return _detect_mass_storage(cfg)
     if mode == "mtp":

@@ -112,6 +112,8 @@ class SourceModel(BaseModel):
     extra_mount_roots: list[str] = Field(default_factory=list)
     activity_subdir: str = "GARMIN/Activity"
     mtp_mountpoint: str = "~/.cache/fenix5sync/mtp"
+    recursive: bool = False
+    formats: list[str] = Field(default_factory=list)
 
 
 class StorageModel(BaseModel):
