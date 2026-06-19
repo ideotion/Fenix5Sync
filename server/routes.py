@@ -88,6 +88,15 @@ def stats(store: Store = Depends(get_store)) -> Stats:
     )
 
 
+@router.get("/insights")
+def insights(
+    sport: str | None = Query(None, description="Scope all figures to one sport."),
+    store: Store = Depends(get_store),
+) -> dict:
+    """Aggregate analytics for the Insights view (totals, trends, PRs, calendar)."""
+    return store.insights(sport)
+
+
 # ---- activities ------------------------------------------------------------
 @router.get("/activities", response_model=ActivityList)
 def list_activities(

@@ -27,6 +27,7 @@ const API = (() => {
   return {
     health: () => req("/health"),
     stats: () => req("/stats"),
+    insights: (sport) => req("/insights" + qs({ sport })),
     listActivities: (params) => req("/activities" + qs(params)),
     getActivity: (id) => req("/activities/" + id),
     startSync: () => req("/sync", { method: "POST" }),

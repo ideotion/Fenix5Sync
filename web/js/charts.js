@@ -98,5 +98,71 @@ const Charts = (() => {
     return chart;
   }
 
-  return { applyTheme, destroyAll, series, makeLine };
+  // Category charts (labelled x axis) for the Insights view: monthly bars and
+  // a cumulative area. Kept separate from makeLine (which formats x as elapsed
+  // time for per-activity series).
+  function _category(canvas, type, labels, values, color, { unit = "", fill = false } = {}) {
+    if (!window.Chart) return null;
+    const ctx = canvas.getContext("2d");
+    let bg = color + "cc";
+    if (type === "line" && fill) {
+      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height || 220);
+      grad.addColorStop(0, color + "55");
+      grad.addColorStop(1, color + "00");
+      bg = grad;
+    }
+    const chart = new Chart(ctx, {
+      type,
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          borderColor: color,
+          backgroundColor: bg,
+          borderWidth: type === "bar" ? 0 : 2,
+          borderRadius: type === "bar" ? 6 : 0,
+          maxBarThickness: 38,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: color,
+          tension: 0.25,
+          fill: type === "line" ? fill : true,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        scales: {
+          x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+          y: {
+            beginAtZero: true,
+            grid: { color: U.cssVar("--border-soft") },
+            ticks: { maxTicksLimit: 5, callback: (v) => `${v}${unit}` },
+          },
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: U.cssVar("--elev"),
+            titleColor: U.cssVar("--text"),
+            bodyColor: U.cssVar("--text-dim"),
+            borderColor: U.cssVar("--border"),
+            borderWidth: 1,
+            padding: 10,
+            displayColors: false,
+            callbacks: { label: (item) => `${item.parsed.y}${unit}` },
+          },
+        },
+      },
+    });
+    registry.push(chart);
+    return chart;
+  }
+
+  const makeBar = (canvas, labels, values, color, opts) => _category(canvas, "bar", labels, values, color, opts);
+  const makeArea = (canvas, labels, values, color, opts) =>
+    _category(canvas, "line", labels, values, color, { ...opts, fill: true });
+
+  return { applyTheme, destroyAll, series, makeLine, makeBar, makeArea };
 })();
