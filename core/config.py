@@ -71,6 +71,24 @@ class DedupeConfig:
 
 
 @dataclass
+class AnonymizeConfig:
+    """Optional, opt-in anonymization applied to a *copy* at export time.
+
+    The stored archive is never modified. ``enabled`` is the master switch; an
+    export may also force it on per-request. GPS scrubbing is off by default
+    (you choose the level); device/personal stripping is on once you opt in.
+    """
+
+    enabled: bool = False
+    drop_gps: bool = False           # remove all positions entirely
+    privacy_radius_m: float = 0.0    # null positions within this radius of start & end
+    fuzz_gps_m: float = 0.0          # jitter each remaining position by up to this many m
+    strip_device: bool = True        # drop device make/model and serial/unit ids
+    strip_personal: bool = True      # drop user-profile fields (age, weight, gender, ...)
+    shift_dates: bool = False        # rebase timestamps to hide when you exercised
+
+
+@dataclass
 class ServerConfig:
     host: str = "127.0.0.1"
     port: int = 8765
@@ -95,6 +113,7 @@ class Config:
     storage: StorageConfig = field(default_factory=StorageConfig)
     export: ExportConfig = field(default_factory=ExportConfig)
     dedupe: DedupeConfig = field(default_factory=DedupeConfig)
+    anonymize: AnonymizeConfig = field(default_factory=AnonymizeConfig)
     server: ServerConfig = field(default_factory=ServerConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
     # Absolute path this config was loaded from, if any (None = pure defaults).
@@ -123,6 +142,7 @@ class Config:
             storage=section("storage", StorageConfig),
             export=section("export", ExportConfig),
             dedupe=section("dedupe", DedupeConfig),
+            anonymize=section("anonymize", AnonymizeConfig),
             server=section("server", ServerConfig),
             logging=section("logging", LoggingConfig),
         )
@@ -135,6 +155,7 @@ class Config:
             "storage": self.storage,
             "export": self.export,
             "dedupe": self.dedupe,
+            "anonymize": self.anonymize,
             "server": self.server,
             "logging": self.logging,
         }.items()}
@@ -168,6 +189,10 @@ class Config:
             raise ValueError(f"server.port out of range: {self.server.port}")
         if self.logging.level.upper() not in {"DEBUG", "INFO", "WARNING", "ERROR"}:
             raise ValueError(f"logging.level invalid: {self.logging.level}")
+        if self.anonymize.privacy_radius_m < 0:
+            raise ValueError("anonymize.privacy_radius_m must be >= 0")
+        if self.anonymize.fuzz_gps_m < 0:
+            raise ValueError("anonymize.fuzz_gps_m must be >= 0")
 
 
 def find_config_path(explicit: str | os.PathLike[str] | None = None) -> Path | None:

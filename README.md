@@ -9,7 +9,8 @@ read-only**: nothing is ever written to the device.
 
 The goal is durable, long-term data capture you fully own. Raw `.FIT` files are
 kept as the canonical source, parsed into a queryable SQLite database, and can be
-exported as CSV, JSON, GPX, or a full-fidelity NDJSON archive for later analysis.
+exported as CSV, JSON, GPX, TCX, the original raw file, or a full-fidelity NDJSON
+archive for later analysis — optionally anonymized for safe sharing.
 
 Repository: <https://github.com/ideotion/Fenix5Sync>
 
@@ -26,6 +27,10 @@ Repository: <https://github.com/ideotion/Fenix5Sync>
 - **More than FIT.** Imports `.FIT`, `.TCX` and `.GPX` from a folder, a single
   file or a `.zip` — so exports from other watches/platforms (Coros, Suunto,
   Wahoo, Polar, Strava, Komoot, …) land in the same local archive.
+- **Export anywhere, privately.** Re-share to **Garmin Connect** (TCX / original
+  FIT) or any app (universal GPX) — with **opt-in anonymization** that scrubs GPS
+  near home/finish, strips device & personal data, and can shift dates. It's a
+  non-destructive transform on the exported copy; your archive stays intact.
 - **Deduplicated** by SHA-256 of file *contents* (not filename), with an import
   ledger — re-running a sync only imports what's new.
 - **Resilient.** One corrupt or truncated file is logged and skipped; it never
@@ -127,7 +132,8 @@ systemctl --user enable --now fenix5sync.service   # auto-start on login
 fenix5sync sync                  # import new activities from the watch
 fenix5sync list --sport running  # search the local store
 fenix5sync show 12               # one activity's summary + laps
-fenix5sync export 12 --format gpx # per-activity export (csv|json|gpx)
+fenix5sync export 12 --format tcx      # per-activity (csv|json|gpx|tcx|raw)
+fenix5sync export 12 -f gpx --anonymize # scrub location & sensitive data
 fenix5sync export --bulk --format csv
 fenix5sync archive               # full-fidelity NDJSON archive of everything
 fenix5sync serve --open          # run the GUI/API
@@ -163,6 +169,7 @@ for the fully-documented template). Key sections:
 | `storage` | data dir, raw `.FIT` subdir, SQLite DB path                             |
 | `export`  | output dir, path to the `gpsbabel` binary                               |
 | `dedupe`  | enable/disable content-hash dedupe                                      |
+| `anonymize` | opt-in export scrubbing: GPS privacy radius/fuzz/drop, device & personal stripping, date shifting |
 | `server`  | host (**loopback only — enforced**), port, browser auto-open            |
 | `logging` | log dir, level                                                          |
 
@@ -268,11 +275,40 @@ Chart.js is vendored in `web/vendor/` (MIT); no other JS dependencies, no CDN.
 
 ---
 
+## Exporting & sharing
+
+Per-activity export offers the right format for wherever it's going:
+
+| Format | Best for |
+|--------|----------|
+| **GPX** | Universal — Strava, Komoot, most apps and tools |
+| **TCX** | Garmin Connect (native upload) and Strava |
+| **Original** (`raw`) | Byte-for-byte source file — the most faithful, Garmin-native re-upload |
+| **CSV / JSON** | Spreadsheets, scripts, analysis |
+
+**Anonymization (opt-in, non-destructive).** Tick *Anonymize* in the GUI, pass
+`--anonymize` on the CLI, or add `?anonymize=true` to an export request — or set
+`anonymize.enabled: true` to always scrub exports. It transforms only the
+exported **copy**; the stored archive is never modified. Configurable scrubbing
+(see [`config.example.yaml`](config.example.yaml)):
+
+- **Location** — drop all GPS, and/or null positions within a *privacy radius* of
+  the start **and** end (hide home/finish), and/or jitter remaining points.
+- **Device identity** — make/model and serial / unit / ANT ids.
+- **Personal profile** — age, weight, height, gender, …
+- **Dates** — rebase timestamps to hide *when* you exercised (durations preserved).
+
+(The `raw` original-file export can't be anonymized, by definition — use GPX/TCX/JSON/CSV.)
+
+---
+
 ## Privacy & safety
 
 - The watch filesystem is **read-only**; Fenix5Sync only copies files off it.
 - The server binds to `127.0.0.1` and makes **no network calls** at runtime.
 - No Garmin account, no cloud, no telemetry. Your data stays on your machine.
+- Sharing a file? **Anonymize** it on export to scrub location and personal data
+  without touching your lossless local copy (see *Exporting & sharing*).
 
 ---
 

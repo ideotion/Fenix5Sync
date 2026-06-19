@@ -6,9 +6,10 @@ schema onto the canonical model. Everything here is pure and stdlib-only.
 
 from __future__ import annotations
 
-import math
 from datetime import datetime, timezone
 from typing import Iterable
+
+from ..geo import haversine_m  # re-exported for the importers (shared geo helper)
 
 
 # --------------------------------------------------------------------------- #
@@ -104,18 +105,8 @@ def parse_time(value: str | None) -> datetime | None:
 
 
 # --------------------------------------------------------------------------- #
-# Geometry / derived series
+# Derived series
 # --------------------------------------------------------------------------- #
-def haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    """Great-circle distance between two lat/lon points, in metres."""
-    radius = 6371000.0  # mean Earth radius (m)
-    p1, p2 = math.radians(lat1), math.radians(lat2)
-    dphi = math.radians(lat2 - lat1)
-    dlambda = math.radians(lon2 - lon1)
-    a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dlambda / 2) ** 2
-    return 2 * radius * math.asin(min(1.0, math.sqrt(a)))
-
-
 def ascent_descent(altitudes: Iterable[float | None]) -> tuple[int | None, int | None]:
     """Total ascent/descent (m, rounded) from a sequence of altitudes.
 

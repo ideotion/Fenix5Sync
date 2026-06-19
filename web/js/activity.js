@@ -24,7 +24,7 @@ const ActivityView = (() => {
         U.el("h1", { text: `${U.cap(a.sport || "Activity")}${a.sub_sport && a.sub_sport !== "generic" ? " · " + U.cap(a.sub_sport) : ""}` }),
         U.el("div", { class: "sub", text: `${U.fmtDateTime(a.start_time)}  ·  ${a.device_manufacturer || ""} ${a.device_product || ""}`.trim() }),
       ]),
-      U.el("div", { class: "head-actions" }, exportButtons(a.id)),
+      U.el("div", { class: "head-actions" }, exportControls(a)),
     ]));
 
     root.appendChild(metaGrid(a));
@@ -124,18 +124,47 @@ const ActivityView = (() => {
     ]);
   }
 
-  function exportButtons(id) {
-    return ["csv", "json", "gpx"].map((fmt) =>
+  function exportControls(a) {
+    const id = a.id;
+    let anon = false;
+    const rawExt = ((a.extra && a.extra.source_format && a.extra.source_format.value) || "fit").toLowerCase();
+
+    // Original raw file: lossless and Garmin-native, but cannot be anonymized.
+    const rawBtn = U.el("button", {
+      class: "btn sm",
+      text: "Original",
+      title: `Download the original .${rawExt} file (lossless; cannot be anonymized)`,
+      onclick: () => {
+        U.download(API.activityExportUrl(id, "raw", false), `activity-${id}.${rawExt}`);
+        U.toast("Downloading original file…");
+      },
+    });
+
+    const cb = U.el("input", { type: "checkbox" });
+    cb.addEventListener("change", () => {
+      anon = cb.checked;
+      rawBtn.disabled = anon;
+      rawBtn.title = anon
+        ? "Disabled while anonymizing — the original file can't be scrubbed"
+        : `Download the original .${rawExt} file (lossless; cannot be anonymized)`;
+    });
+    const toggle = U.el("label", {
+      class: "anon-toggle",
+      title: "Scrub GPS near start/end and strip device & personal data on export",
+    }, [cb, U.el("span", { text: "Anonymize" })]);
+
+    const fmtBtns = ["csv", "json", "gpx", "tcx"].map((fmt) =>
       U.el("button", {
         class: "btn sm",
         text: fmt.toUpperCase(),
-        title: "Export this activity as " + fmt.toUpperCase(),
+        title: "Export as " + fmt.toUpperCase() + (fmt === "tcx" ? " — Garmin Connect / Strava" : fmt === "gpx" ? " — universal" : ""),
         onclick: () => {
-          U.download(API.activityExportUrl(id, fmt), `activity-${id}.${fmt}`);
-          U.toast(`Exporting ${fmt.toUpperCase()}…`);
+          U.download(API.activityExportUrl(id, fmt, anon), `activity-${id}.${fmt}`);
+          U.toast(`Exporting ${fmt.toUpperCase()}${anon ? " (anonymized)" : ""}…`);
         },
       })
     );
+    return [toggle, ...fmtBtns, rawBtn];
   }
 
   return { render };

@@ -131,6 +131,16 @@ class DedupeModel(BaseModel):
     enabled: bool = True
 
 
+class AnonymizeModel(BaseModel):
+    enabled: bool = False
+    drop_gps: bool = False
+    privacy_radius_m: float = 0.0
+    fuzz_gps_m: float = 0.0
+    strip_device: bool = True
+    strip_personal: bool = True
+    shift_dates: bool = False
+
+
 class ServerModel(BaseModel):
     host: str = "127.0.0.1"
     port: int = 8765
@@ -147,5 +157,6 @@ class ConfigModel(BaseModel):
     storage: StorageModel
     export: ExportModel
     dedupe: DedupeModel
+    anonymize: AnonymizeModel = AnonymizeModel()
     server: ServerModel
     logging: LoggingModel
