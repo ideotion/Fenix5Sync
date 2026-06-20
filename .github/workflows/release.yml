@@ -1,0 +1,78 @@
+name: Release
+
+# Automated releases, version-file driven.
+#
+# The ONLY manual step is bumping `version` in pyproject.toml inside a normal PR.
+# When that merges to main this workflow runs the test suite and — if the version
+# has no Release yet — tags the commit and publishes a GitHub Release with
+# auto-generated notes. Merges that don't change the version are a no-op (the
+# "already released?" check short-circuits), so it's safe to run on every push.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # allow a manual re-run from the Actions tab
+
+permissions:
+  contents: write       # needed to create the tag and the Release
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: tag & release on version bump
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version from pyproject.toml
+        id: ver
+        run: |
+          version=$(grep -E '^version[[:space:]]*=' pyproject.toml | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
+          if [ -z "$version" ]; then
+            echo "::error::could not read [project] version from pyproject.toml"; exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version"   >> "$GITHUB_OUTPUT"
+          echo "Detected version $version (tag v$version)"
+
+      - name: Has this version already been released?
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "${{ steps.ver.outputs.tag }}" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::${{ steps.ver.outputs.tag }} already released — nothing to do."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Python
+        if: steps.check.outputs.exists == 'false'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install & test before releasing
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+          pytest
+
+      - name: Create tag & GitHub Release
+        if: steps.check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.ver.outputs.tag }}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "${{ steps.ver.outputs.tag }}" \
+            --generate-notes
+          echo "::notice::Published ${{ steps.ver.outputs.tag }}"

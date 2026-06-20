@@ -277,6 +277,22 @@ Python: `fastapi`, `uvicorn`, `fitparse`, `pyyaml`, `typer` (plus `pytest`,
 `gpsbabel` (GPX — there is also a built-in GPX writer fallback). Frontend:
 Chart.js is vendored in `web/vendor/` (MIT); no other JS dependencies, no CDN.
 
+### Releases
+
+Releases are automated and version-file driven — `main` is never renamed, and
+each release is a tag. **The only manual step is bumping the version**, in a
+normal PR:
+
+1. Edit `version` in [`pyproject.toml`](pyproject.toml) (semver, e.g. `0.2.0`).
+   It's the single source of truth — `core.__version__` reads it from the
+   installed package metadata, so there's nothing else to change.
+2. Open a PR and merge it to `main`.
+
+On merge, [`.github/workflows/release.yml`](.github/workflows/release.yml) runs
+the test suite and — if that version has no Release yet — tags the commit
+`v<version>` and publishes a GitHub Release with auto-generated notes. Merges
+that don't change the version are a no-op.
+
 ---
 
 ## Exporting & sharing
