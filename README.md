@@ -105,8 +105,11 @@ After install the GUI is at **<http://127.0.0.1:8765/>**. Views:
 
 - **Dashboard** — activity list with date / sport / distance / duration filters,
   sortable columns and summary tiles.
+- **Insights** — local-only accomplishments, monthly/cumulative trends, personal
+  records and an activity calendar.
 - **Activity detail** — summary stats, heart-rate / speed / elevation charts, an
-  offline GPS track plot, laps, and per-activity CSV/JSON/GPX export.
+  offline GPS track plot, **HR & power training zones**, laps, and per-activity
+  CSV/JSON/GPX/TCX/raw export.
 - **Import / Sync** — one button to acquire & parse from the watch, with live
   progress and a run summary (found / imported / skipped / failed).
 - **Export** — bulk CSV/JSON and the full-fidelity NDJSON archive.
@@ -170,6 +173,7 @@ for the fully-documented template). Key sections:
 | `export`  | output dir, path to the `gpsbabel` binary                               |
 | `dedupe`  | enable/disable content-hash dedupe                                      |
 | `anonymize` | opt-in export scrubbing: GPS privacy radius/fuzz/drop, device & personal stripping, date shifting |
+| `athlete` | optional thresholds for training zones: `max_heart_rate`, `resting_heart_rate`, `ftp_w` |
 | `server`  | host (**loopback only — enforced**), port, browser auto-open            |
 | `logging` | log dir, level                                                          |
 

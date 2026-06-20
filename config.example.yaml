@@ -83,6 +83,16 @@ anonymize:
   shift_dates: false       # rebase timestamps to hide when you exercised
                            #   (durations & intervals are preserved)
 
+# ---- Athlete profile (optional) ---------------------------------------------
+# Personal thresholds used to compute the HR/power training zones shown on each
+# activity page. All optional; everything is computed locally.
+athlete:
+  max_heart_rate:          # bpm; drives the 5-zone HR model. Blank = fall back
+                           #   to each activity's own observed max HR.
+  resting_heart_rate:      # bpm; reserved for future heart-rate-reserve zones
+  ftp_w:                   # functional threshold power (W); required for the
+                           #   7-zone power model (blank = power zones hidden)
+
 # ---- Server -----------------------------------------------------------------
 server:
   # SECURITY: bind to loopback only. Do not set this to 0.0.0.0.

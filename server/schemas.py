@@ -141,6 +141,12 @@ class AnonymizeModel(BaseModel):
     shift_dates: bool = False
 
 
+class AthleteModel(BaseModel):
+    max_heart_rate: int | None = None
+    resting_heart_rate: int | None = None
+    ftp_w: int | None = None
+
+
 class ServerModel(BaseModel):
     host: str = "127.0.0.1"
     port: int = 8765
@@ -158,5 +164,6 @@ class ConfigModel(BaseModel):
     export: ExportModel
     dedupe: DedupeModel
     anonymize: AnonymizeModel = AnonymizeModel()
+    athlete: AthleteModel = AthleteModel()
     server: ServerModel
     logging: LoggingModel
