@@ -14,6 +14,8 @@ can be used directly::
 
 from __future__ import annotations
 
+from importlib.metadata import PackageNotFoundError, version as _pkg_version
+
 from .anonymize import anonymize_activity, effective_options
 from .config import (
     AnonymizeConfig,
@@ -48,7 +50,13 @@ from .search import ActivityFilter, build_where
 from .store import Store
 from .zones import ZoneBin, compute_zones, hr_zones, power_zones
 
-__version__ = "0.1.0"
+# Single source of truth for the version is pyproject.toml; we read the installed
+# distribution metadata so it never drifts. Falls back when running from a raw
+# (uninstalled) source tree.
+try:
+    __version__ = _pkg_version("fenix5sync")
+except PackageNotFoundError:  # pragma: no cover - only when not pip-installed
+    __version__ = "0.0.0+local"
 
 __all__ = [
     "__version__",
