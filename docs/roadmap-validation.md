@@ -58,7 +58,7 @@ Legend: ✅ done · ◑ partial · ◔ minimal · ❌ not started
 | 1 | HR & power zone analytics | Now 7.2 | ✅ **shipped in this PR** — `core/zones.py`, `/api/.../zones`, activity-page UI |
 | 2 | Round-trip multi-format interop | Now 6.1 | ◑ export/round-trip done (TCX writer + raw passthrough); **decode robustness** still `fitparse`, not SDK-grade |
 | 3 | Harden cross-generation ingestion | Now 5.4 | ◑ mass-storage + MTP work; cross-generation hardening is ongoing |
-| 4 | Training-load & form (CTL/ATL/TSB) | Now 5.1 | ❌ not started — Insights is descriptive stats, not training load |
+| 4 | Training-load & form (CTL/ATL/TSB) | Now 5.1 | ✅ **shipped** — `core/training_load.py` (CTL/ATL/TSB EWMAs over per-day TSS/TRIMP/duration load), `GET /api/insights/training-load`, Insights PMC card; reuses the `athlete` thresholds |
 | 5 | Strengthen + automate anonymized export | Now 5.1 | ✅ **already done** — opt-in, per-request + config, bulk-aware, GUI toggle + CLI flag, tested |
 | 6 | Distribution & trust hardening | Next 4.5 | ◔ `install.sh` + CI exist; no `.deb`/Flatpak/AppImage, no signing/reproducible builds |
 | 7 | Multi-device consolidation + dedup hub | Next 4.2 | ❌ only exact-content SHA-256 dedup; cross-source **semantic** dedup missing |
@@ -94,9 +94,10 @@ Legend: ✅ done · ◑ partial · ◔ minimal · ❌ not started
    full "Next" item.
 
 4. **#1 (zones) and #4 (training load) shared a missing prerequisite** — there was
-   nowhere to store athlete thresholds. This PR adds an `athlete` config section
-   (`max_heart_rate`, `resting_heart_rate`, `ftp_w`); #4's TSS/TRIMP work can reuse
-   it.
+   nowhere to store athlete thresholds. The zones PR added an `athlete` config
+   section (`max_heart_rate`, `resting_heart_rate`, `ftp_w`); **#4 now reuses it**
+   for its TSS (power) and TRIMP (HR) scoring, falling back to a duration estimate
+   when no thresholds are set.
 
 5. **Gap-matrix nits.** For the Fenix5Sync row today, *wellness/sleep* is ○ (no
    wellness data is ingested at all — only activity files), and *offline maps* is
@@ -114,8 +115,9 @@ Legend: ✅ done · ◑ partial · ◔ minimal · ❌ not started
   is exact SHA-256 of bytes; the same run as a watch `.FIT` and a Strava `.GPX`
   hash differently. The hub needs semantic matching (start-time/duration/distance/
   GPS), which is a different, harder mechanism.
-- **R3 — athlete thresholds were absent.** Addressed in this PR for zones (#1);
-  carry it forward for training load (#4).
+- **R3 — athlete thresholds were absent.** Addressed for zones (#1) and now
+  reused by training load (#4); both read `max_heart_rate` / `resting_heart_rate`
+  / `ftp_w` from the `athlete` config section.
 
 ---
 
@@ -133,5 +135,7 @@ zones**, which was genuinely absent:
   show; HR falls back to the observed max when no threshold is configured).
 - Tests in `tests/test_zones.py` (core binning, fallbacks, API, config roundtrip).
 
-The genuine next "Now" gaps after this are **#4 training-load** (reusing the new
-`athlete` thresholds) and **#2 SDK-grade FIT decoding**.
+The training-load item (**#4**) has since shipped too, reusing those same
+`athlete` thresholds (`core/training_load.py` + `GET /api/insights/training-load`
++ an Insights PMC card). The genuine next "Now" gap after that is **#2 SDK-grade
+FIT decoding**.

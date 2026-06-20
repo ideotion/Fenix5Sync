@@ -164,5 +164,74 @@ const Charts = (() => {
   const makeArea = (canvas, labels, values, color, opts) =>
     _category(canvas, "line", labels, values, color, { ...opts, fill: true });
 
-  return { applyTheme, destroyAll, series, makeLine, makeBar, makeArea };
+  // Multi-series labelled line chart with a legend — used for the Performance
+  // Management Chart (CTL/ATL on the left axis, TSB on an optional right axis).
+  // Each dataset: {label, data, color, fill?, dashed?, axis?: "y"|"y1"}.
+  function makeMultiLine(canvas, labels, datasets, { unit = "" } = {}) {
+    if (!window.Chart || !labels.length) return null;
+    const ctx = canvas.getContext("2d");
+    const useRight = datasets.some((d) => d.axis === "y1");
+
+    const ds = datasets.map((d) => {
+      let bg = "transparent";
+      if (d.fill) {
+        const grad = ctx.createLinearGradient(0, 0, 0, canvas.height || 240);
+        grad.addColorStop(0, d.color + "44");
+        grad.addColorStop(1, d.color + "00");
+        bg = grad;
+      }
+      return {
+        label: d.label,
+        data: d.data,
+        borderColor: d.color,
+        backgroundColor: bg,
+        borderWidth: 2,
+        borderDash: d.dashed ? [5, 4] : [],
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        pointHoverBackgroundColor: d.color,
+        tension: 0.25,
+        fill: !!d.fill,
+        yAxisID: d.axis || "y",
+      };
+    });
+
+    const scales = {
+      x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } },
+      y: { grid: { color: U.cssVar("--border-soft") }, ticks: { maxTicksLimit: 5, callback: (v) => `${v}${unit}` } },
+    };
+    if (useRight) {
+      scales.y1 = { position: "right", grid: { display: false }, ticks: { maxTicksLimit: 5 } };
+    }
+
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: { labels, datasets: ds },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        scales,
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+            labels: { boxWidth: 12, boxHeight: 12, usePointStyle: true, padding: 14 },
+          },
+          tooltip: {
+            backgroundColor: U.cssVar("--elev"),
+            titleColor: U.cssVar("--text"),
+            bodyColor: U.cssVar("--text-dim"),
+            borderColor: U.cssVar("--border"),
+            borderWidth: 1,
+            padding: 10,
+          },
+        },
+      },
+    });
+    registry.push(chart);
+    return chart;
+  }
+
+  return { applyTheme, destroyAll, series, makeLine, makeBar, makeArea, makeMultiLine };
 })();

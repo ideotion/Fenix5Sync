@@ -32,6 +32,7 @@ from core.export import (
 from core.logging_setup import read_recent_logs
 from core.search import ActivityFilter
 from core.store import Store
+from core.training_load import compute_training_load
 from core.zones import compute_zones
 from .progress import JobManager
 from .schemas import (
@@ -96,6 +97,26 @@ def insights(
 ) -> dict:
     """Aggregate analytics for the Insights view (totals, trends, PRs, calendar)."""
     return store.insights(sport)
+
+
+@router.get("/insights/training-load")
+def insights_training_load(
+    sport: str | None = Query(None, description="Scope the chart to one sport."),
+    store: Store = Depends(get_store),
+    cfg: Config = Depends(get_config),
+) -> dict:
+    """Performance Management Chart: Fitness (CTL), Fatigue (ATL) and Form (TSB).
+
+    Computed locally from activity *summaries* only (``total_timer_time``,
+    ``avg_power``, ``avg_heart_rate``, ``start_time``, ``sport``) -- a single
+    query, deliberately not loading every trackpoint (which would be an N+1 over
+    the whole archive). Per-activity stress uses the best basis the athlete config
+    supports (power TSS, HR TRIMP, else a duration estimate); at this summary level
+    Normalized Power is approximated by ``avg_power``. ``needs`` lists thresholds
+    (e.g. ``ftp_w``) that would sharpen the numbers.
+    """
+    activities = store.all_activities(with_series=False)
+    return compute_training_load(activities, cfg.athlete, sport=sport)
 
 
 # ---- activities ------------------------------------------------------------

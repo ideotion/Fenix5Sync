@@ -48,6 +48,7 @@ from .parse import ParseError, parse_fit_file
 from .pipeline import import_activities, open_store
 from .search import ActivityFilter, build_where
 from .store import Store
+from .training_load import DayLoad, TrainingLoad, compute_training_load
 from .zones import ZoneBin, compute_zones, hr_zones, power_zones
 
 # Single source of truth for the version is pyproject.toml; we read the installed
@@ -109,6 +110,10 @@ __all__ = [
     "hr_zones",
     "power_zones",
     "ZoneBin",
+    # training load
+    "compute_training_load",
+    "TrainingLoad",
+    "DayLoad",
     # logging
     "setup_logging",
     "get_logger",
