@@ -89,6 +89,20 @@ class AnonymizeConfig:
 
 
 @dataclass
+class AthleteConfig:
+    """Optional athlete thresholds used for training-zone analysis.
+
+    All optional. ``max_heart_rate`` drives the HR zone model (falling back to
+    each activity's observed maximum when unset); ``ftp_w`` is required for power
+    zones. ``resting_heart_rate`` is stored for future use (e.g. HR-reserve zones).
+    """
+
+    max_heart_rate: int | None = None        # bpm
+    resting_heart_rate: int | None = None    # bpm
+    ftp_w: int | None = None                 # functional threshold power, W
+
+
+@dataclass
 class ServerConfig:
     host: str = "127.0.0.1"
     port: int = 8765
@@ -114,6 +128,7 @@ class Config:
     export: ExportConfig = field(default_factory=ExportConfig)
     dedupe: DedupeConfig = field(default_factory=DedupeConfig)
     anonymize: AnonymizeConfig = field(default_factory=AnonymizeConfig)
+    athlete: AthleteConfig = field(default_factory=AthleteConfig)
     server: ServerConfig = field(default_factory=ServerConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
     # Absolute path this config was loaded from, if any (None = pure defaults).
@@ -143,6 +158,7 @@ class Config:
             export=section("export", ExportConfig),
             dedupe=section("dedupe", DedupeConfig),
             anonymize=section("anonymize", AnonymizeConfig),
+            athlete=section("athlete", AthleteConfig),
             server=section("server", ServerConfig),
             logging=section("logging", LoggingConfig),
         )
@@ -156,6 +172,7 @@ class Config:
             "export": self.export,
             "dedupe": self.dedupe,
             "anonymize": self.anonymize,
+            "athlete": self.athlete,
             "server": self.server,
             "logging": self.logging,
         }.items()}
@@ -193,6 +210,13 @@ class Config:
             raise ValueError("anonymize.privacy_radius_m must be >= 0")
         if self.anonymize.fuzz_gps_m < 0:
             raise ValueError("anonymize.fuzz_gps_m must be >= 0")
+        for _name, _val in (
+            ("max_heart_rate", self.athlete.max_heart_rate),
+            ("resting_heart_rate", self.athlete.resting_heart_rate),
+            ("ftp_w", self.athlete.ftp_w),
+        ):
+            if _val is not None and _val <= 0:
+                raise ValueError(f"athlete.{_name} must be positive when set")
 
 
 def find_config_path(explicit: str | os.PathLike[str] | None = None) -> Path | None:

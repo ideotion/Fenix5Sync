@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fenix5Sync — Roadmap Prioritization Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ECEFF1;
+    --surface:#FFFFFF;
+    --ink:#14171B;
+    --ink-2:#4A535E;
+    --ink-3:#7C8794;
+    --line:#DCE1E6;
+    --line-2:#EAEEF1;
+    --teal:#0E8A82;
+    --teal-soft:#E1F0EE;
+    --blue:#3F6CB0;
+    --amber:#C2860B;
+    --clay:#B0473B;
+    --slate-mute:#9CA4AE;
+    --font-display:'Space Grotesk','Geist',system-ui,sans-serif;
+    --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--font-body);font-size:16px;line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .doc{max-width:880px;margin:0 auto;padding:0 22px 96px;}
+  .sheet{
+    background:var(--surface);margin-top:26px;padding:46px 54px 52px;
+    border:1px solid var(--line);border-radius:4px;
+    box-shadow:0 1px 0 rgba(20,23,27,.02);
+  }
+
+  /* ---------- masthead ---------- */
+  .eyebrow{
+    font-family:var(--font-mono);font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-3);font-weight:500;
+  }
+  .masthead{border-bottom:2px solid var(--ink);padding-bottom:22px;margin-bottom:26px;}
+  .masthead h1{
+    font-family:var(--font-display);font-weight:700;letter-spacing:-.02em;
+    font-size:39px;line-height:1.04;margin:14px 0 8px;
+  }
+  .masthead h1 .mono{font-family:var(--font-mono);font-weight:500;font-size:.7em;color:var(--teal);letter-spacing:-.01em;}
+  .dek{font-size:17px;color:var(--ink-2);max-width:60ch;margin:0 0 18px;}
+  .trace{display:block;width:100%;height:54px;margin:6px 0 16px;}
+  .meta{
+    display:flex;flex-wrap:wrap;gap:6px 30px;font-family:var(--font-mono);
+    font-size:12px;color:var(--ink-2);padding-top:4px;
+  }
+  .meta b{color:var(--ink);font-weight:600;}
+
+  /* ---------- confidence strip ---------- */
+  .callout{
+    border:1px solid var(--line);border-left:3px solid var(--teal);
+    background:#FAFCFC;border-radius:3px;padding:13px 17px;margin:24px 0 30px;
+    font-size:13.5px;color:var(--ink-2);
+  }
+  .callout b{color:var(--ink);font-weight:600;}
+
+  /* ---------- sections ---------- */
+  section{margin:42px 0;scroll-margin-top:20px;}
+  .sec-head{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--line);padding-bottom:9px;margin-bottom:18px;}
+  .sec-tag{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--teal);letter-spacing:.04em;}
+  h2{font-family:var(--font-display);font-weight:600;font-size:23px;letter-spacing:-.01em;margin:0;}
+  h3{font-family:var(--font-display);font-weight:600;font-size:16.5px;margin:26px 0 6px;letter-spacing:-.005em;}
+  p{margin:0 0 13px;}
+  .lead{font-size:16.5px;}
+  a{color:var(--teal);text-underline-offset:2px;text-decoration-thickness:1px;}
+  a:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:2px;}
+  sup.c{font-family:var(--font-mono);font-size:10.5px;font-weight:500;color:var(--blue);vertical-align:super;line-height:0;}
+  sup.c a{color:var(--blue);text-decoration:none;}
+  .flag{font-family:var(--font-mono);font-size:10.5px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--clay);border:1px solid #E7C9C5;background:#FBF0EF;border-radius:3px;padding:1px 5px;white-space:nowrap;}
+
+  /* ---------- segment cards ---------- */
+  .seg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px;}
+  .seg{border:1px solid var(--line);border-radius:4px;padding:13px 15px 14px;background:#FCFDFD;}
+  .seg .n{font-family:var(--font-mono);font-size:11px;color:var(--ink-3);font-weight:500;}
+  .seg .t{font-family:var(--font-display);font-weight:600;font-size:14.5px;margin:2px 0 5px;}
+  .seg .need{font-size:13px;color:var(--ink-2);line-height:1.5;margin:0;}
+  .seg-span{grid-column:1 / -1;border-left:3px solid var(--teal);background:var(--teal-soft);}
+
+  /* ---------- gap matrix ---------- */
+  .scrollx{overflow-x:auto;margin:4px -4px 8px;padding:0 4px 2px;}
+  table.matrix{border-collapse:collapse;width:100%;min-width:660px;font-size:13px;}
+  table.matrix th,table.matrix td{padding:8px 6px;text-align:center;border-bottom:1px solid var(--line-2);}
+  table.matrix thead th{
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--ink-2);font-weight:600;border-bottom:1.5px solid var(--ink);vertical-align:bottom;line-height:1.3;
+  }
+  table.matrix td.tool,table.matrix th.tool{text-align:left;white-space:nowrap;font-weight:500;padding-left:2px;}
+  table.matrix td.tool{font-size:13.5px;}
+  table.matrix tr.you td{background:var(--teal-soft);}
+  table.matrix tr.you td.tool{font-weight:700;}
+  table.matrix td .g{font-size:15px;line-height:1;font-family:var(--font-mono);}
+  .s-strong{color:var(--teal);}
+  .s-part{color:var(--amber);}
+  .s-none{color:var(--clay);opacity:.85;}
+  .legend{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-2);display:flex;gap:18px;flex-wrap:wrap;margin-top:4px;}
+  .legend span b{font-family:var(--font-mono);}
+
+  /* ---------- RICE chart ---------- */
+  .chart-wrap{border:1px solid var(--line);border-radius:4px;padding:16px 14px 12px;background:#FCFDFD;margin:8px 0 14px;}
+  .chart-lab{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:8px;}
+  .barchart{width:100%;height:auto;display:block;font-family:var(--font-mono);}
+  .tierkey{display:flex;gap:20px;flex-wrap:wrap;font-family:var(--font-mono);font-size:11.5px;color:var(--ink-2);margin-top:6px;}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:6px;}
+
+  /* ---------- RICE table ---------- */
+  .scrollx2{overflow-x:auto;margin:8px -4px 6px;padding:0 4px 2px;}
+  table.rice{border-collapse:collapse;width:100%;min-width:680px;font-size:13px;}
+  table.rice th,table.rice td{padding:8px 9px;border-bottom:1px solid var(--line-2);text-align:left;vertical-align:top;}
+  table.rice thead th{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-2);font-weight:600;border-bottom:1.5px solid var(--ink);}
+  table.rice td.num,table.rice th.num{text-align:center;font-family:var(--font-mono);}
+  table.rice td.feat{font-weight:600;width:160px;}
+  table.rice td.score{font-family:var(--font-mono);font-weight:600;text-align:center;}
+  table.rice td.rat{color:var(--ink-2);font-size:12.5px;line-height:1.5;}
+  .pill{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:3px;white-space:nowrap;}
+  .p-now{background:var(--teal-soft);color:#0a635d;}
+  .p-next{background:#E8EEF7;color:#2f5491;}
+  .p-later{background:#EDEFF2;color:#5a626c;}
+  .srcref{font-family:var(--font-mono);font-size:11px;color:var(--blue);}
+
+  /* ---------- wedges ---------- */
+  .wedge{border:1px solid var(--line);border-top:3px solid var(--teal);border-radius:4px;padding:16px 19px 17px;margin:13px 0;background:#FCFDFD;}
+  .wedge .wn{font-family:var(--font-mono);font-size:11px;color:var(--teal);font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+  .wedge h3{margin:3px 0 7px;font-size:17px;}
+  .wedge p{font-size:14px;color:var(--ink-2);margin:0 0 8px;}
+  .ev{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-3);}
+  .ev b{color:var(--teal);font-weight:600;}
+
+  /* ---------- dataflow ---------- */
+  .flow-wrap{border:1px solid var(--line);border-radius:4px;background:#FCFDFD;padding:18px 16px 12px;margin:10px 0 6px;}
+  .flow{width:100%;height:auto;display:block;font-family:var(--font-mono);}
+  .cap{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-3);margin-top:8px;text-align:left;}
+
+  /* ---------- sources ---------- */
+  ol.src{font-family:var(--font-mono);font-size:12px;color:var(--ink-2);line-height:1.7;padding-left:30px;margin:6px 0 0;}
+  ol.src li{margin-bottom:3px;}
+  ol.src a{color:var(--blue);word-break:break-word;}
+  .foot{margin-top:40px;border-top:1px solid var(--line);padding-top:14px;font-family:var(--font-mono);font-size:11px;color:var(--ink-3);}
+
+  @media (max-width:640px){
+    .sheet{padding:30px 20px 36px;}
+    .masthead h1{font-size:30px;}
+    .seg-grid{grid-template-columns:1fr;}
+    .doc{padding:0 12px 60px;}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="doc">
+<div class="sheet">
+
+  <!-- ===================== MASTHEAD ===================== -->
+  <header class="masthead">
+    <div class="eyebrow">Product Research Brief &nbsp;·&nbsp; v1 &nbsp;·&nbsp; June 2026</div>
+    <h1>Fenix5Sync <span class="mono">// roadmap prioritization</span></h1>
+    <p class="dek">Where a local-first, fully offline Garmin extractor should invest next — read against what is actually pushing engaged athletes off the incumbent platforms right now.</p>
+    <svg class="trace" viewBox="0 0 820 54" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,40 60,33 110,37 165,20 220,26 280,10 340,17 400,8 470,22 540,14 600,28 660,18 720,30 780,22 820,26"
+        fill="none" stroke="#0E8A82" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      <g fill="#0E8A82">
+        <circle cx="165" cy="20" r="3"/><circle cx="280" cy="10" r="3"/>
+        <circle cx="400" cy="8" r="3"/><circle cx="540" cy="14" r="3"/><circle cx="660" cy="18" r="3"/>
+      </g>
+      <line x1="0" y1="49" x2="820" y2="49" stroke="#DCE1E6" stroke-width="1"/>
+    </svg>
+    <div class="meta">
+      <span><b>Prepared for</b> Ideotion</span>
+      <span><b>Scope</b> Debian/Ubuntu desktop · USB-direct · no cloud</span>
+      <span><b>Length</b> ~1,300 words + matrix &amp; RICE</span>
+    </div>
+  </header>
+
+  <div class="callout">
+    <b>How to read confidence.</b> Claims tied to the 2024–25 platform shifts are corroborated across multiple sources and marked with citations. The competitive matrix is analyst judgment derived from those sources, not a benchmarked feature audit. Where a claim rests on inference rather than a direct source, it carries a <span class="flag">thin&nbsp;evidence</span> marker.
+  </div>
+
+  <!-- ===================== A. EXEC SUMMARY ===================== -->
+  <section id="exec">
+    <div class="sec-head"><span class="sec-tag">A</span><h2>Executive summary</h2></div>
+    <p class="lead">Fenix5Sync is entering its market at an unusually favourable moment. Within the last 18 months the two dominant platforms have each, in effect, advertised the exact value proposition Fenix5Sync embodies.</p>
+    <p>Garmin's March 2025 launch of the paid <i>Connect+</i> tier drew a backlash large enough that a single boycott thread reached roughly ten thousand upvotes — driven less by the $7/month price than by the fear that a historically subscription-free platform had started down the road of paywalling future features.<sup class="c"><a href="#s1">1</a><a href="#s2">2</a><a href="#s3">3</a></sup> In November 2024, Strava's API clampdown broke the third-party "data hub" model in parallel: connected apps may no longer show a user's data to anyone but that user, which cut coaches off from athletes' synced activities and explicitly barred AI/analytics use of exported data.<sup class="c"><a href="#s4">4</a><a href="#s5">5</a><a href="#s6">6</a></sup></p>
+    <p>The net effect is a primed audience that wants to own its history and keep real analytics, without a cloud account — and no existing tool fully serves it. GoldenCheetah is local but cycling-power-centric with a famously steep interface; Intervals.icu and Runalyze have the analytics depth but are cloud-hosted and depend on the very sync pipes Strava just throttled; the self-hosted servers (Endurain, FitTrackee, wger) own the data but offer shallow endurance analysis and no direct-from-watch ingestion. Fenix5Sync's opening is the intersection none of them occupy: <b>trustworthy local-first ingestion straight off the device, with honest analytics and offline maps in a modern GUI.</b></p>
+  </section>
+
+  <!-- ===================== B. SEGMENTS ===================== -->
+  <section id="segments">
+    <div class="sec-head"><span class="sec-tag">B</span><h2>User segments &amp; top unmet needs</h2></div>
+    <p>Five segments dominate, with heavy overlap. The cross-cutting need is the same for all of them: a reliable, no-cloud path from "watch on USB" to "a queryable local database with real analytics and offline maps" — something that today demands stitching together a CLI tool, a clunky desktop app, and a cloud service.</p>
+    <div class="seg-grid">
+      <div class="seg"><div class="n">SEG 01</div><div class="t">Privacy / data-sovereignty users</div><p class="need">Want lossless local ownership, zero telemetry, and auditable open formats. Interest in self-hosted tracking is rising specifically because commercial data pipelines feel opaque.<sup class="c"><a href="#s13">13</a><a href="#s16">16</a></sup></p></div>
+      <div class="seg"><div class="n">SEG 02</div><div class="t">Ex- / supplementing-Connect users</div><p class="need">Want to leave or hedge Garmin Connect after the paywall signal while keeping their metrics and re-exporting to Connect-friendly formats. Some publicly plan to delete their Connect history and go local-only.<sup class="c"><a href="#s1">1</a><a href="#s8">8</a></sup></p></div>
+      <div class="seg"><div class="n">SEG 03</div><div class="t">Multi-device / multi-platform owners</div><p class="need">Want one local store that merges Garmin plus imported Strava/other exports and de-duplicates. Strava's API change broke the cross-app history hub these users relied on.<sup class="c"><a href="#s4">4</a><a href="#s5">5</a></sup></p></div>
+      <div class="seg"><div class="n">SEG 04</div><div class="t">Serious endurance &amp; quantified-self</div><p class="need">Want Intervals/Runalyze-grade training-load and physiology analytics. Community consensus is that these tools out-analyze Connect and Strava.<sup class="c"><a href="#s9">9</a><a href="#s10">10</a><a href="#s11">11</a></sup></p></div>
+      <div class="seg"><div class="n">SEG 05</div><div class="t">Linux users</div><p class="need">Want a tool that simply works with a watch on Debian/Ubuntu, where Garmin ships no native desktop support and MTP transfer is painful and brittle.<sup class="c"><a href="#s7">7</a><a href="#s12">12</a><a href="#s14">14</a></sup></p></div>
+      <div class="seg seg-span"><div class="n">CROSS-CUTTING</div><div class="t">The unserved job-to-be-done</div><p class="need">"Plug in my watch and get a private, searchable, exportable database with analytics and an offline map — in one app I trust." No current product does all of this; Fenix5Sync's entire thesis is collapsing that toolchain into a single local-first application.</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== C. GAP MATRIX ===================== -->
+  <section id="matrix">
+    <div class="sec-head"><span class="sec-tag">C</span><h2>Competitive gap matrix</h2></div>
+    <p>Across the field, strong cells cluster on the cloud incumbents (analytics, maps, wellness) and on the self-hosted tools (ownership) — but no row is complete. GoldenCheetah and GarminDB are the only genuinely local + direct-device options, and both are weak on maps and wellness, with GarminDB offering no GUI at all. The white space is the combination Fenix5Sync can own.</p>
+    <div class="scrollx">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th class="tool">Tool</th>
+          <th>Data<br>ownership</th>
+          <th>Analytics<br>depth</th>
+          <th>Device<br>direct-read</th>
+          <th>Offline<br>maps</th>
+          <th>Wellness /<br>sleep</th>
+          <th>Platform<br>reach</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="tool">Garmin Connect</td><td><span class="g s-none">○</span></td><td><span class="g s-strong">●</span></td><td><span class="g s-strong">●</span></td><td><span class="g s-strong">●</span></td><td><span class="g s-strong">●</span></td><td><span class="g s-strong">●</span></td></tr>
+        <tr><td class="tool">Strava</td><td><span class="g s-none">○</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-strong">●</span></td><td><span class="g s-none">○</span></td><td><span class="g s-strong">●</span></td></tr>
+        <tr><td class="tool">GoldenCheetah</td><td><span class="g s-strong">●</span></td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-none">○</span></td><td><span class="g s-part">◐</span></td></tr>
+        <tr><td class="tool">Runalyze</td><td><span class="g s-part">◐</span></td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td></tr>
+        <tr><td class="tool">Intervals.icu</td><td><span class="g s-none">○</span></td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td></tr>
+        <tr><td class="tool">wger</td><td><span class="g s-strong">●</span></td><td><span class="g s-none">○</span></td><td><span class="g s-none">○</span></td><td><span class="g s-none">○</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-strong">●</span></td></tr>
+        <tr><td class="tool">Endurain / FitTrackee</td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-none">○</span></td><td><span class="g s-part">◐</span></td></tr>
+        <tr><td class="tool">GarminDB</td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-none">○</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-none">○</span></td></tr>
+        <tr class="you"><td class="tool">Fenix5Sync ↗ target</td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐→●</span></td><td><span class="g s-strong">●</span></td><td><span class="g s-part">◐→●</span></td><td><span class="g s-part">◐</span></td><td><span class="g s-part">◐</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="legend">
+      <span><b class="s-strong">●</b> strong</span>
+      <span><b class="s-part">◐</b> partial</span>
+      <span><b class="s-none">○</b> weak / absent</span>
+      <span style="color:var(--ink-3)">→ = direction Fenix5Sync should move</span>
+    </div>
+  </section>
+
+  <!-- ===================== D. RICE ===================== -->
+  <section id="rice">
+    <div class="sec-head"><span class="sec-tag">D</span><h2>Prioritized feature list (RICE)</h2></div>
+    <p>Scores are <span style="font-family:var(--font-mono);font-size:.93em">RICE = Reach × Impact × Confidence ÷ Effort</span>, all relative to the existing baseline (USB extraction, raw + SQLite + NDJSON storage, charts, a basic GPS track, multi-format export, optional anonymization already exist). Reach is a 1–10 share-of-target-users proxy; Impact 0.5/1/2/3; Confidence 0.5/0.8/0.9 by evidence strength; Effort in person-months. With no usage telemetry, Reach and Effort are estimates — treat ordering as directional.</p>
+
+    <div class="chart-wrap">
+      <div class="chart-lab">RICE ranking — higher is better value per unit of effort</div>
+      <svg class="barchart" viewBox="0 0 700 430" role="img" aria-label="Horizontal bar chart of RICE scores by feature">
+        <!-- baseline -->
+        <line x1="248" y1="6" x2="248" y2="406" stroke="#DCE1E6" stroke-width="1"/>
+        <!-- rows: y pitch 29, bar height 15 -->
+        <!-- 1 zones 7.2 -> 360 -->
+        <text x="244" y="20" text-anchor="end" font-size="11.5" fill="#14171B">HR &amp; power zones</text>
+        <rect x="248" y="11" width="360" height="15" fill="#0E8A82"/><text x="614" y="22.5" font-size="11" fill="#4A535E">7.2</text>
+        <!-- 2 interop 6.08 -> 304 -->
+        <text x="244" y="49" text-anchor="end" font-size="11.5" fill="#14171B">Round-trip interop</text>
+        <rect x="248" y="40" width="304" height="15" fill="#0E8A82"/><text x="558" y="51.5" font-size="11" fill="#4A535E">6.1</text>
+        <!-- 3 ingestion 5.4 -> 270 -->
+        <text x="244" y="78" text-anchor="end" font-size="11.5" fill="#14171B">Device ingestion (MTP/USB)</text>
+        <rect x="248" y="69" width="270" height="15" fill="#0E8A82"/><text x="524" y="80.5" font-size="11" fill="#4A535E">5.4</text>
+        <!-- 4 training load 5.1 -> 255 -->
+        <text x="244" y="107" text-anchor="end" font-size="11.5" fill="#14171B">Training load &amp; form</text>
+        <rect x="248" y="98" width="255" height="15" fill="#0E8A82"/><text x="509" y="109.5" font-size="11" fill="#4A535E">5.1</text>
+        <!-- 5 anonymize 5.1 -> 255 -->
+        <text x="244" y="136" text-anchor="end" font-size="11.5" fill="#14171B">Anonymized export</text>
+        <rect x="248" y="127" width="255" height="15" fill="#0E8A82"/><text x="509" y="138.5" font-size="11" fill="#4A535E">5.1</text>
+        <!-- 6 packaging 4.53 -> 227 -->
+        <text x="244" y="165" text-anchor="end" font-size="11.5" fill="#14171B">Packaging &amp; trust</text>
+        <rect x="248" y="156" width="227" height="15" fill="#3F6CB0"/><text x="481" y="167.5" font-size="11" fill="#4A535E">4.5</text>
+        <!-- 7 multi-device 4.2 -> 210 -->
+        <text x="244" y="194" text-anchor="end" font-size="11.5" fill="#14171B">Multi-device hub</text>
+        <rect x="248" y="185" width="210" height="15" fill="#3F6CB0"/><text x="464" y="196.5" font-size="11" fill="#4A535E">4.2</text>
+        <!-- 8 maps 3.6 -> 180 -->
+        <text x="244" y="223" text-anchor="end" font-size="11.5" fill="#14171B">Offline vector maps</text>
+        <rect x="248" y="214" width="180" height="15" fill="#3F6CB0"/><text x="434" y="225.5" font-size="11" fill="#4A535E">3.6</text>
+        <!-- 9 vo2 3.27 -> 164 -->
+        <text x="244" y="252" text-anchor="end" font-size="11.5" fill="#14171B">VO₂max &amp; predictions</text>
+        <rect x="248" y="243" width="164" height="15" fill="#3F6CB0"/><text x="418" y="254.5" font-size="11" fill="#4A535E">3.3</text>
+        <!-- 10 PR 3.27 -> 164 -->
+        <text x="244" y="281" text-anchor="end" font-size="11.5" fill="#14171B">PR / best efforts</text>
+        <rect x="248" y="272" width="164" height="15" fill="#3F6CB0"/><text x="418" y="283.5" font-size="11" fill="#4A535E">3.3</text>
+        <!-- 11 gear 2.8 -> 140 -->
+        <text x="244" y="310" text-anchor="end" font-size="11.5" fill="#14171B">Gear mileage</text>
+        <rect x="248" y="301" width="140" height="15" fill="#9CA4AE"/><text x="394" y="312.5" font-size="11" fill="#4A535E">2.8</text>
+        <!-- 12 sleep 2.4 -> 120 -->
+        <text x="244" y="339" text-anchor="end" font-size="11.5" fill="#14171B">Sleep / HRV (raw)</text>
+        <rect x="248" y="330" width="120" height="15" fill="#9CA4AE"/><text x="374" y="341.5" font-size="11" fill="#4A535E">2.4</text>
+        <!-- 13 strength 1.0 -> 50 -->
+        <text x="244" y="368" text-anchor="end" font-size="11.5" fill="#14171B">Strength logging</text>
+        <rect x="248" y="359" width="50" height="15" fill="#9CA4AE"/><text x="304" y="370.5" font-size="11" fill="#4A535E">1.0</text>
+        <!-- 14 LLM 0.53 -> 27 -->
+        <text x="244" y="397" text-anchor="end" font-size="11.5" fill="#14171B">Local LLM (Ollama)</text>
+        <rect x="248" y="388" width="27" height="15" fill="#9CA4AE"/><text x="281" y="399.5" font-size="11" fill="#4A535E">0.5</text>
+        <line x1="248" y1="406" x2="640" y2="406" stroke="#DCE1E6" stroke-width="1"/>
+      </svg>
+      <div class="tierkey">
+        <span><span class="dot" style="background:#0E8A82"></span>Now (≥5.0)</span>
+        <span><span class="dot" style="background:#3F6CB0"></span>Next (3.0–4.9)</span>
+        <span><span class="dot" style="background:#9CA4AE"></span>Later / bets (&lt;3.0)</span>
+      </div>
+    </div>
+
+    <div class="scrollx2">
+    <table class="rice">
+      <thead>
+        <tr><th class="feat">Feature (delta on baseline)</th><th class="num">R</th><th class="num">I</th><th class="num">C</th><th class="num">E</th><th class="num">RICE</th><th>Tier</th><th>One-line rationale</th><th>Src</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="feat">HR &amp; power zone analytics</td><td class="num">8</td><td class="num">2</td><td class="num">.9</td><td class="num">2</td><td class="score">7.2</td><td><span class="pill p-now">Now</span></td>
+          <td class="rat">Cheap once parsing is solid, and the first thing power/HR users check to judge progress.</td><td class="srcref"><a href="#s10">10</a></td>
+        </tr>
+        <tr>
+          <td class="feat">Round-trip multi-format interop (churn-robust)</td><td class="num">9</td><td class="num">3</td><td class="num">.9</td><td class="num">4</td><td class="score">6.1</td><td><span class="pill p-now">Now</span></td>
+          <td class="rat">The mechanism by which users leave/supplement and consolidate; FIT profile changes since 2023 break naive parsers, so robustness is the moat. GPX/TCX stay open XML; FIT needs SDK-grade decoding.</td><td class="srcref"><a href="#s15">15</a> <a href="#s17">17</a> <a href="#s21">21</a></td>
+        </tr>
+        <tr>
+          <td class="feat">Harden cross-generation device ingestion</td><td class="num">10</td><td class="num">3</td><td class="num">.9</td><td class="num">5</td><td class="score">5.4</td><td><span class="pill p-now">Now</span></td>
+          <td class="rat">MTP on Linux needs udev rules and kernel-module handling and breaks across watch generations; making "plug in → local DB" reliable is the foundational enabler that gates everything below.</td><td class="srcref"><a href="#s7">7</a> <a href="#s8">8</a></td>
+        </tr>
+        <tr>
+          <td class="feat">Training-load &amp; form dashboard (CTL/ATL/TSB)</td><td class="num">8</td><td class="num">3</td><td class="num">.85</td><td class="num">4</td><td class="score">5.1</td><td><span class="pill p-now">Now</span></td>
+          <td class="rat">The headline reason serious users prefer Intervals/Runalyze over Connect and Strava.</td><td class="srcref"><a href="#s9">9</a> <a href="#s11">11</a></td>
+        </tr>
+        <tr>
+          <td class="feat">Strengthen + automate anonymized export</td><td class="num">6</td><td class="num">2</td><td class="num">.85</td><td class="num">2</td><td class="score">5.1</td><td><span class="pill p-now">Now</span></td>
+          <td class="rat">Turns the privacy promise into a concrete, shareable artifact (home-location fuzzing, time jitter, PII redaction) — something no cloud tool can match.</td><td class="srcref"><a href="#s13">13</a> <a href="#s4">4</a></td>
+        </tr>
+        <tr>
+          <td class="feat">Distribution &amp; trust hardening</td><td class="num">8</td><td class="num">2</td><td class="num">.85</td><td class="num">3</td><td class="score">4.5</td><td><span class="pill p-next">Next</span></td>
+          <td class="rat">.deb + Flatpak/AppImage, signed &amp; reproducible builds, clear portability docs — what converts privacy-minded users, and the lever to widen reach beyond Linux.</td><td class="srcref"><a href="#s16">16</a> <a href="#s18">18</a></td>
+        </tr>
+        <tr>
+          <td class="feat">Multi-device consolidation + dedup hub</td><td class="num">7</td><td class="num">3</td><td class="num">.8</td><td class="num">4</td><td class="score">4.2</td><td><span class="pill p-next">Next</span></td>
+          <td class="rat">Directly fills the cross-app history hole that Strava's API clampdown opened.</td><td class="srcref"><a href="#s4">4</a> <a href="#s5">5</a></td>
+        </tr>
+        <tr>
+          <td class="feat">Full offline vector maps + routes</td><td class="num">9</td><td class="num">2</td><td class="num">.8</td><td class="num">4</td><td class="score">3.6</td><td><span class="pill p-next">Next</span></td>
+          <td class="rat">Expected for any GPS app; MapLibre + bundled/cached OSM extracts (MBTiles/PMTiles) keep it private and offline — at a real storage and refresh cost.</td><td class="srcref"><a href="#s19">19</a> <a href="#s20">20</a></td>
+        </tr>
+        <tr>
+          <td class="feat">VO₂max trend + race-time predictions</td><td class="num">7</td><td class="num">2</td><td class="num">.7</td><td class="num">3</td><td class="score">3.3</td><td><span class="pill p-next">Next</span></td>
+          <td class="rat">Commonly expected; be explicit that a locally computed estimate differs from Garmin's proprietary FirstBeat figure.</td><td class="srcref"><a href="#s11">11</a> <a href="#s8">8</a></td>
+        </tr>
+        <tr>
+          <td class="feat">PR / best-efforts tracking</td><td class="num">7</td><td class="num">2</td><td class="num">.7</td><td class="num">3</td><td class="score">3.3</td><td><span class="pill p-next">Next</span></td>
+          <td class="rat">Low-effort retention feature; "table-stakes" status inferred from competitor parity. <span class="flag">thin&nbsp;evidence</span></td><td class="srcref">—</td>
+        </tr>
+        <tr>
+          <td class="feat">Gear / equipment mileage + reminders</td><td class="num">6</td><td class="num">1</td><td class="num">.7</td><td class="num">1.5</td><td class="score">2.8</td><td><span class="pill p-later">Later</span></td>
+          <td class="rat">Popular parity feature; demand inferred rather than directly sourced. <span class="flag">thin&nbsp;evidence</span></td><td class="srcref">—</td>
+        </tr>
+        <tr>
+          <td class="feat">Sleep / HRV / recovery from raw monitoring FIT</td><td class="num">6</td><td class="num">2</td><td class="num">.6</td><td class="num">3</td><td class="score">2.4</td><td><span class="pill p-later">Later</span></td>
+          <td class="rat">Show raw signals honestly; cannot replicate Body Battery / Training Readiness, which are computed on-device/server.</td><td class="srcref"><a href="#s8">8</a></td>
+        </tr>
+        <tr>
+          <td class="feat">Manual + strength/gym logging</td><td class="num">5</td><td class="num">1</td><td class="num">.6</td><td class="num">3</td><td class="score">1.0</td><td><span class="pill p-later">Later</span></td>
+          <td class="rat">Consolidates wger-style use locally, but tangential to the endurance wedge.</td><td class="srcref"><a href="#s22">22</a></td>
+        </tr>
+        <tr>
+          <td class="feat">Optional local LLM insights (Ollama)</td><td class="num">4</td><td class="num">2</td><td class="num">.4</td><td class="num">6</td><td class="score">0.5</td><td><span class="pill p-later">Later</span></td>
+          <td class="rat">Answers the private-AI appetite the Connect+ backlash revealed, but high effort and unproven — a later bet.</td><td class="srcref"><a href="#s1">1</a></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:13px;color:var(--ink-2);margin-top:10px;"><b style="color:var(--ink)">One caveat on the ordering.</b> RICE under-weights foundational and sequencing work: HR/power zones top the list only <i>because</i> they are cheap once data is flowing. Device ingestion and interop must ship first regardless of their slightly lower per-unit scores — nothing that consumes the data can be trusted until that layer is solid.</p>
+
+    <h3>The local-first data path the roadmap protects</h3>
+    <div class="flow-wrap">
+      <svg class="flow" viewBox="0 0 720 150" role="img" aria-label="Data flow from watch to local GUI">
+        <!-- stage boxes -->
+        <g font-size="11.5">
+          <!-- watch -->
+          <rect x="6" y="40" width="120" height="58" rx="5" fill="#FFFFFF" stroke="#0E8A82" stroke-width="1.5"/>
+          <text x="66" y="62" text-anchor="middle" font-weight="600" fill="#14171B">Garmin watch</text>
+          <text x="66" y="78" text-anchor="middle" fill="#4A535E">USB · read-only</text>
+          <text x="66" y="91" text-anchor="middle" fill="#7C8794" font-size="10">MTP / mass-storage</text>
+          <!-- arrow -->
+          <path d="M126,69 L168,69" stroke="#9CA4AE" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+          <!-- store -->
+          <rect x="170" y="28" width="150" height="82" rx="5" fill="#FAFCFC" stroke="#DCE1E6" stroke-width="1.5"/>
+          <text x="245" y="48" text-anchor="middle" font-weight="600" fill="#14171B">Local lossless store</text>
+          <text x="245" y="66" text-anchor="middle" fill="#4A535E">raw .fit + .tcx</text>
+          <text x="245" y="80" text-anchor="middle" fill="#4A535E">SQLite (queryable)</text>
+          <text x="245" y="94" text-anchor="middle" fill="#4A535E">NDJSON (audit)</text>
+          <!-- arrow -->
+          <path d="M320,69 L362,69" stroke="#9CA4AE" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+          <!-- gui -->
+          <rect x="364" y="28" width="150" height="82" rx="5" fill="#FFFFFF" stroke="#0E8A82" stroke-width="1.5"/>
+          <text x="439" y="48" text-anchor="middle" font-weight="600" fill="#14171B">Local web GUI</text>
+          <text x="439" y="66" text-anchor="middle" fill="#4A535E">zones · load · form</text>
+          <text x="439" y="80" text-anchor="middle" fill="#4A535E">offline vector map</text>
+          <text x="439" y="94" text-anchor="middle" fill="#4A535E">search · dashboard</text>
+          <!-- arrow -->
+          <path d="M514,69 L556,69" stroke="#9CA4AE" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+          <!-- out -->
+          <rect x="558" y="40" width="150" height="58" rx="5" fill="#FAFCFC" stroke="#DCE1E6" stroke-width="1.5"/>
+          <text x="633" y="60" text-anchor="middle" font-weight="600" fill="#14171B">Export &amp; share</text>
+          <text x="633" y="76" text-anchor="middle" fill="#4A535E">TCX/FIT · CSV/JSON</text>
+          <text x="633" y="89" text-anchor="middle" fill="#4A535E">anonymized variant</text>
+        </g>
+        <text x="360" y="135" text-anchor="middle" font-size="11" fill="#0E8A82" font-weight="600">no account · no cloud · no telemetry</text>
+        <defs>
+          <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#9CA4AE"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="cap">Every prioritized item either hardens a stage of this path or adds a private capability on top of it — the device stays strictly read-only throughout.</div>
+    </div>
+  </section>
+
+  <!-- ===================== E. WEDGES ===================== -->
+  <section id="wedges">
+    <div class="sec-head"><span class="sec-tag">E</span><h2>Top 3 wedge opportunities</h2></div>
+
+    <div class="wedge">
+      <div class="wn">Wedge 01 — timing</div>
+      <h3>The escape hatch from Connect &amp; Strava</h3>
+      <p>Own the moment. A one-action, fully offline capture of a user's Garmin history into a lossless local store, plus clean re-export to Connect-friendly TCX/FIT, so leaving or hedging costs them nothing. This lands directly on the Connect+ paywall anxiety and the Strava API breakage — both recent, both fundamentally about losing control of one's own data.</p>
+      <p class="ev"><b>Evidence: high.</b> Multi-source, 2024–25 <sup class="c"><a href="#s1">1</a><a href="#s4">4</a><a href="#s8">8</a></sup></p>
+    </div>
+
+    <div class="wedge">
+      <div class="wn">Wedge 02 — moat</div>
+      <h3>Direct-from-device ingestion that actually works on Linux</h3>
+      <p>No polished tool makes "plug in watch → queryable database" reliable on Debian/Ubuntu: GarminDB is a CLI and GoldenCheetah is clunky. Solving MTP/USB cleanly across watch generations — read-only and offline — is a hard, fiddly capability competitors won't casually replicate, and it seeds every other feature in the product.</p>
+      <p class="ev"><b>Evidence: high on the pain.</b> Primary technical sources <sup class="c"><a href="#s7">7</a><a href="#s12">12</a><a href="#s14">14</a></sup></p>
+    </div>
+
+    <div class="wedge">
+      <div class="wn">Wedge 03 — differentiation</div>
+      <h3>Honest, private analytics depth + offline maps in one modern GUI</h3>
+      <p>Combine Intervals/Runalyze-grade training-load and physiology views with full offline OSM vector maps, all local — and be transparent about what can and cannot be reproduced versus Garmin's proprietary scores. That candour is itself a trust feature. This out-designs GoldenCheetah and out-owns the cloud tools simultaneously.</p>
+      <p class="ev"><b>Evidence: high for demand</b>; the reproducibility caveat is a feature, not a weakness <sup class="c"><a href="#s9">9</a><a href="#s11">11</a><a href="#s19">19</a><a href="#s8">8</a></sup></p>
+    </div>
+  </section>
+
+  <!-- ===================== METHOD & RISK ===================== -->
+  <section id="method">
+    <div class="sec-head"><span class="sec-tag">·</span><h2>Method, risks &amp; evidence quality</h2></div>
+    <p>Sourcing prioritized recent primary material: vendor announcements (Strava, Garmin), tech press covering the backlash (TechRadar, gHacks, DC Rainmaker), and developer/community primary sources (Garmin forums, GitHub issues/discussions, Hacker News). <b>Strongest evidence</b> is the Connect+ backlash and the Strava API change, each corroborated across multiple 2024–25 sources. <b>Solid but older:</b> the Linux MTP/USB mechanics rest on 2019–22 primary sources that remain accurate but should be revalidated against current firmware. <b>Thin evidence, flagged in-line:</b> gear-mileage and PR-tracking demand are inferred from competitor parity, and the frequently cited "four location points re-identify most people" statistic should be checked against its primary study before being quoted.</p>
+    <p><b>Format &amp; legality note.</b> Reading and converting files from a device the user owns is well supported: GPX and TCX are open XML schemas, and Garmin's FIT SDK is free to use for decoding. The legal sensitivity sits with scraping Connect's web service — which Fenix5Sync sidesteps by reading local files and treating the device as strictly read-only. These are software tools processing sensor-derived numbers, not diagnostic outputs, so no CE / ISO 13485 medical-device obligations attach.<sup class="c"><a href="#s16">16</a><a href="#s17">17</a><a href="#s21">21</a></sup> The main interop risk is FIT format churn: Garmin mandated profile changes (effective late 2023) that not all platforms adopted, so multisport and newer files can trip naive parsers — robust, SDK-grade decoding is the mitigation.<sup class="c"><a href="#s15">15</a></sup></p>
+  </section>
+
+  <!-- ===================== SOURCES ===================== -->
+  <section id="sources">
+    <div class="sec-head"><span class="sec-tag">·</span><h2>Sources</h2></div>
+    <ol class="src">
+      <li id="s1">TechRadar — Garmin Connect+ backlash (live, Mar 2025). <a href="https://www.techradar.com/health-fitness/live/live-garmin-connect-backlash-tell-us-what-you-think-about-garmins-new-premium-tier">link</a></li>
+      <li id="s2">Garmin Rumors — Connect+ sparks major backlash (Mar 2025). <a href="https://garminrumors.com/garmin-connect-sparks-major-backlash-from-users-over-subscription-launch/">link</a></li>
+      <li id="s3">gHacks — Garmin's new subscription sparks backlash (Mar 2025). <a href="https://www.ghacks.net/2025/03/31/garmins-new-subscription-service-sparks-backlash-from-users/">link</a></li>
+      <li id="s4">Strava — Updates to Strava's API Agreement (Nov 2024). <a href="https://press.strava.com/articles/updates-to-stravas-api-agreement">link</a></li>
+      <li id="s5">DC Rainmaker — Strava's changes to kill off apps (Nov 2024). <a href="https://www.dcrainmaker.com/2024/11/stravas-changes-to-kill-off-apps.html">link</a></li>
+      <li id="s6">Cybernews — Strava API agreement changes (Nov 2024). <a href="https://cybernews.com/security/strava-changes-api-agreement/">link</a></li>
+      <li id="s7">A. Harsányi — Synchronizing FIT files using a Raspberry Pi (PiFitSync; MTP udev/jmtpfs detail). <a href="https://alex-hhh.github.io/2022/05/pi-fit-sync.html">link</a></li>
+      <li id="s8">GarminDB — "offline, local-only Garmin data analysis?" discussion #156 (server-side metrics caveat). <a href="https://github.com/tcgoetz/GarminDB/discussions/156">link</a></li>
+      <li id="s9">LetsRun forum — Intervals.icu vs GoldenCheetah vs Runalyze vs TrainingPeaks. <a href="https://www.letsrun.com/forum/flat_read.php?thread=12445016">link</a></li>
+      <li id="s10">BikeForums — Which training program has the best analytics. <a href="https://www.bikeforums.net/training-nutrition/1227033-training-program-has-best-analytics.html">link</a></li>
+      <li id="s11">the5krunner — Runalyze feature roundup (VO₂max, CTL/ATL, predictions). <a href="https://the5krunner.com/2022/02/03/runalyze-a-year-of-awesome-updates-many-of-them-free/">link</a></li>
+      <li id="s12">Garmin Forums — "USB Drive Mode is needed; MTP not supported on Mac." <a href="https://forums.garmin.com/outdoor-recreation/outdoor-recreation/f/epix-2/285733/usb-drive-mode-is-needed-mtp-is-not-supported-on-mac">link</a></li>
+      <li id="s13">BrightCoding — Self-hosted fitness tracking / data sovereignty (Dec 2025). <a href="https://www.blog.brightcoding.dev/2025/12/30/take-back-your-run-self-hosted-fitness-tracking-for-complete-data-control/">link</a></li>
+      <li id="s14">Leberwurscht — vívosmart Linux USB extraction (GitHub; mass-storage command, garmin_gps blacklist). <a href="https://github.com/Leberwurscht/vivosmart">link</a></li>
+      <li id="s15">the5krunner — Garmin FIT file format changes 2023/24 (interop breakage). <a href="https://the5krunner.com/2024/02/12/garmin-fit-files-welcomed-improvements-for-2023-4-is-there-a-downside/">link</a></li>
+      <li id="s16">Open-source fitness tracker guide (2026) — OSI licenses, "not a medical device" note. <a href="https://electronics.alibaba.com/buyingguides/open-source-fitness-tracker-guide-self-hosted-vs.-app-based">link</a></li>
+      <li id="s17">Garmin Forums (FIT SDK) — decoding activity files / FIT SDK cookbook. <a href="https://forums.garmin.com/developer/fit-sdk/f/discussion/292626/getting-gpx-files-from-wellness-api">link</a></li>
+      <li id="s18">Hacker News — wger discussion (on-device-first design comment). <a href="https://news.ycombinator.com/item?id=43034329">link</a></li>
+      <li id="s19">OpenMapTiles — self-hosting OSM vector tiles (MBTiles, MapLibre). <a href="https://openmaptiles.org/">link</a></li>
+      <li id="s20">selfhosting.cloud — offline-first map tile server + routing (Jan 2026). <a href="https://selfhosting.cloud/offline-first-navigation-build-a-self-hosted-map-tile-server">link</a></li>
+      <li id="s21">Decathlon Digital — GPX / TCX / FIT format comparison (open XML vs binary). <a href="https://medium.com/decathlondigital/gpx-tcx-fit-how-to-choose-the-best-file-extension-for-sport-activity-transfer-403487337c04">link</a></li>
+      <li id="s22">wger — self-hosted FLOSS fitness/workout tracker (GitHub). <a href="https://github.com/wger-project/wger">link</a></li>
+    </ol>
+  </section>
+
+  <div class="foot">Fenix5Sync roadmap brief · compiled June 2026 from public primary sources · matrix and RICE estimates are analyst judgment, not benchmarked measurements — revalidate before committing engineering quarters.</div>
+
+</div>
+</div>
+</body>
+</html>

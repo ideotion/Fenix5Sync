@@ -36,6 +36,9 @@ const ActivityView = (() => {
     root.appendChild(chartsWrap);
     root.appendChild(chartCard("Elevation", "--elev-line", "ele-canvas", "m", true));
 
+    // training zones (loaded async; hidden until there's something to show)
+    root.appendChild(zonesCard());
+
     // track
     root.appendChild(U.el("div", { class: "card track-card", style: "margin-top:var(--sp-5)" }, [
       U.el("h3", { class: "", style: "font-size:14px;color:var(--text-dim);margin-bottom:var(--sp-3)", text: "GPS track" }),
@@ -45,6 +48,7 @@ const ActivityView = (() => {
     if (a.laps && a.laps.length > 1) root.appendChild(lapsCard(a.laps));
 
     U.setView(root);
+    loadZones(a.id);
 
     // Build visuals after layout so canvas sizes are known.
     requestAnimationFrame(() => {
@@ -121,6 +125,60 @@ const ActivityView = (() => {
     return U.el("div", { class: "card", style: "margin-top:var(--sp-5)" }, [
       U.el("h3", { style: "font-size:14px;color:var(--text-dim);padding:var(--sp-4) var(--sp-4) 0", text: "Laps" }),
       U.el("div", { class: "table-wrap" }, [U.el("table", {}, [thead, tbody])]),
+    ]);
+  }
+
+  // ---- training zones (HR + power) ----
+  function zonesCard() {
+    return U.el("div", { class: "card pad", id: "zones-card", style: "margin-top:var(--sp-5);display:none" }, [
+      U.el("h3", { style: "font-size:14px;color:var(--text-dim);margin-bottom:var(--sp-4)", text: "Training zones" }),
+      U.el("div", { id: "zones-host" }),
+    ]);
+  }
+
+  async function loadZones(id) {
+    let z;
+    try { z = await API.activityZones(id); } catch (_) { return; }
+    const host = document.getElementById("zones-host");
+    const card = document.getElementById("zones-card");
+    if (!host || !card) return;
+
+    const blocks = [];
+    if (z.hr && z.hr.zones && z.hr.zones.length) {
+      const note = z.hr.basis === "observed"
+        ? `max ${z.hr.max_heart_rate} bpm · observed (set yours in config)`
+        : `max ${z.hr.max_heart_rate} bpm`;
+      blocks.push(zoneBlock("Heart rate", z.hr.zones, "--hr", note));
+    }
+    if (z.power && z.power.zones && z.power.zones.length) {
+      blocks.push(zoneBlock("Power", z.power.zones, "--speed", `FTP ${z.power.ftp_w} W`));
+    } else if (z.power && z.power.needs_ftp) {
+      blocks.push(U.el("div", { class: "sub", text: "Set your FTP in config to see power zones." }));
+    }
+    if (!blocks.length) return;  // nothing to show -> leave the card hidden
+
+    blocks.forEach((b) => host.appendChild(b));
+    card.style.display = "";
+  }
+
+  function zoneBlock(title, zones, colorVar, caption) {
+    const maxPct = Math.max(...zones.map((z) => z.percent), 1);
+    const rows = zones.map((z) =>
+      U.el("div", { class: "zone-row" }, [
+        U.el("div", { class: "zone-name", text: z.name }),
+        U.el("div", { class: "zone-bar" }, [
+          U.el("div", { class: "fill", style: `width:${Math.max(2, (z.percent / maxPct) * 100)}%;background:var(${colorVar})` }),
+        ]),
+        U.el("div", { class: "zone-fig tnum", html: `${z.percent}% <span class="muted">${U.fmtDuration(z.seconds)}</span>` }),
+      ])
+    );
+    return U.el("div", { class: "zone-block" }, [
+      U.el("div", { class: "zone-head" }, [
+        U.el("span", { class: "swatch", style: `background:var(${colorVar})` }),
+        document.createTextNode(title),
+        caption ? U.el("span", { class: "zone-cap muted", text: caption }) : null,
+      ]),
+      U.el("div", { class: "zone-list" }, rows),
     ]);
   }
 

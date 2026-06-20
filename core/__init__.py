@@ -17,6 +17,7 @@ from __future__ import annotations
 from .anonymize import anonymize_activity, effective_options
 from .config import (
     AnonymizeConfig,
+    AthleteConfig,
     Config,
     find_config_path,
     load_config,
@@ -45,6 +46,7 @@ from .parse import ParseError, parse_fit_file
 from .pipeline import import_activities, open_store
 from .search import ActivityFilter, build_where
 from .store import Store
+from .zones import ZoneBin, compute_zones, hr_zones, power_zones
 
 __version__ = "0.1.0"
 
@@ -53,6 +55,7 @@ __all__ = [
     # config
     "Config",
     "AnonymizeConfig",
+    "AthleteConfig",
     "load_config",
     "find_config_path",
     "write_config",
@@ -93,6 +96,11 @@ __all__ = [
     # anonymize
     "anonymize_activity",
     "effective_options",
+    # zones
+    "compute_zones",
+    "hr_zones",
+    "power_zones",
+    "ZoneBin",
     # logging
     "setup_logging",
     "get_logger",

@@ -32,6 +32,7 @@ from core.export import (
 from core.logging_setup import read_recent_logs
 from core.search import ActivityFilter
 from core.store import Store
+from core.zones import compute_zones
 from .progress import JobManager
 from .schemas import (
     ActivityDetail,
@@ -136,6 +137,23 @@ def get_activity(activity_id: int, store: Store = Depends(get_store)) -> Activit
     if activity is None:
         raise HTTPException(status_code=404, detail="activity not found")
     return activity_to_dict(activity, include_series=True)  # type: ignore[return-value]
+
+
+@router.get("/activities/{activity_id}/zones")
+def activity_zones(
+    activity_id: int,
+    store: Store = Depends(get_store),
+    cfg: Config = Depends(get_config),
+) -> dict:
+    """Heart-rate and power time-in-zone for one activity (computed locally).
+
+    Uses athlete thresholds from config; HR falls back to the activity's observed
+    maximum when none is set, and power is omitted until an FTP is configured.
+    """
+    activity = store.get_activity(activity_id, with_series=True)
+    if activity is None:
+        raise HTTPException(status_code=404, detail="activity not found")
+    return compute_zones(activity, cfg.athlete)
 
 
 @router.get("/activities/{activity_id}/export")
