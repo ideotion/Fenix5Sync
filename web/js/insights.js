@@ -4,6 +4,7 @@
 const Insights = (() => {
   let state = { sport: "", year: "" };
   let data = null;
+  let load = null;  // training-load (CTL/ATL/TSB) payload, fetched alongside insights
 
   async function render() {
     Charts.destroyAll();
@@ -13,6 +14,12 @@ const Insights = (() => {
     } catch (e) {
       U.setView(U.el("div", { class: "empty", text: "Could not load insights: " + e.message }));
       return;
+    }
+    // Training load is supplementary — a failure here must not sink the page.
+    try {
+      load = await API.trainingLoad(state.sport || undefined);
+    } catch (_) {
+      load = null;
     }
     if (!data.years.includes(state.year)) state.year = data.years[data.years.length - 1] || "";
     draw();
@@ -31,6 +38,8 @@ const Insights = (() => {
     root.appendChild(heroTiles(data.totals));
     const recs = recordsRow(data.records);
     if (recs) root.appendChild(recs);
+    const tl = trainingLoadCard();
+    if (tl) root.appendChild(tl);
     root.appendChild(evolutionCard());
     if (!state.sport && data.by_sport.length > 1) root.appendChild(sportBreakdown(data.by_sport));
     root.appendChild(calendarCard());
@@ -39,6 +48,7 @@ const Insights = (() => {
     requestAnimationFrame(() => {
       Charts.applyTheme();
       buildEvolutionCharts();
+      buildTrainingLoad();
     });
   }
 
@@ -133,6 +143,73 @@ const Insights = (() => {
     if (bar) Charts.makeBar(bar, labels, perMonthKm, U.cssVar("--accent"), { unit: " km" });
     const area = document.getElementById("in-cumulative");
     if (area) Charts.makeArea(area, labels, cumulativeKm, U.cssVar("--accent-2"), { unit: " km" });
+  }
+
+  // ---- training load: Fitness (CTL) / Fatigue (ATL) / Form (TSB) ----
+  function trainingLoadCard() {
+    if (!load || !load.series || !load.series.length) return null;  // hide when no data
+    const cur = load.current || {};
+    return U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [
+      U.el("div", { class: "cal-head" }, [
+        U.el("h3", { style: "font-size:14px;color:var(--text-dim)", text: "Training load (Fitness / Fatigue / Form)" }),
+        U.el("div", { class: "sub", style: "color:var(--text-dim);font-size:13px", text: `CTL ${load.ctl_days}d · ATL ${load.atl_days}d` }),
+      ]),
+      tlNow(cur),
+      U.el("div", { class: "chart-box", style: "height:280px;margin-top:var(--sp-4)" }, [U.el("canvas", { id: "tl-canvas" })]),
+      U.el("div", { style: "margin-top:var(--sp-3);font-size:12.5px;color:var(--text-dim);line-height:1.5", text: tlLegend() }),
+      U.el("div", { style: "margin-top:4px;font-size:12px;color:var(--text-faint);line-height:1.5", text: tlNote() }),
+    ]);
+  }
+
+  function tlNow(cur) {
+    const tiles = U.el("div", { class: "stats" });
+    const tile = (label, value) =>
+      tiles.appendChild(U.el("div", { class: "tile" }, [
+        U.el("div", { class: "label", text: label }),
+        U.el("div", { class: "value tnum", text: value }),
+      ]));
+    tile("Fitness (CTL)", fmt1(cur.ctl));
+    tile("Fatigue (ATL)", fmt1(cur.atl));
+    tile("Form (TSB)", fmt1(cur.tsb));
+    return tiles;
+  }
+
+  function buildTrainingLoad() {
+    if (!load || !load.series || !load.series.length) return;
+    const canvas = document.getElementById("tl-canvas");
+    if (!canvas) return;
+    const labels = load.series.map((d) => d.date);
+    Charts.makeMultiLine(canvas, labels, [
+      { label: "Fitness (CTL)", data: load.series.map((d) => d.ctl), color: U.cssVar("--accent"), fill: true },
+      { label: "Fatigue (ATL)", data: load.series.map((d) => d.atl), color: U.cssVar("--accent-2") },
+      { label: "Form (TSB)", data: load.series.map((d) => d.tsb), color: U.cssVar("--hr"), axis: "y1", dashed: true },
+    ]);
+  }
+
+  // Plain-language legend so the three lines are readable without prior knowledge.
+  function tlLegend() {
+    return "Fitness (CTL) is your slow ~6-week training load, Fatigue (ATL) your recent ~1-week load, " +
+      "and Form (TSB, right axis) is yesterday's fitness minus fatigue — positive means fresh, negative means loaded.";
+  }
+
+  // Honest note about the unit and what backed each day.
+  function tlNote() {
+    const c = load.coverage || { activities: 0, scored: 0, basis: {} };
+    const b = c.basis || {};
+    const mix = ["power", "hr", "duration"]
+      .filter((k) => b[k]).map((k) => `${b[k]} ${k === "hr" ? "HR" : k}`);
+    let note = `Unit: ${String(load.unit).toUpperCase()} · scored ${c.scored} of ${c.activities} activities` +
+      (mix.length ? ` (${mix.join(", ")})` : "") +
+      ". An open, local approximation — not Garmin's proprietary FirstBeat figures.";
+    if (load.needs && load.needs.length) {
+      const labels = { ftp_w: "FTP", max_heart_rate: "max HR" };
+      note += " Set your " + load.needs.map((n) => labels[n] || n).join(" and ") + " in config for sharper numbers.";
+    }
+    return note;
+  }
+
+  function fmt1(v) {
+    return (v === null || v === undefined) ? "—" : Number(v).toFixed(1);
   }
 
   // ---- per-sport breakdown ----
