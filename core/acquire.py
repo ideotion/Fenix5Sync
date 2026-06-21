@@ -55,6 +55,7 @@ class Source:
     cleanup: Callable[[], None] = field(default=lambda: None)
     files: list[Path] | None = None
     recursive: bool = False
+    monitoring_dir: Path | None = None  # wellness/monitoring files, scanned alongside activities
 
 
 def known_extensions(formats: list[str] | None = None) -> set[str]:
@@ -98,16 +99,25 @@ def list_fit_files(activity_dir: str | Path) -> list[Path]:
 
 
 def source_files(source: Source, cfg: Config) -> list[Path]:
-    """Resolve the list of files to import for a located :class:`Source`."""
+    """Resolve the list of files to import for a located :class:`Source`.
+
+    Monitoring/wellness ``.FIT`` files from ``monitoring_dir`` (when located) are
+    appended; the import pipeline routes them to the wellness store.
+    """
     if source.files is not None:
-        return list(source.files)
-    if source.activity_dir is None:
-        return []
-    return list_activity_files(
-        source.activity_dir,
-        recursive=source.recursive,
-        formats=cfg.source.formats or None,
-    )
+        files = list(source.files)
+    elif source.activity_dir is not None:
+        files = list_activity_files(
+            source.activity_dir,
+            recursive=source.recursive,
+            formats=cfg.source.formats or None,
+        )
+    else:
+        files = []
+    if source.monitoring_dir is not None:
+        seen = set(files)
+        files += [f for f in list_fit_files(source.monitoring_dir) if f not in seen]
+    return files
 
 
 def copy_to_raw(
@@ -199,8 +209,10 @@ def _detect_mass_storage(cfg: Config) -> Source | None:
         for base in candidates:
             found = _find_activity_dir_under(base, cfg.source.activity_subdir)
             if found:
+                mon = _find_activity_dir_under(base, cfg.source.monitoring_subdir)
                 logger.info("Detected mass-storage activity dir: %s", found)
-                return Source(activity_dir=found, description=f"mass storage ({found})")
+                return Source(activity_dir=found, monitoring_dir=mon,
+                              description=f"mass storage ({found})")
     return None
 
 
@@ -231,9 +243,11 @@ def _detect_mtp(cfg: Config) -> Source | None:
         _unmount_mtp(mountpoint)
         return None
 
+    mon = _find_activity_dir_under(mountpoint, cfg.source.monitoring_subdir, max_depth=6)
     logger.info("Detected MTP activity dir: %s", found)
     return Source(
         activity_dir=found,
+        monitoring_dir=mon,
         description=f"MTP ({found})",
         cleanup=lambda: _unmount_mtp(mountpoint),
     )
@@ -348,7 +362,8 @@ def _source_from_path(cfg: Config) -> Source | None:
     # A device root containing the activity subdir.
     found = _find_activity_dir_under(base, cfg.source.activity_subdir)
     if found:
-        return Source(activity_dir=found, description=f"path ({found})")
+        mon = _find_activity_dir_under(base, cfg.source.monitoring_subdir)
+        return Source(activity_dir=found, monitoring_dir=mon, description=f"path ({found})")
     # Fall back to the joined path even if currently empty.
     joined = base / Path(*_activity_subdir_parts(cfg.source.activity_subdir))
     if joined.is_dir():

@@ -35,6 +35,7 @@ class SourceConfig:
     path: str = ""
     extra_mount_roots: list[str] = field(default_factory=list)
     activity_subdir: str = "GARMIN/Activity"
+    monitoring_subdir: str = "GARMIN/Monitor"  # wellness (steps/HR/stress) files
     mtp_mountpoint: str = "~/.cache/fenix5sync/mtp"
     recursive: bool = False  # descend into subdirectories (folder/zip/path dirs)
     formats: list[str] = field(default_factory=list)  # restrict to these; empty = all
