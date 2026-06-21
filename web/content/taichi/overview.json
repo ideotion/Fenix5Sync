@@ -1,0 +1,66 @@
+{
+  "title": "Tai Chi",
+  "subtitle": "Gentle, evidence-based movement for balance, mobility and well-being — built for older and deconditioned users, and scalable for the fit.",
+  "evidence_date": "2026-06-21",
+  "source_doc": "docs/taichi/curation-report.md",
+  "disclaimer": "Not medical advice. Tai Chi is an adjunct activity, not a treatment or cure for any condition. If you are older, pregnant, deconditioned, or have a medical condition, get clinician clearance (PAR-Q+ screening) before starting. Stop and seek care for chest pain, severe breathlessness, dizziness or faintness, or new or worsening joint pain.",
+  "levels": [
+    {"id": "chair", "name": "Seated / chair", "intensity_met": [2.0, 2.8], "desc": "Lowest-impact entry: all movements done seated. Safest start for the most deconditioned users or for symptom days."},
+    {"id": "supported", "name": "Supported standing", "intensity_met": [2.0, 2.5], "desc": "Standing with a chair or wall for support — builds standing tolerance and confidence before unassisted balance work."},
+    {"id": "standing", "name": "Foundational standing", "intensity_met": [2.5, 3.0], "desc": "Unassisted standing forms with higher, knee-sparing stances. The balance-and-falls training core."},
+    {"id": "advanced", "name": "Advanced flows", "intensity_met": [3.0, 4.0], "desc": "Longer flows, more repetitions and lower stances for fitter users wanting a greater challenge."}
+  ],
+  "programs": [
+    {"tier": "entry", "name": "Tai Chi for Arthritis (Sun-style)", "desc": "Sun-style program by Dr Paul Lam (~12 movements: a 6-movement core plus extension). Higher, upright stances and follow-step footwork reduce knee loading and train balance continuously — the safest standing entry point. CDC-recognized for fall prevention.", "refs": ["R13"]},
+    {"tier": "falls", "name": "Tai Ji Quan: Moving for Better Balance (8-form)", "desc": "Dr Fuzhong Li's 8-form core (from the Simplified 24-form) plus mini therapeutic movements. Highest-tier evidence-based falls-prevention program with the strongest single trial in the field.", "refs": ["R02", "R14"]},
+    {"tier": "progression", "name": "Simplified Yang 24-form", "desc": "The aspirational longer standing form for fitter users — more demanding flows once balance and lower-limb tolerance are established.", "refs": ["R01"]},
+    {"tier": "regression", "name": "Seated adaptations", "desc": "Chair versions of the above, always available for the most deconditioned users or on symptom days.", "refs": []}
+  ],
+  "benefits": [
+    {"outcome": "Falls reduction & balance", "grade": "Strong", "detail": "~20% fewer fallers (RR 0.80) and ~30% lower fall rate; effect strengthens with practice frequency.", "refs": ["R01", "R02"]},
+    {"outcome": "Balance, mobility & lower-limb function", "grade": "Strong–Moderate", "detail": "Consistent gains in functional tests (timed up-and-go, standing balance) and reduced fear of falling.", "refs": ["R01", "R02"]},
+    {"outcome": "Quality of life (physical)", "grade": "Strong–Moderate", "detail": "Repeated improvement across conditions (osteoarthritis, fibromyalgia and others).", "refs": ["R04", "R06"]},
+    {"outcome": "Fibromyalgia", "grade": "Strong–Moderate", "detail": "Clinically meaningful symptom improvement; at least as effective as aerobic exercise at 24–52 weeks.", "refs": ["R06", "R07"]},
+    {"outcome": "Knee osteoarthritis", "grade": "Moderate", "detail": "Short-term improvement in pain, stiffness and function; higher-stance Sun-style preferred to limit knee loading.", "refs": ["R04"]},
+    {"outcome": "Blood pressure", "grade": "Moderate", "detail": "~6 mmHg systolic / ~4 mmHg diastolic vs inactivity; modest, and not superior to other aerobic exercise.", "refs": ["R03"]},
+    {"outcome": "COPD (exercise capacity, QoL)", "grade": "Moderate", "detail": "Six-minute walk distance ~+41 m and better respiratory quality of life.", "refs": ["R05"]},
+    {"outcome": "Depression, anxiety & mood", "grade": "Moderate", "detail": "Reductions in stress/anxiety/depressive symptoms (effect sizes ~0.5–0.66); heterogeneous evidence.", "refs": ["R09"]},
+    {"outcome": "Cognition", "grade": "Moderate", "detail": "Benefits for executive function and global cognition in mild cognitive impairment; larger with longer practice.", "refs": ["R10"]},
+    {"outcome": "Type 2 diabetes (glycaemic markers)", "grade": "Moderate–Limited", "detail": "HbA1c ~ -0.5 to -0.7 points; high heterogeneity; adjunct to standard care, not a treatment.", "refs": ["R08"]},
+    {"outcome": "Sleep & fatigue", "grade": "Limited / Emerging", "detail": "Mixed findings; not reviewed in depth yet. No sleep claims made.", "refs": []},
+    {"outcome": "Weight loss (standalone)", "grade": "Limited", "detail": "Low energy cost; BMI often unchanged. Supports weight management indirectly but is not a standalone weight-loss method.", "refs": ["R11", "R12"]}
+  ],
+  "not_supported": [
+    "Tai Chi does not cure or treat any disease; benefits are adjunctive.",
+    "It is not a primary weight-loss method (low MET cost; BMI often unchanged).",
+    "For blood pressure and several diabetes markers it is not superior to ordinary aerobic exercise — its edge is accessibility, low impact, balance training and adherence.",
+    "Cognition, mood and diabetes benefits rest on heterogeneous, modest-quality trials.",
+    "Sleep benefit is not yet substantiated."
+  ],
+  "safety": {
+    "setup": ["A stable chair within reach", "Clear space around you", "Supportive footwear (or bare feet on a non-slip surface)", "Water to hand"],
+    "red_flags": ["Chest pain", "Severe breathlessness", "Dizziness or faintness", "New or worsening joint pain"],
+    "note": "Trials across these conditions reported few or no serious adverse events when Tai Chi is taught and scaled appropriately. The default standing style is the higher-stance Sun-style to protect knees and balance."
+  },
+  "sessions": {
+    "status": "pending",
+    "note": "Guided sessions (movement library, daily rotation, and instructor-reviewed videos) are the next research deliverables. This page ships the evidence foundation that those build on.",
+    "planned": ["10–13 min daily sessions that rotate to cover the whole body", "Longer 20/30/45 min sessions for fitter users", "Per-movement instruction with front/side/mirror views and clear cues"]
+  },
+  "bibliography": [
+    {"ref_id": "R01", "authors": "Huang et al.", "year": 2017, "title": "Tai Chi for preventing falls in older adults (SR & meta-analysis; 18 trials, 3,824)", "source": "systematic review / meta-analysis", "url": "https://pubmed.ncbi.nlm.nih.gov/28167744/", "type": "meta-analysis", "grade": "Strong"},
+    {"ref_id": "R02", "authors": "Li F, Harmer P, et al.", "year": 2018, "title": "Therapeutic Tai Ji Quan vs multimodal exercise to prevent falls (RCT, n=670)", "source": "JAMA Internal Medicine", "url": "https://pubmed.ncbi.nlm.nih.gov/30208396/", "type": "RCT", "grade": "Strong"},
+    {"ref_id": "R03", "authors": "Dong X, Ding M, Yi X", "year": 2020, "title": "Meta-analysis of RCTs: effects of Tai Chi on blood pressure (24 trials)", "source": "Evidence-Based Complementary and Alternative Medicine", "url": "https://doi.org/10.1155/2020/8503047", "type": "meta-analysis", "grade": "Moderate"},
+    {"ref_id": "R04", "authors": "Hu L, Wang Y, et al.", "year": 2021, "title": "Tai Chi for physical and mental health in knee osteoarthritis (SR & meta-analysis)", "source": "Clinical Rehabilitation", "url": "https://doi.org/10.1177/0269215520954343", "type": "meta-analysis", "grade": "Moderate"},
+    {"ref_id": "R05", "authors": "Liu et al.", "year": 2021, "title": "Tai Chi for pulmonary rehabilitation in COPD (SR & meta-analysis; 23 studies)", "source": "Annals of Palliative Medicine", "url": "https://pubmed.ncbi.nlm.nih.gov/33894710/", "type": "meta-analysis", "grade": "Moderate"},
+    {"ref_id": "R06", "authors": "Wang C, Schmid CH, Rones R, et al.", "year": 2010, "title": "A randomized trial of Tai Chi for fibromyalgia", "source": "New England Journal of Medicine", "url": "https://doi.org/10.1056/NEJMoa0912611", "type": "RCT", "grade": "Moderate"},
+    {"ref_id": "R07", "authors": "Wang C, Schmid CH, Fielding RA, et al.", "year": 2018, "title": "Tai Chi versus aerobic exercise for fibromyalgia (RCT, n=226, 52 wk)", "source": "BMJ", "url": "https://doi.org/10.1136/bmj.k851", "type": "RCT", "grade": "Strong"},
+    {"ref_id": "R08", "authors": "Sun Y, Li Q, Xue W", "year": 2025, "title": "Tai Chi and glycemic control in type 2 diabetes (meta-analysis of RCTs)", "source": "Frontiers in Endocrinology", "url": "https://doi.org/10.3389/fendo.2025.1605253", "type": "meta-analysis", "grade": "Moderate"},
+    {"ref_id": "R09", "authors": "Wang C, Bannuru R, Ramel J, Kupelnick B, Scott T, Schmid CH", "year": 2010, "title": "Tai Chi on psychological well-being (SR & meta-analysis; 40 studies)", "source": "BMC Complementary and Alternative Medicine", "url": "https://doi.org/10.1186/1472-6882-10-23", "type": "meta-analysis", "grade": "Moderate"},
+    {"ref_id": "R10", "authors": "Wang WT, Wang H", "year": 2025, "title": "Tai Chi Chuan and cognitive function in older adults with MCI (SR & meta-analysis)", "source": "Frontiers in Physiology", "url": "https://doi.org/10.3389/fphys.2025.1556622", "type": "meta-analysis", "grade": "Moderate"},
+    {"ref_id": "R11", "authors": "[complete from source]", "year": 2022, "title": "Chinese Compilation of Physical Activities (24-form simplified Tai Chi ~3 METs)", "source": "Journal of Sport and Health Science", "url": "https://www.sciencedirect.com/science/article/pii/S2666337622000403", "type": "measurement / compendium", "grade": "n/a (intensity)"},
+    {"ref_id": "R12", "authors": "[complete from source]", "year": 2023, "title": "Energy costs of chair sitting and standing video exercises in older adults (chair Tai Chi 2.0–2.8 METs)", "source": "measurement study (PubMed-indexed)", "url": "https://pubmed.ncbi.nlm.nih.gov/37649672/", "type": "measurement", "grade": "n/a (intensity)"},
+    {"ref_id": "R13", "authors": "Lam P / Tai Chi for Health Institute", "year": 1997, "title": "Tai Chi for Arthritis (Sun-style; ~12 movements; CDC-recognized for fall prevention)", "source": "Tai Chi for Health Institute / US NCOA", "url": "https://www.ncoa.org/article/evidence-based-program-tai-chi-for-arthritis-and-falls-prevention/", "type": "validated program documentation", "grade": "Moderate (program)"},
+    {"ref_id": "R14", "authors": "Li F / Oregon Research Institute", "year": 2018, "title": "Tai Ji Quan: Moving for Better Balance (8-form core; CDC highest-tier falls program)", "source": "US NCOA / program documentation", "url": "https://www.ncoa.org/article/evidence-based-program-tai-ji-quan-moving-for-better-balance/", "type": "validated program documentation", "grade": "Strong (program + R02)"}
+  ]
+}
