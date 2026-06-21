@@ -52,6 +52,7 @@ from .models import Activity, Lap, RunSummary, Trackpoint
 from .parse import ParseError, parse_fit_file
 from .pipeline import import_activities, open_store
 from .race import RacePrediction, compute_race_predictions
+from .records import compute_personal_records
 from .search import ActivityFilter, build_where
 from .splits import Split, compute_splits
 from .store import Store
@@ -144,6 +145,8 @@ __all__ = [
     "WellnessParseError",
     # consolidate / dedup
     "find_duplicate_groups",
+    # personal records
+    "compute_personal_records",
     # athlete suggestions
     "suggest_athlete",
     # logging

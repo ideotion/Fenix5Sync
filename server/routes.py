@@ -21,6 +21,7 @@ from core.athlete import suggest_athlete
 from core.best_efforts import compute_best_efforts
 from core.config import Config, write_config
 from core.consolidate import find_duplicate_groups
+from core.records import compute_personal_records
 from core.export import (
     ExportError,
     activities_json,
@@ -151,6 +152,25 @@ def insights_duplicates(store: Store = Depends(get_store)) -> dict:
     run as a watch ``.FIT`` and a Strava ``.GPX``).
     """
     return find_duplicate_groups(store.all_activities(with_series=False))
+
+
+@router.get("/insights/records")
+def insights_records(
+    sport: str = Query("running", description="Sport to compute distance PRs for."),
+    store: Store = Depends(get_store),
+) -> dict:
+    """All-time best times per distance (fastest-ever 1K/5K/10K…), with the source.
+
+    Loads trackpoint series for the chosen sport's activities (an N+1, pruned to
+    that sport and to activities with a distance signal) to find in-run best
+    windows; computed locally and read-only.
+    """
+    ids = [
+        a.id for a in store.all_activities(with_series=False)
+        if a.id is not None and a.sport == sport and a.total_distance
+    ]
+    full = [store.get_activity(i, with_series=True) for i in ids]
+    return compute_personal_records([a for a in full if a is not None])
 
 
 @router.get("/insights/hr-trends")
