@@ -97,6 +97,17 @@ CREATE TABLE IF NOT EXISTS import_ledger (
     activity_id INTEGER
 );
 
+CREATE TABLE IF NOT EXISTS wellness_days (
+    date           TEXT PRIMARY KEY,
+    steps          INTEGER,
+    resting_hr     INTEGER,
+    avg_hr         INTEGER,
+    max_hr         INTEGER,
+    avg_stress     INTEGER,
+    stress_samples INTEGER,
+    updated_at     TEXT
+);
+
 CREATE INDEX IF NOT EXISTS idx_activities_start_time ON activities(start_time);
 CREATE INDEX IF NOT EXISTS idx_activities_sport      ON activities(sport);
 CREATE INDEX IF NOT EXISTS idx_activities_distance   ON activities(total_distance);
@@ -343,6 +354,40 @@ class Store:
             "SELECT DISTINCT sport FROM activities WHERE sport IS NOT NULL ORDER BY sport"
         ).fetchall()
         return [r["sport"] for r in rows]
+
+    # ---- wellness (monitoring-derived daily summaries) --------------------
+    def add_wellness_days(self, days: Iterable[dict]) -> int:
+        """Upsert daily wellness summaries (keyed by date); returns the count."""
+        rows = list(days)
+        if not rows:
+            return 0
+        now = _dt.datetime.now(_dt.timezone.utc).isoformat()
+        with self.conn:
+            for d in rows:
+                self.conn.execute(
+                    """INSERT INTO wellness_days
+                           (date, steps, resting_hr, avg_hr, max_hr, avg_stress, stress_samples, updated_at)
+                       VALUES (:date, :steps, :resting_hr, :avg_hr, :max_hr, :avg_stress, :stress_samples, :updated_at)
+                       ON CONFLICT(date) DO UPDATE SET
+                           steps=excluded.steps, resting_hr=excluded.resting_hr, avg_hr=excluded.avg_hr,
+                           max_hr=excluded.max_hr, avg_stress=excluded.avg_stress,
+                           stress_samples=excluded.stress_samples, updated_at=excluded.updated_at""",
+                    {
+                        "date": d.get("date"), "steps": d.get("steps"),
+                        "resting_hr": d.get("resting_hr"), "avg_hr": d.get("avg_hr"),
+                        "max_hr": d.get("max_hr"), "avg_stress": d.get("avg_stress"),
+                        "stress_samples": d.get("stress_samples"), "updated_at": now,
+                    },
+                )
+        return len(rows)
+
+    def all_wellness_days(self) -> list[dict]:
+        """Every stored daily wellness summary, chronological."""
+        rows = self.conn.execute(
+            "SELECT date, steps, resting_hr, avg_hr, max_hr, avg_stress, stress_samples "
+            "FROM wellness_days ORDER BY date"
+        ).fetchall()
+        return [dict(r) for r in rows]
 
     def summary_stats(self) -> dict[str, Any]:
         """Aggregate totals for the dashboard header."""

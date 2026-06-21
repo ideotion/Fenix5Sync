@@ -135,6 +135,12 @@ def insights_training_load(
     return compute_training_load(activities, cfg.athlete, sport=sport)
 
 
+@router.get("/insights/wellness")
+def insights_wellness(store: Store = Depends(get_store)) -> dict:
+    """Daily wellness summaries (steps, resting/avg/max HR, stress) from monitoring files."""
+    return {"days": store.all_wellness_days()}
+
+
 @router.get("/insights/hr-trends")
 def insights_hr_trends(
     sport: str | None = Query(None, description="Scope the trend to one sport."),

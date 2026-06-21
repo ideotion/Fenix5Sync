@@ -44,6 +44,20 @@ def _emit(cb: ProgressCallback | None, **event) -> None:
             pass
 
 
+def _try_wellness(path) -> list[dict]:
+    """Best-effort: parse a non-activity FIT as a monitoring/wellness file.
+
+    Returns daily wellness summaries, or an empty list if it isn't one. Never
+    raises — a monitoring miss simply falls back to the normal failed path.
+    """
+    try:
+        from .wellness import parse_wellness_file
+
+        return parse_wellness_file(path).get("days", [])
+    except Exception:
+        return []
+
+
 def import_activities(
     cfg: Config,
     store: Store | None = None,
@@ -120,6 +134,17 @@ def import_activities(
                 try:
                     activity = parse_activity_file(raw_path, file_hash, str(raw_path))
                 except ParseError as exc:
+                    # Not a parseable activity? It may be a Garmin monitoring
+                    # (wellness) file — route it there before counting it failed.
+                    wdays = _try_wellness(raw_path)
+                    if wdays:
+                        added = store.add_wellness_days(wdays)
+                        summary.wellness += added
+                        logger.info("Imported wellness: %s (%d day[s])", src.name, added)
+                        store.record_ledger(file_hash, src.name, "wellness", detail=f"{added} day(s)")
+                        _emit(on_progress, phase="file_done", current=index,
+                              total=summary.found, filename=src.name, status="wellness")
+                        continue
                     summary.failed += 1
                     logger.error("Parse failed: %s", exc)
                     summary.errors.append(str(exc))

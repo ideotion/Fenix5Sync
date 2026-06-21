@@ -6,6 +6,7 @@ const Insights = (() => {
   let data = null;
   let load = null;  // training-load (CTL/ATL/TSB) payload, fetched alongside insights
   let hr = null;    // heart-rate & efficiency trends
+  let wellness = null;  // daily wellness/readiness from monitoring files
 
   async function render() {
     Charts.destroyAll();
@@ -19,6 +20,7 @@ const Insights = (() => {
     // Supplementary analytics — a failure here must not sink the page.
     try { load = await API.trainingLoad(state.sport || undefined); } catch (_) { load = null; }
     try { hr = await API.hrTrends(state.sport || undefined); } catch (_) { hr = null; }
+    try { wellness = await API.wellness(); } catch (_) { wellness = null; }
     if (!data.years.includes(state.year)) state.year = data.years[data.years.length - 1] || "";
     draw();
   }
@@ -40,6 +42,8 @@ const Insights = (() => {
     if (tl) root.appendChild(tl);
     const hrc = hrTrendsCard();
     if (hrc) root.appendChild(hrc);
+    const wc = wellnessCard();
+    if (wc) root.appendChild(wc);
     root.appendChild(evolutionCard());
     if (!state.sport && data.by_sport.length > 1) root.appendChild(sportBreakdown(data.by_sport));
     root.appendChild(calendarCard());
@@ -50,6 +54,7 @@ const Insights = (() => {
       buildEvolutionCharts();
       buildTrainingLoad();
       buildHrTrends();
+      buildWellness();
     });
   }
 
@@ -261,6 +266,49 @@ const Insights = (() => {
     let n = "Efficiency Factor is output per heartbeat; a rising trend means improving aerobic fitness.";
     if (unit) n += ` Unit: ${unit}.`;
     return n;
+  }
+
+  // ---- wellness & readiness (from monitoring files) ----
+  function wellnessCard() {
+    if (!wellness || !wellness.days || !wellness.days.length) return null;
+    const days = wellness.days;
+    const latest = days[days.length - 1];
+    const tiles = U.el("div", { class: "stats" });
+    const tile = (label, value, unit) => tiles.appendChild(U.el("div", { class: "tile" }, [
+      U.el("div", { class: "label", text: label }),
+      U.el("div", { class: "value tnum", html: `${value}${unit ? ` <span>${unit}</span>` : ""}` }),
+    ]));
+    tile("Latest steps", latest.steps != null ? latest.steps.toLocaleString() : "—", "");
+    tile("Resting HR", latest.resting_hr != null ? latest.resting_hr : "—", "bpm");
+    tile("Avg stress", latest.avg_stress != null ? latest.avg_stress : "—", "");
+
+    const charts = U.el("div", { class: "charts", style: "margin-top:var(--sp-4)" });
+    charts.appendChild(chartBox("Steps per day", "in-steps", "--accent"));
+    charts.appendChild(chartBox("Resting & average HR", "in-whr", "--hr"));
+
+    return U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [
+      U.el("div", { class: "cal-head" }, [
+        U.el("h3", { style: "font-size:14px;color:var(--text-dim)", text: "Wellness & readiness" }),
+        U.el("div", { class: "sub", style: "color:var(--text-dim);font-size:13px", text: `${days.length} day${days.length === 1 ? "" : "s"} from your watch` }),
+      ]),
+      tiles,
+      charts,
+      U.el("div", { style: "margin-top:var(--sp-3);font-size:12px;color:var(--text-faint)",
+        text: "From monitoring files (steps, all-day heart rate, stress). Resting HR is the day's minimum. Sleep, HRV and SpO₂ need richer decoding and aren't shown yet." }),
+    ]);
+  }
+
+  function buildWellness() {
+    if (!wellness || !wellness.days || !wellness.days.length) return;
+    const days = wellness.days;
+    const labels = days.map((d) => d.date);
+    const steps = document.getElementById("in-steps");
+    if (steps) Charts.makeBar(steps, labels, days.map((d) => d.steps || 0), U.cssVar("--accent"), {});
+    const whr = document.getElementById("in-whr");
+    if (whr) Charts.makeMultiLine(whr, labels, [
+      { label: "Resting HR", data: days.map((d) => d.resting_hr), color: U.cssVar("--hr"), fill: true },
+      { label: "Avg HR", data: days.map((d) => d.avg_hr), color: U.cssVar("--accent-2") },
+    ], { unit: " bpm" });
   }
 
   // ---- per-sport breakdown ----
