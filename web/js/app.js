@@ -28,6 +28,7 @@
         case "sync": return await SyncView.render();
         case "export": return await ExportView.render();
         case "logs": return await LogsView.render();
+        case "settings": return await SettingsView.render();
         default: location.hash = "#/dashboard";
       }
     } catch (e) {

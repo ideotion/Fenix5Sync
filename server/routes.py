@@ -17,6 +17,7 @@ from fastapi.responses import Response, StreamingResponse
 
 from core import __version__
 from core.anonymize import anonymize_activity, effective_options
+from core.athlete import suggest_athlete
 from core.best_efforts import compute_best_efforts
 from core.config import Config, write_config
 from core.export import (
@@ -93,6 +94,16 @@ def stats(store: Store = Depends(get_store)) -> Stats:
         total_duration_s=s["total_duration"],
         sports=store.sports(),
     )
+
+
+@router.get("/athlete/suggestions")
+def athlete_suggestions(store: Store = Depends(get_store)) -> dict:
+    """Suggested athlete values from the archive (observed max HR + watch profile).
+
+    Read-only hints for the Settings page: the highest observed max HR, and
+    weight/height/gender/resting HR from the most recent device ``user_profile``.
+    """
+    return suggest_athlete(store.all_activities(with_series=False))
 
 
 @router.get("/insights")

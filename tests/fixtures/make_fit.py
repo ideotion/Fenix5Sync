@@ -110,6 +110,18 @@ def build_sample_fit(start: _dt.datetime | None = None, n_records: int = 12) -> 
     body += file_id.definition_bytes()
     body += file_id.data_bytes({0: 4, 1: 1, 2: 2697, 4: fit_timestamp(start)})
 
+    # --- user_profile (global 3) -------------------------------------------
+    # gender (1=male), height (cm; FIT scale 100 -> 1.81 m), weight (kg*10 ->
+    # 74.0 kg), resting_heart_rate (bpm). Lets us test athlete auto-fill.
+    user_profile = _Message(4, 3, [
+        (1, "enum"),    # gender
+        (3, "uint8"),   # height
+        (4, "uint16"),  # weight
+        (8, "uint8"),   # resting_heart_rate
+    ])
+    body += user_profile.definition_bytes()
+    body += user_profile.data_bytes({1: 1, 3: 181, 4: 740, 8: 48})
+
     # --- record (global 20) -------------------------------------------------
     record = _Message(3, 20, [
         (253, "uint32"),  # timestamp
