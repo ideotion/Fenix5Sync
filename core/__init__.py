@@ -17,6 +17,7 @@ from __future__ import annotations
 from importlib.metadata import PackageNotFoundError, version as _pkg_version
 
 from .anonymize import anonymize_activity, effective_options
+from .athlete import suggest_athlete
 from .best_efforts import BestEffort, compute_best_efforts
 from .config import (
     AnonymizeConfig,
@@ -134,6 +135,8 @@ __all__ = [
     # race predictions
     "compute_race_predictions",
     "RacePrediction",
+    # athlete suggestions
+    "suggest_athlete",
     # logging
     "setup_logging",
     "get_logger",

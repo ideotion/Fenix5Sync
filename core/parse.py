@@ -206,6 +206,28 @@ def parse_fit_file(
             if activity.start_time is None:
                 activity.start_time = vals.get("time_created")
 
+    # ---- user_profile (athlete data the watch carries) ---------------------
+    # Stored under a namespaced ``extra`` key so athlete auto-fill can offer it
+    # (weight/height/gender/resting HR) without changing the DB schema.
+    for msg in fit.get_messages("user_profile"):
+        vals, _ = _collect_fields(msg)
+        profile: dict[str, Any] = {}
+        weight = _num(vals.get("weight"))
+        height = _num(vals.get("height"))
+        gender = _as_str(vals.get("gender"))
+        resting = _intish(vals.get("resting_heart_rate"))
+        if weight:
+            profile["weight_kg"] = weight
+        if height:
+            profile["height_m"] = height
+        if gender:
+            profile["gender"] = gender
+        if resting:  # 0 means "unset" on the device
+            profile["resting_heart_rate"] = resting
+        if profile:
+            activity.extra["user_profile"] = profile
+        break
+
     # ---- laps ---------------------------------------------------------------
     for idx, msg in enumerate(fit.get_messages("lap")):
         try:
