@@ -17,6 +17,7 @@ from __future__ import annotations
 from importlib.metadata import PackageNotFoundError, version as _pkg_version
 
 from .anonymize import anonymize_activity, effective_options
+from .best_efforts import BestEffort, compute_best_efforts
 from .config import (
     AnonymizeConfig,
     AthleteConfig,
@@ -122,6 +123,9 @@ __all__ = [
     # splits
     "compute_splits",
     "Split",
+    # best efforts
+    "compute_best_efforts",
+    "BestEffort",
     # logging
     "setup_logging",
     "get_logger",
