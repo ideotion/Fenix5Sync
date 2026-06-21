@@ -30,6 +30,7 @@ from core.export import (
     activity_trackpoints_csv,
 )
 from core.logging_setup import read_recent_logs
+from core.metrics import compute_activity_metrics
 from core.search import ActivityFilter
 from core.store import Store
 from core.training_load import compute_training_load
@@ -175,6 +176,25 @@ def activity_zones(
     if activity is None:
         raise HTTPException(status_code=404, detail="activity not found")
     return compute_zones(activity, cfg.athlete)
+
+
+@router.get("/activities/{activity_id}/metrics")
+def activity_metrics(
+    activity_id: int,
+    store: Store = Depends(get_store),
+    cfg: Config = Depends(get_config),
+) -> dict:
+    """Advanced per-activity metrics (intensity, efficiency, pace, HR, …).
+
+    Computed locally from the trackpoint series using athlete thresholds from
+    config. Power figures (NP/IF/VI/TSS) need a power series and an FTP; without
+    those, efficiency/decoupling fall back to pace and ``needs`` flags what's
+    missing. Empty groups are returned as ``null`` so the UI can omit them.
+    """
+    activity = store.get_activity(activity_id, with_series=True)
+    if activity is None:
+        raise HTTPException(status_code=404, detail="activity not found")
+    return compute_activity_metrics(activity, cfg.athlete)
 
 
 @router.get("/activities/{activity_id}/export")
