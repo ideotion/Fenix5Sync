@@ -33,6 +33,7 @@ const API = (() => {
     getActivity: (id) => req("/activities/" + id),
     activityZones: (id) => req("/activities/" + id + "/zones"),
     activityMetrics: (id) => req("/activities/" + id + "/metrics"),
+    activitySplits: (id, unit) => req("/activities/" + id + "/splits" + qs({ unit })),
     startSync: () => req("/sync", { method: "POST" }),
     syncStatus: (jobId) => req("/sync/" + jobId),
     activeSync: () => req("/sync"),
