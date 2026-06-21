@@ -1,0 +1,119 @@
+{
+  "title": "Coach",
+  "subtitle": "Evidence-based, deterministic training guidance personalized from your own metrics — offline, with every recommendation traceable to a source.",
+  "phase": "Phase 0 — verified foundation",
+  "source_doc": "docs/coach/phase0-report.md",
+  "disclaimer": "Educational, not medical advice. Plans assume an apparently healthy adult cleared for exercise. Consult a qualified professional before starting, and stop and seek care for chest pain, fainting, or unusual breathlessness.",
+  "programs_status": "foundation",
+  "programs_note": "One worked reference program (intermediate marathon, 16 weeks) is included to demonstrate the pattern. The full goal × sport matrix is generated block-by-block against this verified backbone (see coverage).",
+  "approach": [
+    {"topic": "Intensity distribution", "detail": "Pyramidal (~80% easy / 15% threshold / 5% hard) by default, with polarized and threshold models also stored so a block can shift emphasis.", "grade": "Strong", "refs": ["ref_seiler2010", "ref_haugen2022", "ref_rosenblat2019"]},
+    {"topic": "Periodization & taper", "detail": "Meso/microcycles on a 3:1 loading pattern with a deload every 4th week; pre-race taper cuts volume ~50% while holding intensity and frequency.", "grade": "Strong", "refs": ["ref_bosquet2007"]},
+    {"topic": "Concurrent strength", "detail": "Heavy/explosive resistance training improves economy and maximal strength without harming endurance; separated from quality sessions and tapered out before racing.", "grade": "Strong", "refs": ["ref_ronnestad2014", "ref_beattie2014", "ref_berryman2018"]},
+    {"topic": "Progression", "detail": "Weekly load increases capped (~8–10%) with scheduled deloads — justified by progressive-overload prudence, not by ACWR (see safety).", "grade": "Practice", "refs": []}
+  ],
+  "reference_program": {
+    "id": "program_run_marathon_intermediate_16wk",
+    "goal": "marathon", "sport": "running", "level": "intermediate", "duration_weeks": 16,
+    "distribution": "~80% easy / 15% threshold / 5% hard (pyramidal)",
+    "phases": [
+      {"name": "Base", "weeks": 5}, {"name": "Build", "weeks": 4},
+      {"name": "Peak", "weeks": 4}, {"name": "Taper", "weeks": 3}
+    ],
+    "peak_volume_km": 70, "peak_long_run_km": 34,
+    "entry_gate": "Recent average ≥35 km/week or CTL ≥40 (otherwise routed to base-building).",
+    "taper": "Final ~2 weeks cut volume ~50% while maintaining intensity and frequency.",
+    "refs": ["ref_seiler2010", "ref_haugen2022", "ref_bosquet2007", "ref_ronnestad2014"]
+  },
+  "personalization": {
+    "summary": "Twelve closed-form rules map your metrics to concrete targets, with a fallback when an input is missing. No runtime model.",
+    "metric_fields": ["max_hr", "resting_hr", "ftp_w", "weight_kg", "height_cm", "sex", "age", "vo2max_vdot", "normalized_power", "intensity_factor", "variability_index", "tss", "efficiency_factor", "aerobic_decoupling", "grade_adjusted_pace", "hr_zone_time", "power_zone_time", "ctl", "atl", "tsb", "weekly_volume_km", "weekly_elevation_m", "mean_max_power_curve", "mean_max_pace_curve"],
+    "worked_example": [
+      {"step": "Estimate HRmax (only if missing)", "detail": "Tanaka 208 − 0.7×age (≈181 bpm at 38); a measured value overrides; large standard error flagged.", "refs": ["ref_tanaka2001", "ref_shookster2020"]},
+      {"step": "HR zones via Karvonen", "detail": "Heart-rate reserve span between resting and max HR.", "refs": ["ref_karvonen1957"]},
+      {"step": "Running paces from VDOT", "detail": "Computed from your VO2-cost relationship (no copyrighted table); updates as vo2max_vdot changes.", "refs": []},
+      {"step": "Starting volume & progression", "detail": "Recent weekly average becomes the start; increases capped ~8–10% with deloads.", "refs": []},
+      {"step": "Entry gate", "detail": "≥35 km/week or CTL ≥40 for the marathon plan.", "refs": []},
+      {"step": "Readiness & taper", "detail": "TSB band guides readiness; two-week taper cuts volume ~50%, holds intensity.", "refs": ["ref_bosquet2007"]},
+      {"step": "Durability autoregulation", "detail": "If aerobic_decoupling exceeds ~5% on a long run, hold rather than extend.", "refs": []}
+    ]
+  },
+  "normative_tables": [
+    {"name": "HRmax prediction equations (Fox, Tanaka, Gulati) + accuracy/SE", "refs": ["ref_tanaka2001", "ref_gulati2010", "ref_shookster2020"]},
+    {"name": "HR zone models (%HRmax, Karvonen HRR)", "refs": ["ref_karvonen1957", "ref_seiler2010"]},
+    {"name": "Cycling power zones (7-zone %FTP)", "refs": ["ref_cogganallen"]},
+    {"name": "TSB interpretation bands (readiness / taper)", "refs": ["ref_cogganallen", "ref_banister1991"]},
+    {"name": "Intensity-distribution models (pyramidal/polarized/threshold)", "refs": ["ref_seiler2010", "ref_haugen2022", "ref_rosenblat2019"]},
+    {"name": "Protein intake by goal and per dose", "refs": ["ref_morton2018", "ref_jager2017"]},
+    {"name": "Resistance-training volume & frequency landmarks", "refs": ["ref_schoenfeld2017vol", "ref_schoenfeld2016freq"]},
+    {"name": "%1RM to repetition relationship", "refs": ["ref_nsca_haff2016"]},
+    {"name": "Strength training effects in endurance athletes", "refs": ["ref_ronnestad2014", "ref_beattie2014", "ref_berryman2018"]},
+    {"name": "Taper parameters", "refs": ["ref_bosquet2007"]},
+    {"name": "Race-time prediction (Riegel) + ultra caveat", "refs": ["ref_riegel1981"]},
+    {"name": "Carbohydrate intake during prolonged exercise", "refs": ["ref_jeukendrup2014"]},
+    {"name": "Energy-availability thresholds (RED-S)", "refs": ["ref_mountjoy2018"]},
+    {"name": "Safe body-mass change rates", "refs": ["ref_donnelly2009", "ref_jager2017"]},
+    {"name": "ACWR bands (presented as contested)", "refs": ["ref_gabbett2016", "ref_impellizzeri2020"]}
+  ],
+  "safety": {
+    "red_s": "Relative Energy Deficiency in Sport is a first-class constraint: a low-availability threshold near 30 kcal/kg fat-free mass/day triggers education and referral, not aggressive prescription. Weight-loss content is capped at a sustainable rate and paired with elevated protein to protect lean mass.",
+    "anti_doping": "Content stays within nutrition, training and recovery; defers to current WADA guidance; nothing touching prohibited methods or substances.",
+    "acwr": "The acute-to-chronic workload ratio (proposed lower-risk ~0.8–1.3) has been substantively criticized for mathematical coupling and collider bias. The app treats a large acute spike as a prompt for caution but presents no ACWR number as a validated injury predictor.",
+    "refs": ["ref_mountjoy2018", "ref_donnelly2009", "ref_jager2017", "ref_gabbett2016", "ref_impellizzeri2020"]
+  },
+  "coverage": [
+    {"cell": "Running — Marathon, intermediate, 16 wk", "status": "complete"},
+    {"cell": "Running — Marathon beginner/advanced + alt durations", "status": "planned"},
+    {"cell": "Running — 5k, 10k, half (all levels)", "status": "planned"},
+    {"cell": "Running — Trail / ultra (all levels)", "status": "planned"},
+    {"cell": "Cycling — criterium, 40k TT, gran fondo, ultra, MTB/gravel", "status": "planned"},
+    {"cell": "Cross-sport — get strong, lose weight, stay fit", "status": "planned"},
+    {"cell": "Muscle gain — hypertrophy + concurrent variants", "status": "planned"},
+    {"cell": "Schema / bibliography / personalization ruleset", "status": "complete"},
+    {"cell": "Normative tables (15)", "status": "complete"},
+    {"cell": "Glossary", "status": "planned"}
+  ],
+  "glossary": [
+    {"term": "Aerobic decoupling", "def": "Drift of HR relative to pace/power over a steady effort; rising decoupling signals fading aerobic durability."},
+    {"term": "ATL", "def": "Acute training load; short-term EWMA of load; fatigue proxy."},
+    {"term": "CTL", "def": "Chronic training load; long-term EWMA of load; fitness proxy."},
+    {"term": "Efficiency factor", "def": "Output (pace/power) ÷ heart rate; tracks aerobic efficiency over time."},
+    {"term": "FTP", "def": "Functional threshold power; anchor for cycling power zones."},
+    {"term": "Intensity factor", "def": "Normalized power ÷ FTP for a session."},
+    {"term": "Karvonen / HRR", "def": "Zone method using the span between resting and maximal heart rate."},
+    {"term": "Normalized power", "def": "Physiologically weighted average power accounting for variability."},
+    {"term": "Pyramidal / polarized / threshold", "def": "The three intensity-distribution models the app stores."},
+    {"term": "TSB", "def": "Training stress balance; CTL − ATL; a form proxy for readiness and taper timing."},
+    {"term": "VDOT", "def": "VO2-based running fitness index used to derive paces by computation."},
+    {"term": "Variability index", "def": "Normalized power ÷ average power; how evenly an effort was paced."}
+  ],
+  "bibliography": [
+    {"ref_id": "ref_seiler2010", "citation": "Seiler S. Best practice for training intensity & duration distribution in endurance athletes. Int J Sports Physiol Perform 2010;5(3):276–291.", "url": "https://doi.org/10.1123/ijspp.5.3.276", "grade": "Strong", "verification": "web_verified"},
+    {"ref_id": "ref_haugen2022", "citation": "Haugen T, et al. The training characteristics of world-class distance runners. Sports Med Open 2022;8(1):46.", "url": "https://doi.org/10.1186/s40798-022-00438-7", "grade": "Moderate", "verification": "web_verified"},
+    {"ref_id": "ref_rosenblat2019", "citation": "Rosenblat MA, et al. Polarized vs. threshold training intensity distribution: meta-analysis. J Strength Cond Res 2019;33(12):3491–3500.", "url": "https://doi.org/10.1519/JSC.0000000000002618", "grade": "Moderate", "verification": "web_verified"},
+    {"ref_id": "ref_bosquet2007", "citation": "Bosquet L, et al. Effects of tapering on performance: a meta-analysis. Med Sci Sports Exerc 2007;39(8):1358–1365.", "url": "https://doi.org/10.1249/mss.0b013e31806010e0", "grade": "Strong", "verification": "web_verified"},
+    {"ref_id": "ref_tanaka2001", "citation": "Tanaka H, Monahan KD, Seals DR. Age-predicted maximal heart rate revisited. J Am Coll Cardiol 2001;37(1):153–156.", "url": "https://doi.org/10.1016/S0735-1097(00)01054-8", "grade": "Strong", "verification": "web_verified"},
+    {"ref_id": "ref_gulati2010", "citation": "Gulati M, et al. Heart rate response to exercise stress testing in asymptomatic women. Circulation 2010;122:130–137.", "url": "https://doi.org/10.1161/CIRCULATIONAHA.110.939249", "grade": "Moderate", "verification": "web_verified"},
+    {"ref_id": "ref_shookster2020", "citation": "Shookster D, et al. Accuracy of commonly used age-predicted maximal heart rate equations. Int J Exerc Sci 2020;13(7):1242–1250.", "url": "https://doi.org/10.70252/XFSJ6815", "grade": "Moderate", "verification": "web_verified"},
+    {"ref_id": "ref_karvonen1957", "citation": "Karvonen MJ, Kentala E, Mustala O. The effects of training on heart rate. Ann Med Exp Biol Fenn 1957;35(3):307–315.", "url": "https://pubmed.ncbi.nlm.nih.gov/13470504/", "grade": "Moderate", "verification": "web_verified"},
+    {"ref_id": "ref_ronnestad2014", "citation": "Rønnestad BR, Mujika I. Optimizing strength training for running and cycling endurance performance. Scand J Med Sci Sports 2014;24(4):603–612.", "url": "https://doi.org/10.1111/sms.12104", "grade": "Strong", "verification": "web_verified"},
+    {"ref_id": "ref_beattie2014", "citation": "Beattie K, et al. The effect of strength training on performance in endurance athletes. Sports Med 2014;44(6):845–865.", "url": "https://doi.org/10.1007/s40279-014-0157-y", "grade": "Strong", "verification": "web_verified"},
+    {"ref_id": "ref_berryman2018", "citation": "Berryman N, et al. Strength training for middle- and long-distance performance: a meta-analysis. Int J Sports Physiol Perform 2018;13(1):57–63.", "url": "https://doi.org/10.1123/ijspp.2017-0032", "grade": "Moderate", "verification": "web_verified"},
+    {"ref_id": "ref_schoenfeld2017vol", "citation": "Schoenfeld BJ, Ogborn D, Krieger JW. Dose-response: weekly resistance-training volume and hypertrophy. J Sports Sci 2017;35(11):1073–1082.", "url": "https://doi.org/10.1080/02640414.2016.1210197", "grade": "Strong", "verification": "web_verified"},
+    {"ref_id": "ref_schoenfeld2016freq", "citation": "Schoenfeld BJ, et al. Resistance-training frequency and hypertrophy: a meta-analysis. Sports Med 2016;46(11):1689–1697.", "url": "https://doi.org/10.1007/s40279-016-0543-8", "grade": "Strong", "verification": "web_verified"},
+    {"ref_id": "ref_morton2018", "citation": "Morton RW, et al. Protein supplementation and resistance-training gains: SR & meta-analysis. Br J Sports Med 2018;52(6):376–384.", "url": "https://doi.org/10.1136/bjsports-2017-097608", "grade": "Strong", "verification": "web_verified"},
+    {"ref_id": "ref_jager2017", "citation": "Jäger R, et al. ISSN position stand: protein and exercise. J Int Soc Sports Nutr 2017;14:20.", "url": "https://doi.org/10.1186/s12970-017-0177-8", "grade": "Strong", "verification": "web_verified"},
+    {"ref_id": "ref_gabbett2016", "citation": "Gabbett TJ. The training-injury prevention paradox. Br J Sports Med 2016;50(5):273–280.", "url": "https://doi.org/10.1136/bjsports-2015-095788", "grade": "Limited (contested)", "verification": "web_verified"},
+    {"ref_id": "ref_impellizzeri2020", "citation": "Impellizzeri FM, et al. Acute:chronic workload ratio: conceptual & methodological critique. Sports Med 2020;51:581–592.", "url": "https://doi.org/10.1007/s40279-020-01378-6", "grade": "Moderate", "verification": "web_verified"},
+    {"ref_id": "ref_daniels", "citation": "Daniels J. Daniels' Running Formula, 3rd ed. (VDOT methodology).", "url": "", "grade": "Practice", "verification": "UNVERIFIED"},
+    {"ref_id": "ref_cogganallen", "citation": "Allen H, Coggan A. Training and Racing with a Power Meter, 3rd ed. (CTL/ATL/TSB; 7-zone model).", "url": "", "grade": "Practice", "verification": "UNVERIFIED"},
+    {"ref_id": "ref_banister1991", "citation": "Banister EW. Modeling elite athletic performance (impulse-response). Book chapter.", "url": "", "grade": "Limited", "verification": "UNVERIFIED"},
+    {"ref_id": "ref_riegel1981", "citation": "Riegel PS. Athletic records and human endurance. American Scientist 1981.", "url": "", "grade": "Limited", "verification": "UNVERIFIED"},
+    {"ref_id": "ref_kreider2017", "citation": "Kreider RB, et al. ISSN position stand: creatine. J Int Soc Sports Nutr 2017.", "url": "https://doi.org/10.1186/s12970-017-0173-z", "grade": "Strong", "verification": "UNVERIFIED"},
+    {"ref_id": "ref_kerksick2017", "citation": "Kerksick CM, et al. ISSN position stand: nutrient timing. J Int Soc Sports Nutr 2017.", "url": "https://doi.org/10.1186/s12970-017-0189-4", "grade": "Moderate", "verification": "UNVERIFIED"},
+    {"ref_id": "ref_jeukendrup2014", "citation": "Jeukendrup A. Personalized sports nutrition: carbohydrate during exercise. Sports Med 2014.", "url": "https://doi.org/10.1007/s40279-014-0148-z", "grade": "Moderate", "verification": "UNVERIFIED"},
+    {"ref_id": "ref_donnelly2009", "citation": "Donnelly JE, et al. ACSM position stand: physical activity and weight management. Med Sci Sports Exerc 2009.", "url": "https://doi.org/10.1249/MSS.0b013e3181949333", "grade": "Moderate", "verification": "UNVERIFIED"},
+    {"ref_id": "ref_mountjoy2018", "citation": "Mountjoy M, et al. IOC consensus update: RED-S. Br J Sports Med 2018.", "url": "https://doi.org/10.1136/bjsports-2018-099193", "grade": "Moderate", "verification": "UNVERIFIED"},
+    {"ref_id": "ref_nsca_haff2016", "citation": "Haff GG, Triplett NT (eds). Essentials of Strength Training and Conditioning, 4th ed. NSCA.", "url": "", "grade": "Practice", "verification": "UNVERIFIED"}
+  ]
+}

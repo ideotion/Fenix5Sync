@@ -25,6 +25,7 @@
         case "dashboard": return await Dashboard.render();
         case "insights": return await Insights.render();
         case "taichi": return await TaiChiView.render();
+        case "coach": return await CoachView.render();
         case "activity": return await ActivityView.render(arg);
         case "sync": return await SyncView.render();
         case "export": return await ExportView.render();
