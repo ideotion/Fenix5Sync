@@ -99,6 +99,7 @@ class RunSummary:
     imported: int = 0
     skipped: int = 0
     failed: int = 0
+    wellness: int = 0  # daily wellness summaries ingested from monitoring files
     started_at: datetime | None = None
     finished_at: datetime | None = None
     imported_ids: list[int] = field(default_factory=list)
@@ -111,6 +112,7 @@ class RunSummary:
             "imported": self.imported,
             "skipped": self.skipped,
             "failed": self.failed,
+            "wellness": self.wellness,
             "started_at": self.started_at.isoformat() if self.started_at else None,
             "finished_at": self.finished_at.isoformat() if self.finished_at else None,
             "imported_ids": list(self.imported_ids),
