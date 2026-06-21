@@ -33,6 +33,7 @@ from core.export import (
 from core.hr_trends import compute_hr_trends
 from core.logging_setup import read_recent_logs
 from core.metrics import compute_activity_metrics
+from core.race import compute_race_predictions
 from core.search import ActivityFilter
 from core.splits import MILE_M, compute_splits
 from core.store import Store
@@ -246,6 +247,20 @@ def activity_best_efforts(activity_id: int, store: Store = Depends(get_store)) -
     if activity is None:
         raise HTTPException(status_code=404, detail="activity not found")
     return compute_best_efforts(activity)
+
+
+@router.get("/activities/{activity_id}/race-predictions")
+def activity_race_predictions(activity_id: int, store: Store = Depends(get_store)) -> dict:
+    """VO₂max estimate + race-time predictions (running), from this activity.
+
+    An open Daniels/Riegel model over the activity's best effort, computed
+    locally. ``available`` is False for non-running activities or efforts too
+    short to anchor a prediction. Explicitly not Garmin's FirstBeat VO₂max.
+    """
+    activity = store.get_activity(activity_id, with_series=True)
+    if activity is None:
+        raise HTTPException(status_code=404, detail="activity not found")
+    return compute_race_predictions(activity)
 
 
 @router.get("/activities/{activity_id}/export")

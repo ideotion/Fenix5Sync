@@ -49,6 +49,7 @@ from .metrics import ActivityMetrics, compute_activity_metrics
 from .models import Activity, Lap, RunSummary, Trackpoint
 from .parse import ParseError, parse_fit_file
 from .pipeline import import_activities, open_store
+from .race import RacePrediction, compute_race_predictions
 from .search import ActivityFilter, build_where
 from .splits import Split, compute_splits
 from .store import Store
@@ -130,6 +131,9 @@ __all__ = [
     # hr trends
     "compute_hr_trends",
     "HRPoint",
+    # race predictions
+    "compute_race_predictions",
+    "RacePrediction",
     # logging
     "setup_logging",
     "get_logger",
