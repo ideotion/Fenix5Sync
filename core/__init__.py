@@ -42,6 +42,7 @@ from .export import (
     write_archive,
     write_bulk_export,
 )
+from .hr_trends import HRPoint, compute_hr_trends
 from .importers import detect_format, parse_activity_file
 from .logging_setup import get_logger, read_recent_logs, setup_logging
 from .metrics import ActivityMetrics, compute_activity_metrics
@@ -126,6 +127,9 @@ __all__ = [
     # best efforts
     "compute_best_efforts",
     "BestEffort",
+    # hr trends
+    "compute_hr_trends",
+    "HRPoint",
     # logging
     "setup_logging",
     "get_logger",

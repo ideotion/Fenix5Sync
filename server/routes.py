@@ -30,6 +30,7 @@ from core.export import (
     activity_to_dict,
     activity_trackpoints_csv,
 )
+from core.hr_trends import compute_hr_trends
 from core.logging_setup import read_recent_logs
 from core.metrics import compute_activity_metrics
 from core.search import ActivityFilter
@@ -120,6 +121,19 @@ def insights_training_load(
     """
     activities = store.all_activities(with_series=False)
     return compute_training_load(activities, cfg.athlete, sport=sport)
+
+
+@router.get("/insights/hr-trends")
+def insights_hr_trends(
+    sport: str | None = Query(None, description="Scope the trend to one sport."),
+    store: Store = Depends(get_store),
+) -> dict:
+    """Cross-activity heart-rate & efficiency trends (avg/max HR, Efficiency Factor).
+
+    Computed from activity summaries only (one query, no per-activity trackpoint
+    load). ``ef_basis`` reports whether efficiency is power- or pace-derived.
+    """
+    return compute_hr_trends(store.all_activities(with_series=False), sport=sport)
 
 
 # ---- activities ------------------------------------------------------------
