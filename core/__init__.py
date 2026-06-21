@@ -55,6 +55,7 @@ from .search import ActivityFilter, build_where
 from .splits import Split, compute_splits
 from .store import Store
 from .training_load import DayLoad, TrainingLoad, compute_training_load
+from .wellness import DayWellness, WellnessParseError, parse_wellness_file, summarize_wellness
 from .zones import ZoneBin, compute_zones, hr_zones, power_zones
 
 # Single source of truth for the version is pyproject.toml; we read the installed
@@ -135,6 +136,11 @@ __all__ = [
     # race predictions
     "compute_race_predictions",
     "RacePrediction",
+    # wellness
+    "parse_wellness_file",
+    "summarize_wellness",
+    "DayWellness",
+    "WellnessParseError",
     # athlete suggestions
     "suggest_athlete",
     # logging

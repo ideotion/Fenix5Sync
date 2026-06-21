@@ -255,6 +255,49 @@ def write_sample(path: str | Path) -> Path:
     return path
 
 
+def build_monitoring_fit(day: _dt.datetime | None = None) -> bytes:
+    """Build a small valid Garmin *monitoring* FIT file (steps / HR / stress).
+
+    Separate from activity files: emits ``monitoring`` records (cumulative steps,
+    heart rate) and ``stress_level`` records across one day, for testing the
+    wellness/readiness ingestion path.
+    """
+    day = day or _dt.datetime(2023, 6, 15, 0, 0, 0, tzinfo=_dt.timezone.utc)
+    body = bytearray()
+
+    # file_id: type 32 = monitoring (does not affect message parsing).
+    file_id = _Message(0, 0, [(0, "enum"), (1, "uint16"), (2, "uint16"), (4, "uint32")])
+    body += file_id.definition_bytes()
+    body += file_id.data_bytes({0: 32, 1: 1, 2: 2697, 4: fit_timestamp(day)})
+
+    # monitoring (global 55): timestamp, heart_rate, cycles (cumulative steps), active_calories.
+    mon = _Message(5, 55, [(253, "uint32"), (27, "uint8"), (3, "uint32"), (19, "uint16")])
+    body += mon.definition_bytes()
+    # ``cycles`` carries a FIT scale of 2 (decoded = raw / 2), so emit raw = 2 x steps
+    # to land on round cumulative step counts (0, 1000, 3000, 6000, 8000).
+    for hour, hr, raw_cycles, cal in [(3, 50, 0, 5), (8, 65, 2000, 40),
+                                      (12, 72, 6000, 120), (16, 95, 12000, 260), (20, 68, 16000, 300)]:
+        ts = day + _dt.timedelta(hours=hour)
+        body += mon.data_bytes({253: fit_timestamp(ts), 27: hr, 3: raw_cycles, 19: cal})
+
+    # stress_level (global 227): time + value (-1 is an invalid sentinel, filtered out).
+    stress = _Message(6, 227, [(1, "uint32"), (0, "sint16")])
+    body += stress.definition_bytes()
+    for hour, val in [(9, 20), (12, 40), (15, 60), (18, -1), (21, 40)]:
+        ts = day + _dt.timedelta(hours=hour)
+        body += stress.data_bytes({1: fit_timestamp(ts), 0: val})
+
+    header = bytearray()
+    header.append(12)
+    header.append(0x10)
+    header += struct.pack("<H", 2078)
+    header += struct.pack("<I", len(body))
+    header += b".FIT"
+    file_bytes = bytes(header) + bytes(body)
+    crc = fit_crc(file_bytes)
+    return file_bytes + struct.pack("<H", crc)
+
+
 if __name__ == "__main__":
     out = write_sample(Path(__file__).with_name("sample.fit"))
     print(f"wrote {out} ({out.stat().st_size} bytes)")
