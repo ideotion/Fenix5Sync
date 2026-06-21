@@ -27,6 +27,7 @@ from .config import (
     load_config,
     write_config,
 )
+from .consolidate import find_duplicate_groups
 from .dedupe import sha256_bytes, sha256_file
 from .export import (
     ExportError,
@@ -141,6 +142,8 @@ __all__ = [
     "summarize_wellness",
     "DayWellness",
     "WellnessParseError",
+    # consolidate / dedup
+    "find_duplicate_groups",
     # athlete suggestions
     "suggest_athlete",
     # logging
