@@ -36,7 +36,8 @@ const ActivityView = (() => {
     root.appendChild(chartsWrap);
     root.appendChild(chartCard("Elevation", "--elev-line", "ele-canvas", "m", true));
 
-    // training zones (loaded async; hidden until there's something to show)
+    // performance metrics + training zones (loaded async; hidden until ready)
+    root.appendChild(metricsCard());
     root.appendChild(zonesCard());
 
     // track
@@ -48,6 +49,7 @@ const ActivityView = (() => {
     if (a.laps && a.laps.length > 1) root.appendChild(lapsCard(a.laps));
 
     U.setView(root);
+    loadMetrics(a.id);
     loadZones(a.id);
 
     // Build visuals after layout so canvas sizes are known.
@@ -125,6 +127,90 @@ const ActivityView = (() => {
     return U.el("div", { class: "card", style: "margin-top:var(--sp-5)" }, [
       U.el("h3", { style: "font-size:14px;color:var(--text-dim);padding:var(--sp-4) var(--sp-4) 0", text: "Laps" }),
       U.el("div", { class: "table-wrap" }, [U.el("table", {}, [thead, tbody])]),
+    ]);
+  }
+
+  // ---- performance metrics (intensity / efficiency / pace / dynamics / …) ----
+  function metricsCard() {
+    return U.el("div", { class: "card pad", id: "metrics-card", style: "margin-top:var(--sp-5);display:none" }, [
+      U.el("h3", { style: "font-size:14px;color:var(--text-dim);margin-bottom:var(--sp-4)", text: "Performance metrics" }),
+      U.el("div", { id: "metrics-host" }),
+    ]);
+  }
+
+  async function loadMetrics(id) {
+    let m;
+    try { m = await API.activityMetrics(id); } catch (_) { return; }
+    if (!m || !m.available) return;  // nothing to show -> leave the card hidden
+    const host = document.getElementById("metrics-host");
+    const card = document.getElementById("metrics-card");
+    if (!host || !card) return;
+
+    const pace = (s) => (s == null ? null : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`);
+    const efUnit = m.efficiency && m.efficiency.basis === "power" ? "W/bpm" : "m/min·bpm";
+
+    const groups = [
+      m.intensity && ["Intensity", [
+        ["Normalized power", m.intensity.np_w, "W"],
+        ["Intensity factor", m.intensity.intensity_factor, ""],
+        ["Variability index", m.intensity.variability_index, ""],
+        ["Training stress", m.intensity.tss, "TSS"],
+        ["Avg power", m.intensity.avg_power_w, "W"],
+      ]],
+      m.efficiency && ["Efficiency & endurance", [
+        ["Efficiency factor", m.efficiency.efficiency_factor, efUnit],
+        ["Aerobic decoupling", m.efficiency.decoupling_pct, "%"],
+      ]],
+      m.pace && ["Pace", [
+        ["Avg pace", pace(m.pace.avg_pace_s_per_km), "/km"],
+        ["Grade-adjusted pace", pace(m.pace.gap_pace_s_per_km), "/km"],
+      ]],
+      m.dynamics && ["Dynamics", [
+        ["Peak acceleration", m.dynamics.max_acceleration_mps2, "m/s²"],
+        ["Avg cadence", m.dynamics.avg_cadence, m.dynamics.cadence_unit],
+        ["Max cadence", m.dynamics.max_cadence, m.dynamics.cadence_unit],
+        ["Stride length", m.dynamics.stride_length_m, "m"],
+      ]],
+      m.heart_rate && ["Heart rate", [
+        ["Avg HR", m.heart_rate.avg_bpm, "bpm"],
+        ["Max HR", m.heart_rate.max_bpm, "bpm"],
+        ["HR drift", m.heart_rate.drift_pct, "%"],
+      ]],
+      m.environment && ["Environment", [
+        ["Avg temp", m.environment.avg_temp_c, "°C"],
+        ["Min temp", m.environment.min_temp_c, "°C"],
+        ["Max temp", m.environment.max_temp_c, "°C"],
+      ]],
+    ];
+
+    const blocks = groups.map((g) => g && metricGroup(g[0], g[1])).filter(Boolean);
+    if (!blocks.length) return;
+    blocks.forEach((b) => host.appendChild(b));
+    if (m.needs && m.needs.length) {
+      const labels = { ftp_w: "FTP" };
+      host.appendChild(U.el("div", {
+        style: "margin-top:var(--sp-2);font-size:12px;color:var(--text-faint)",
+        text: "Set your " + m.needs.map((n) => labels[n] || n).join(", ") +
+          " in config to unlock Intensity Factor & TSS.",
+      }));
+    }
+    card.style.display = "";
+  }
+
+  function metricGroup(title, rows) {
+    const items = rows.filter(([, v]) => v !== null && v !== undefined);
+    if (!items.length) return null;
+    return U.el("div", { style: "margin-bottom:var(--sp-4)" }, [
+      U.el("div", {
+        style: "font-size:11.5px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:var(--sp-3)",
+        text: title,
+      }),
+      U.el("div", { class: "meta-grid" }, items.map(([k, v, u]) =>
+        U.el("div", { class: "meta" }, [
+          U.el("div", { class: "k", text: k }),
+          U.el("div", { class: "v tnum", text: `${v}${u ? " " + u : ""}` }),
+        ])
+      )),
     ]);
   }
 

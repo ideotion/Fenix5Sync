@@ -43,6 +43,7 @@ from .export import (
 )
 from .importers import detect_format, parse_activity_file
 from .logging_setup import get_logger, read_recent_logs, setup_logging
+from .metrics import ActivityMetrics, compute_activity_metrics
 from .models import Activity, Lap, RunSummary, Trackpoint
 from .parse import ParseError, parse_fit_file
 from .pipeline import import_activities, open_store
@@ -114,6 +115,9 @@ __all__ = [
     "compute_training_load",
     "TrainingLoad",
     "DayLoad",
+    # metrics
+    "compute_activity_metrics",
+    "ActivityMetrics",
     # logging
     "setup_logging",
     "get_logger",
