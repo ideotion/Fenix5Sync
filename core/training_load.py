@@ -246,6 +246,7 @@ def compute_training_load(
     sport: str | None = None,
     ctl_days: int = 42,
     atl_days: int = 7,
+    as_of: date | None = None,
 ) -> dict:
     """Performance Management Chart (CTL/ATL/TSB) over an activity history.
 
@@ -253,7 +254,11 @@ def compute_training_load(
     ``athlete`` thresholds allow (power TSS, HR TRIMP, or a duration estimate),
     sums per UTC calendar day, then runs the fitness/fatigue EWMAs over a gap-free
     timeline. Pass ``sport`` to scope every figure to one sport (mirrors the
-    Insights endpoint). The activities are only read, never modified.
+    Insights endpoint). Pass ``as_of`` (a date) to evaluate the chart up to that
+    day: the timeline is extended with zero-load days so fitness and fatigue
+    decay correctly when the most recent activity is in the past (the basis for
+    "what's my form *today*, after a rest week?"). The activities are only read,
+    never modified.
 
     Returns the serialisable shape documented at module scope: ``unit``,
     ``ctl_days``/``atl_days``, ``current`` (the latest day, or ``None`` when the
@@ -281,6 +286,12 @@ def compute_training_load(
         basis_counts[basis] += 1
         units_seen.add(_BASIS_UNIT[basis])
         scored += 1
+
+    # Evaluate the chart "as of" a given day (typically today) by extending the
+    # timeline with a zero-load day, so fitness/fatigue decay correctly when the
+    # latest activity is in the past. Only ever extends an existing history.
+    if as_of is not None and daily:
+        daily.setdefault(as_of.isoformat(), 0.0)
 
     series = _pmc_series(daily, ctl_days, atl_days)
 
