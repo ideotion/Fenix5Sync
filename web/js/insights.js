@@ -5,6 +5,7 @@ const Insights = (() => {
   let state = { sport: "", year: "" };
   let data = null;
   let load = null;  // training-load (CTL/ATL/TSB) payload, fetched alongside insights
+  let hr = null;    // heart-rate & efficiency trends
 
   async function render() {
     Charts.destroyAll();
@@ -15,12 +16,9 @@ const Insights = (() => {
       U.setView(U.el("div", { class: "empty", text: "Could not load insights: " + e.message }));
       return;
     }
-    // Training load is supplementary — a failure here must not sink the page.
-    try {
-      load = await API.trainingLoad(state.sport || undefined);
-    } catch (_) {
-      load = null;
-    }
+    // Supplementary analytics — a failure here must not sink the page.
+    try { load = await API.trainingLoad(state.sport || undefined); } catch (_) { load = null; }
+    try { hr = await API.hrTrends(state.sport || undefined); } catch (_) { hr = null; }
     if (!data.years.includes(state.year)) state.year = data.years[data.years.length - 1] || "";
     draw();
   }
@@ -40,6 +38,8 @@ const Insights = (() => {
     if (recs) root.appendChild(recs);
     const tl = trainingLoadCard();
     if (tl) root.appendChild(tl);
+    const hrc = hrTrendsCard();
+    if (hrc) root.appendChild(hrc);
     root.appendChild(evolutionCard());
     if (!state.sport && data.by_sport.length > 1) root.appendChild(sportBreakdown(data.by_sport));
     root.appendChild(calendarCard());
@@ -49,6 +49,7 @@ const Insights = (() => {
       Charts.applyTheme();
       buildEvolutionCharts();
       buildTrainingLoad();
+      buildHrTrends();
     });
   }
 
@@ -210,6 +211,56 @@ const Insights = (() => {
 
   function fmt1(v) {
     return (v === null || v === undefined) ? "—" : Number(v).toFixed(1);
+  }
+
+  // ---- heart-rate & efficiency trends ----
+  function hrTrendsCard() {
+    if (!hr || !hr.points || !hr.points.length) return null;  // hide when no HR data
+    const s = hr.summary || {};
+    const tiles = U.el("div", { class: "stats" });
+    const tile = (label, value, unit) => tiles.appendChild(U.el("div", { class: "tile" }, [
+      U.el("div", { class: "label", text: label }),
+      U.el("div", { class: "value tnum", html: `${value}${unit ? ` <span>${unit}</span>` : ""}` }),
+    ]));
+    tile("Observed max HR", s.observed_max_hr ?? "—", "bpm");
+    tile("Average HR", s.avg_hr ?? "—", "bpm");
+    tile("Activities with HR", s.with_hr ?? 0, "");
+
+    const charts = U.el("div", { class: "charts", style: "margin-top:var(--sp-4)" });
+    charts.appendChild(chartBox("Heart rate over time", "in-hr", "--hr"));
+    if (hr.ef_basis) charts.appendChild(chartBox("Efficiency factor (aerobic fitness)", "in-ef", "--accent-2"));
+
+    return U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [
+      U.el("div", { class: "cal-head" }, [
+        U.el("h3", { style: "font-size:14px;color:var(--text-dim)", text: "Heart rate & efficiency trends" }),
+      ]),
+      tiles,
+      charts,
+      U.el("div", { style: "margin-top:var(--sp-3);font-size:12px;color:var(--text-faint)", text: hrNote() }),
+    ]);
+  }
+
+  function buildHrTrends() {
+    if (!hr || !hr.points || !hr.points.length) return;
+    const labels = hr.points.map((p) => p.date);
+    const hrCanvas = document.getElementById("in-hr");
+    if (hrCanvas) Charts.makeMultiLine(hrCanvas, labels, [
+      { label: "Avg HR", data: hr.points.map((p) => p.avg_hr), color: U.cssVar("--hr"), fill: true },
+      { label: "Max HR", data: hr.points.map((p) => p.max_hr), color: U.cssVar("--speed") },
+    ], { unit: " bpm" });
+    if (hr.ef_basis) {
+      const efCanvas = document.getElementById("in-ef");
+      if (efCanvas) Charts.makeArea(efCanvas, labels, hr.points.map((p) => p.efficiency), U.cssVar("--accent-2"), {});
+    }
+  }
+
+  function hrNote() {
+    if (hr.ef_basis === "mixed")
+      return "Efficiency Factor mixes power- and pace-based activities — filter by sport to compare like with like.";
+    const unit = hr.ef_basis === "power" ? "W/bpm" : hr.ef_basis === "pace" ? "m/min per bpm" : null;
+    let n = "Efficiency Factor is output per heartbeat; a rising trend means improving aerobic fitness.";
+    if (unit) n += ` Unit: ${unit}.`;
+    return n;
   }
 
   // ---- per-sport breakdown ----
