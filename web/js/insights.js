@@ -7,6 +7,7 @@ const Insights = (() => {
   let load = null;  // training-load (CTL/ATL/TSB) payload, fetched alongside insights
   let hr = null;    // heart-rate & efficiency trends
   let wellness = null;  // daily wellness/readiness from monitoring files
+  let dups = null;      // cross-source duplicate report
 
   async function render() {
     Charts.destroyAll();
@@ -21,6 +22,7 @@ const Insights = (() => {
     try { load = await API.trainingLoad(state.sport || undefined); } catch (_) { load = null; }
     try { hr = await API.hrTrends(state.sport || undefined); } catch (_) { hr = null; }
     try { wellness = await API.wellness(); } catch (_) { wellness = null; }
+    try { dups = await API.duplicates(); } catch (_) { dups = null; }
     if (!data.years.includes(state.year)) state.year = data.years[data.years.length - 1] || "";
     draw();
   }
@@ -44,6 +46,8 @@ const Insights = (() => {
     if (hrc) root.appendChild(hrc);
     const wc = wellnessCard();
     if (wc) root.appendChild(wc);
+    const dc = dupsCard();
+    if (dc) root.appendChild(dc);
     root.appendChild(evolutionCard());
     if (!state.sport && data.by_sport.length > 1) root.appendChild(sportBreakdown(data.by_sport));
     root.appendChild(calendarCard());
@@ -309,6 +313,25 @@ const Insights = (() => {
       { label: "Resting HR", data: days.map((d) => d.resting_hr), color: U.cssVar("--hr"), fill: true },
       { label: "Avg HR", data: days.map((d) => d.avg_hr), color: U.cssVar("--accent-2") },
     ], { unit: " bpm" });
+  }
+
+  // ---- possible duplicates (cross-source, report only) ----
+  function dupsCard() {
+    if (!dups || !dups.groups || !dups.groups.length) return null;
+    const groups = dups.groups.map((g) =>
+      U.el("div", { style: "border:1px solid var(--border-soft);border-radius:8px;padding:var(--sp-3);margin-bottom:var(--sp-3)" }, [
+        U.el("div", { style: "font-weight:600;font-size:13px;margin-bottom:4px", text: `${g.count} copies of one effort` }),
+        ...g.activities.map((a) => U.el("div", { style: "font-size:13px;color:var(--text-dim);padding:2px 0" }, [
+          U.el("a", { href: "#/activity/" + a.id, text: `${U.fmtDate(a.start_time)} · ${U.cap(a.sport || "—")}` }),
+          U.el("span", { style: "color:var(--text-faint)", text: `  ${U.fmtKm(a.distance_m)} km · ${U.fmtDuration(a.duration_s)} · ${a.device || "unknown source"}` }),
+        ])),
+      ]));
+    return U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [
+      U.el("h3", { style: "font-size:14px;color:var(--text-dim);margin-bottom:var(--sp-2)", text: "Possible duplicates" }),
+      U.el("div", { style: "font-size:13px;color:var(--text-dim);margin-bottom:var(--sp-3)",
+        text: `${dups.duplicate_groups} group${dups.duplicate_groups === 1 ? "" : "s"} (${dups.duplicate_activities} activities) look like the same effort from different sources. Review and remove extras yourself — nothing is deleted automatically.` }),
+      ...groups,
+    ]);
   }
 
   // ---- per-sport breakdown ----

@@ -20,6 +20,7 @@ from core.anonymize import anonymize_activity, effective_options
 from core.athlete import suggest_athlete
 from core.best_efforts import compute_best_efforts
 from core.config import Config, write_config
+from core.consolidate import find_duplicate_groups
 from core.export import (
     ExportError,
     activities_json,
@@ -139,6 +140,17 @@ def insights_training_load(
 def insights_wellness(store: Store = Depends(get_store)) -> dict:
     """Daily wellness summaries (steps, resting/avg/max HR, stress) from monitoring files."""
     return {"days": store.all_wellness_days()}
+
+
+@router.get("/insights/duplicates")
+def insights_duplicates(store: Store = Depends(get_store)) -> dict:
+    """Likely cross-source duplicate activities (same effort, different file).
+
+    A read-only report grouped by start time / duration / distance / GPS; nothing
+    is modified or deleted. Catches what content-hash dedupe can't (e.g. the same
+    run as a watch ``.FIT`` and a Strava ``.GPX``).
+    """
+    return find_duplicate_groups(store.all_activities(with_series=False))
 
 
 @router.get("/insights/hr-trends")
