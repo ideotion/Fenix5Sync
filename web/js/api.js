@@ -36,6 +36,7 @@ const API = (() => {
     activityMetrics: (id) => req("/activities/" + id + "/metrics"),
     activitySplits: (id, unit) => req("/activities/" + id + "/splits" + qs({ unit })),
     activityBestEfforts: (id) => req("/activities/" + id + "/best-efforts"),
+    activityRacePredictions: (id) => req("/activities/" + id + "/race-predictions"),
     startSync: () => req("/sync", { method: "POST" }),
     syncStatus: (jobId) => req("/sync/" + jobId),
     activeSync: () => req("/sync"),

@@ -52,6 +52,7 @@ const ActivityView = (() => {
 
     root.appendChild(splitsCard());
     root.appendChild(bestEffortsCard());
+    root.appendChild(raceCard());
     if (a.laps && a.laps.length > 1) root.appendChild(lapsCard(a.laps));
 
     U.setView(root);
@@ -59,6 +60,7 @@ const ActivityView = (() => {
     loadZones(a.id);
     loadSplits(a.id);
     loadBestEfforts(a.id);
+    loadRace(a.id);
 
     // Build visuals after layout so canvas sizes are known.
     requestAnimationFrame(() => {
@@ -337,6 +339,53 @@ const ActivityView = (() => {
       box.style.display = "none";
       if (note) note.textContent = "";
     }
+  }
+
+  // ---- VO₂max + race predictions ----
+  function raceCard() {
+    return U.el("div", { class: "card pad", id: "race-card", style: "margin-top:var(--sp-5);display:none" }, [
+      U.el("h3", { style: "font-size:14px;color:var(--text-dim);margin-bottom:var(--sp-4)", text: "VO₂max & race predictions" }),
+      U.el("div", { id: "race-host" }),
+    ]);
+  }
+
+  async function loadRace(id) {
+    let r;
+    try { r = await API.activityRacePredictions(id); } catch (_) { return; }
+    if (!r || !r.available) return;  // non-running or effort too short -> hidden
+    const host = document.getElementById("race-host");
+    const card = document.getElementById("race-card");
+    if (!host || !card) return;
+    host.innerHTML = "";
+
+    if (r.vo2max != null && r.reference) {
+      host.appendChild(U.el("div", { class: "meta-grid", style: "margin-bottom:var(--sp-4)" }, [
+        U.el("div", { class: "meta" }, [
+          U.el("div", { class: "k", text: "Est. VO₂max" }),
+          U.el("div", { class: "v tnum", text: `${r.vo2max} ml/kg/min` }),
+        ]),
+        U.el("div", { class: "meta" }, [
+          U.el("div", { class: "k", text: "From effort" }),
+          U.el("div", { class: "v tnum", text: `${r.reference.label} · ${U.fmtDuration(r.reference.time_s)}` }),
+        ]),
+      ]));
+    }
+
+    const thead = U.el("thead", {}, [U.el("tr", {}, ["Race", "Predicted", "Pace"].map((h) => U.el("th", { text: h })))]);
+    const tbody = U.el("tbody");
+    r.predictions.forEach((p) => {
+      tbody.appendChild(U.el("tr", { style: "cursor:default" }, [
+        U.el("td", { text: p.label }),
+        U.el("td", { class: "tnum", text: U.fmtDuration(p.time_s) }),
+        U.el("td", { class: "tnum", html: `${_pace(p.pace_s_per_km)} <span class="muted">/km</span>` }),
+      ]));
+    });
+    host.appendChild(U.el("div", { class: "table-wrap" }, [U.el("table", {}, [thead, tbody])]));
+    host.appendChild(U.el("div", {
+      style: "margin-top:var(--sp-2);font-size:12px;color:var(--text-faint)",
+      text: "Open Daniels/Riegel estimate from this run's best effort — reliable only if that effort was near-maximal. Not Garmin's FirstBeat VO₂max.",
+    }));
+    card.style.display = "";
   }
 
   // ---- training zones (HR + power) ----
