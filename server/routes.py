@@ -17,6 +17,7 @@ from fastapi.responses import Response, StreamingResponse
 
 from core import __version__
 from core.anonymize import anonymize_activity, effective_options
+from core.best_efforts import compute_best_efforts
 from core.config import Config, write_config
 from core.export import (
     ExportError,
@@ -217,6 +218,20 @@ def activity_splits(
         raise HTTPException(status_code=404, detail="activity not found")
     length = metres if metres is not None else (MILE_M if unit == "mi" else 1000.0)
     return compute_splits(activity, metres=length)
+
+
+@router.get("/activities/{activity_id}/best-efforts")
+def activity_best_efforts(activity_id: int, store: Store = Depends(get_store)) -> dict:
+    """Best-effort times per distance and mean-max power/speed curves.
+
+    Computed locally from this one activity's series (no archive-wide scan):
+    ``best_distances`` (fastest 200 m … marathon found in the run), ``power_curve``
+    and ``speed_curve`` (peak sustained average over standard durations).
+    """
+    activity = store.get_activity(activity_id, with_series=True)
+    if activity is None:
+        raise HTTPException(status_code=404, detail="activity not found")
+    return compute_best_efforts(activity)
 
 
 @router.get("/activities/{activity_id}/export")

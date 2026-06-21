@@ -51,12 +51,14 @@ const ActivityView = (() => {
     ]));
 
     root.appendChild(splitsCard());
+    root.appendChild(bestEffortsCard());
     if (a.laps && a.laps.length > 1) root.appendChild(lapsCard(a.laps));
 
     U.setView(root);
     loadMetrics(a.id);
     loadZones(a.id);
     loadSplits(a.id);
+    loadBestEfforts(a.id);
 
     // Build visuals after layout so canvas sizes are known.
     requestAnimationFrame(() => {
@@ -277,6 +279,63 @@ const ActivityView = (() => {
       const labels = s.splits.map((sp) => sp.index);
       const mins = s.splits.map((sp) => (sp.pace_s_per_km != null ? +(sp.pace_s_per_km / 60).toFixed(2) : 0));
       Charts.makeBar(canvas, labels, mins, U.cssVar("--accent"), { unit: ` min/${u}` });
+    }
+  }
+
+  // ---- best efforts + mean-max curve ----
+  function bestEffortsCard() {
+    return U.el("div", { class: "card pad", id: "efforts-card", style: "margin-top:var(--sp-5);display:none" }, [
+      U.el("h3", { style: "font-size:14px;color:var(--text-dim);margin-bottom:var(--sp-4)", text: "Best efforts" }),
+      U.el("div", { id: "efforts-table" }),
+      U.el("div", { class: "chart-box", id: "efforts-chart-box", style: "height:200px;margin-top:var(--sp-4)" }),
+      U.el("div", { id: "efforts-note", style: "margin-top:var(--sp-2);font-size:12px;color:var(--text-faint)" }),
+    ]);
+  }
+
+  async function loadBestEfforts(id) {
+    let e;
+    try { e = await API.activityBestEfforts(id); } catch (_) { return; }
+    const card = document.getElementById("efforts-card");
+    if (!card) return;
+    const hasDist = e.best_distances && e.best_distances.length;
+    const curve = (e.power_curve && e.power_curve.length) ? { kind: "power", data: e.power_curve }
+      : (e.speed_curve && e.speed_curve.length) ? { kind: "speed", data: e.speed_curve } : null;
+    if (!hasDist && !curve) return;  // nothing to show -> leave hidden
+    card.style.display = "";
+
+    const tableHost = document.getElementById("efforts-table");
+    tableHost.innerHTML = "";
+    if (hasDist) {
+      const thead = U.el("thead", {}, [U.el("tr", {}, ["Distance", "Time", "Pace"].map((h) => U.el("th", { text: h })))]);
+      const tbody = U.el("tbody");
+      e.best_distances.forEach((b) => {
+        tbody.appendChild(U.el("tr", { style: "cursor:default" }, [
+          U.el("td", { text: b.label }),
+          U.el("td", { class: "tnum", text: U.fmtDuration(b.time_s) }),
+          U.el("td", { class: "tnum", html: `${_pace(b.pace_s_per_km)} <span class="muted">/km</span>` }),
+        ]));
+      });
+      tableHost.appendChild(U.el("div", { class: "table-wrap" }, [U.el("table", {}, [thead, tbody])]));
+    }
+
+    const box = document.getElementById("efforts-chart-box");
+    const note = document.getElementById("efforts-note");
+    if (box && curve) {
+      box.style.display = "";
+      box.innerHTML = "";
+      const canvas = U.el("canvas", { id: "efforts-canvas" });
+      box.appendChild(canvas);
+      const labels = curve.data.map((p) => p.label);
+      if (curve.kind === "power") {
+        Charts.makeBar(canvas, labels, curve.data.map((p) => p.watts), U.cssVar("--speed"), { unit: " W" });
+        if (note) note.textContent = "Mean-max power — best average watts sustained for each duration.";
+      } else {
+        Charts.makeBar(canvas, labels, curve.data.map((p) => +(p.speed_mps * 3.6).toFixed(1)), U.cssVar("--accent"), { unit: " km/h" });
+        if (note) note.textContent = "Mean-max speed — best average pace held for each duration (≈1 Hz).";
+      }
+    } else if (box) {
+      box.style.display = "none";
+      if (note) note.textContent = "";
     }
   }
 
