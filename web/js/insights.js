@@ -8,6 +8,7 @@ const Insights = (() => {
   let hr = null;    // heart-rate & efficiency trends
   let wellness = null;  // daily wellness/readiness from monitoring files
   let dups = null;      // cross-source duplicate report
+  let records = null;   // all-time best times per distance
 
   async function render() {
     Charts.destroyAll();
@@ -23,6 +24,7 @@ const Insights = (() => {
     try { hr = await API.hrTrends(state.sport || undefined); } catch (_) { hr = null; }
     try { wellness = await API.wellness(); } catch (_) { wellness = null; }
     try { dups = await API.duplicates(); } catch (_) { dups = null; }
+    try { records = await API.records(state.sport || undefined); } catch (_) { records = null; }
     if (!data.years.includes(state.year)) state.year = data.years[data.years.length - 1] || "";
     draw();
   }
@@ -40,6 +42,8 @@ const Insights = (() => {
     root.appendChild(heroTiles(data.totals));
     const recs = recordsRow(data.records);
     if (recs) root.appendChild(recs);
+    const bt = bestTimesCard();
+    if (bt) root.appendChild(bt);
     const tl = trainingLoadCard();
     if (tl) root.appendChild(tl);
     const hrc = hrTrendsCard();
@@ -313,6 +317,29 @@ const Insights = (() => {
       { label: "Resting HR", data: days.map((d) => d.resting_hr), color: U.cssVar("--hr"), fill: true },
       { label: "Avg HR", data: days.map((d) => d.avg_hr), color: U.cssVar("--accent-2") },
     ], { unit: " bpm" });
+  }
+
+  // ---- all-time best times per distance ----
+  function bestTimesCard() {
+    if (!records || !records.records || !records.records.length) return null;
+    const pace = (s) => (s == null ? "—" : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`);
+    const thead = U.el("thead", {}, [U.el("tr", {}, ["Distance", "Time", "Pace", "When"].map((h) => U.el("th", { text: h })))]);
+    const tbody = U.el("tbody");
+    records.records.forEach((r) => {
+      tbody.appendChild(U.el("tr", {
+        style: r.activity_id != null ? "cursor:pointer" : "cursor:default",
+        onclick: () => { if (r.activity_id != null) location.hash = "#/activity/" + r.activity_id; },
+      }, [
+        U.el("td", { text: r.label }),
+        U.el("td", { class: "tnum", text: U.fmtDuration(r.time_s) }),
+        U.el("td", { class: "tnum", html: `${pace(r.pace_s_per_km)} <span class="muted">/km</span>` }),
+        U.el("td", { class: "tnum", text: U.fmtDate(r.date) }),
+      ]));
+    });
+    return U.el("div", { class: "card", style: "margin-bottom:var(--sp-5)" }, [
+      U.el("h3", { style: "font-size:14px;color:var(--text-dim);padding:var(--sp-4) var(--sp-4) 0", text: "Best times (all-time)" }),
+      U.el("div", { class: "table-wrap" }, [U.el("table", {}, [thead, tbody])]),
+    ]);
   }
 
   // ---- possible duplicates (cross-source, report only) ----

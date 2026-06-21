@@ -32,6 +32,7 @@ const API = (() => {
     hrTrends: (sport) => req("/insights/hr-trends" + qs({ sport })),
     wellness: () => req("/insights/wellness"),
     duplicates: () => req("/insights/duplicates"),
+    records: (sport) => req("/insights/records" + qs({ sport })),
     listActivities: (params) => req("/activities" + qs(params)),
     getActivity: (id) => req("/activities/" + id),
     activityZones: (id) => req("/activities/" + id + "/zones"),
