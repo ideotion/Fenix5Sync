@@ -19,6 +19,7 @@ from importlib.metadata import PackageNotFoundError, version as _pkg_version
 from .anonymize import anonymize_activity, effective_options
 from .athlete import suggest_athlete
 from .best_efforts import BestEffort, compute_best_efforts
+from .coach_state import CoachState, compute_coach_state
 from .config import (
     AnonymizeConfig,
     AthleteConfig,
@@ -123,6 +124,9 @@ __all__ = [
     "compute_training_load",
     "TrainingLoad",
     "DayLoad",
+    # dynamic coach
+    "compute_coach_state",
+    "CoachState",
     # metrics
     "compute_activity_metrics",
     "ActivityMetrics",

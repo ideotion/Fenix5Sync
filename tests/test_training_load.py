@@ -122,6 +122,28 @@ def test_gap_days_filled_with_zero_load():
     assert got == _ref_pmc([60.0, 0.0, 30.0])
 
 
+def test_as_of_extends_timeline_and_decays_fatigue():
+    # One hard day, evaluated a week later: with no new training, fatigue (ATL,
+    # 7-day) decays faster than fitness (CTL, 42-day), so form (TSB) goes positive.
+    tl = compute_training_load([_act(15, minutes=60)], AthleteConfig(), as_of=_dt.date(2023, 6, 22))
+    assert tl["series"][0]["date"] == "2023-06-15"
+    assert tl["series"][-1]["date"] == "2023-06-22"  # extended to as_of
+    assert tl["series"][-1]["load"] == 0.0
+    # Reference EWMA over the 15th..22nd inclusive (8 days): one load then rest.
+    got = [(d["ctl"], d["atl"], d["tsb"]) for d in tl["series"]]
+    assert got == _ref_pmc([60.0] + [0.0] * 7)
+    # Fatigue clears over the rest week: ATL decays from its post-load peak and
+    # form (TSB) recovers from its trough the day after the hard session.
+    assert tl["series"][-1]["atl"] < tl["series"][0]["atl"]   # ~8.0 -> ~3.4
+    assert tl["series"][-1]["tsb"] > tl["series"][1]["tsb"]   # -2.2 > -6.6 (recovering)
+
+
+def test_as_of_does_not_fabricate_history_when_empty():
+    # No activities: as_of must not invent a day out of thin air.
+    tl = compute_training_load([], AthleteConfig(), as_of=_dt.date(2023, 6, 22))
+    assert tl["series"] == [] and tl["current"] is None
+
+
 def test_same_day_activities_sum_into_one_day():
     tl = compute_training_load([_act(15, minutes=60), _act(15, minutes=30)], AthleteConfig())
     assert len(tl["series"]) == 1
