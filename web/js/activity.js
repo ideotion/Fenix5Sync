@@ -1,7 +1,11 @@
 /* Activity detail: summary stats, HR/speed/elevation charts, offline GPS track,
    laps table and per-activity export. */
 const ActivityView = (() => {
+  let currentId = null;     // active activity id (for async re-fetches like splits)
+  let splitsUnit = "km";    // user-tweakable split distance
+
   async function render(id) {
+    currentId = id;
     Charts.destroyAll();
     U.setView(U.spinner("Loading activity…"));
     let a;
@@ -46,11 +50,13 @@ const ActivityView = (() => {
       U.el("div", { class: "track-box" }, [U.el("canvas", { id: "track-canvas" })]),
     ]));
 
+    root.appendChild(splitsCard());
     if (a.laps && a.laps.length > 1) root.appendChild(lapsCard(a.laps));
 
     U.setView(root);
     loadMetrics(a.id);
     loadZones(a.id);
+    loadSplits(a.id);
 
     // Build visuals after layout so canvas sizes are known.
     requestAnimationFrame(() => {
@@ -212,6 +218,66 @@ const ActivityView = (() => {
         ])
       )),
     ]);
+  }
+
+  // ---- splits (even-distance segments; km/mile is user-tweakable) ----
+  function splitsCard() {
+    const sel = U.el("select", { id: "splits-unit" }, [
+      U.el("option", { value: "km", text: "per km" }),
+      U.el("option", { value: "mi", text: "per mile" }),
+    ]);
+    sel.value = splitsUnit;
+    sel.addEventListener("change", () => { splitsUnit = sel.value; loadSplits(currentId); });
+    return U.el("div", { class: "card pad", id: "splits-card", style: "margin-top:var(--sp-5);display:none" }, [
+      U.el("div", { class: "cal-head" }, [
+        U.el("h3", { style: "font-size:14px;color:var(--text-dim)", text: "Splits" }),
+        U.el("div", { class: "field inline" }, [U.el("label", { text: "Distance" }), sel]),
+      ]),
+      U.el("div", { class: "chart-box", id: "splits-chart-box", style: "height:200px;margin-bottom:var(--sp-4)" }),
+      U.el("div", { class: "table-wrap", id: "splits-table" }),
+    ]);
+  }
+
+  const _pace = (s) => (s == null ? "—" : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`);
+
+  async function loadSplits(id) {
+    let s;
+    try { s = await API.activitySplits(id, splitsUnit); } catch (_) { return; }
+    const card = document.getElementById("splits-card");
+    const tableHost = document.getElementById("splits-table");
+    if (!card || !tableHost) return;
+    if (!s.splits || !s.splits.length) { card.style.display = "none"; return; }
+    card.style.display = "";
+    const u = s.unit;
+    const per = u === "mi" ? 1609.344 : 1000;
+
+    const thead = U.el("thead", {}, [U.el("tr", {},
+      ["#", "Distance", "Time", "Pace", "Avg HR", "Elev"].map((h) => U.el("th", { text: h })))]);
+    const tbody = U.el("tbody");
+    s.splits.forEach((sp) => {
+      const tag = sp.index === s.fastest_index ? " ⚡" : sp.index === s.slowest_index ? " 🐌" : "";
+      tbody.appendChild(U.el("tr", { style: "cursor:default" }, [
+        U.el("td", { class: "tnum", text: sp.index }),
+        U.el("td", { class: "tnum", html: `${(sp.distance_m / per).toFixed(2)} <span class="muted">${u}</span>` }),
+        U.el("td", { class: "tnum", text: U.fmtDuration(sp.time_s) }),
+        U.el("td", { class: "tnum", html: `${_pace(sp.pace_s_per_km)} <span class="muted">/${u}</span>${tag}` }),
+        U.el("td", { class: "tnum", text: sp.avg_hr_bpm ?? "—" }),
+        U.el("td", { class: "tnum", html: `+${Math.round(sp.elev_gain_m)} <span class="muted">m</span>` }),
+      ]));
+    });
+    tableHost.innerHTML = "";
+    tableHost.appendChild(U.el("table", {}, [thead, tbody]));
+
+    // Pace-per-split bars (shorter = faster). Rebuild the canvas so re-toggling units is clean.
+    const box = document.getElementById("splits-chart-box");
+    if (box) {
+      box.innerHTML = "";
+      const canvas = U.el("canvas", { id: "splits-canvas" });
+      box.appendChild(canvas);
+      const labels = s.splits.map((sp) => sp.index);
+      const mins = s.splits.map((sp) => (sp.pace_s_per_km != null ? +(sp.pace_s_per_km / 60).toFixed(2) : 0));
+      Charts.makeBar(canvas, labels, mins, U.cssVar("--accent"), { unit: ` min/${u}` });
+    }
   }
 
   // ---- training zones (HR + power) ----

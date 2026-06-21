@@ -32,6 +32,7 @@ from core.export import (
 from core.logging_setup import read_recent_logs
 from core.metrics import compute_activity_metrics
 from core.search import ActivityFilter
+from core.splits import MILE_M, compute_splits
 from core.store import Store
 from core.training_load import compute_training_load
 from core.zones import compute_zones
@@ -195,6 +196,27 @@ def activity_metrics(
     if activity is None:
         raise HTTPException(status_code=404, detail="activity not found")
     return compute_activity_metrics(activity, cfg.athlete)
+
+
+@router.get("/activities/{activity_id}/splits")
+def activity_splits(
+    activity_id: int,
+    unit: str = Query("km", pattern="^(km|mi)$", description="Split distance unit."),
+    metres: float | None = Query(
+        None, gt=0, le=100000, description="Custom split length in metres (overrides unit)."
+    ),
+    store: Store = Depends(get_store),
+) -> dict:
+    """Even-distance splits (pace / HR / elevation per segment) for one activity.
+
+    Defaults to 1 km splits; pass ``unit=mi`` for miles or ``metres`` for any
+    custom length. Computed locally from the trackpoint distance series.
+    """
+    activity = store.get_activity(activity_id, with_series=True)
+    if activity is None:
+        raise HTTPException(status_code=404, detail="activity not found")
+    length = metres if metres is not None else (MILE_M if unit == "mi" else 1000.0)
+    return compute_splits(activity, metres=length)
 
 
 @router.get("/activities/{activity_id}/export")

@@ -48,6 +48,7 @@ from .models import Activity, Lap, RunSummary, Trackpoint
 from .parse import ParseError, parse_fit_file
 from .pipeline import import_activities, open_store
 from .search import ActivityFilter, build_where
+from .splits import Split, compute_splits
 from .store import Store
 from .training_load import DayLoad, TrainingLoad, compute_training_load
 from .zones import ZoneBin, compute_zones, hr_zones, power_zones
@@ -118,6 +119,9 @@ __all__ = [
     # metrics
     "compute_activity_metrics",
     "ActivityMetrics",
+    # splits
+    "compute_splits",
+    "Split",
     # logging
     "setup_logging",
     "get_logger",
