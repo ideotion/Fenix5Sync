@@ -38,6 +38,7 @@ from core.hr_trends import compute_hr_trends
 from core.logging_setup import read_recent_logs
 from core.metrics import compute_activity_metrics
 from core.race import compute_race_predictions
+from core.privacy_audit import compute_privacy_audit
 from core.recap import compute_recap
 from core.search import ActivityFilter
 from core.splits import MILE_M, compute_splits
@@ -188,6 +189,28 @@ def insights_recap(
     GUI renders a self-contained, shareable card; nothing leaves the machine.
     """
     return compute_recap(store.all_activities(with_series=False), year=year)
+
+
+@router.get("/insights/privacy-audit")
+def insights_privacy_audit(
+    store: Store = Depends(get_store),
+    cfg: Config = Depends(get_config),
+) -> dict:
+    """Defensive self-audit: what your own activity start points reveal.
+
+    Clusters start locations (likely home first) and the weekday/time regularity
+    that exposes a routine, then recommends a privacy radius that feeds the
+    existing anonymization. Computed locally from summaries; inferences are
+    probabilistic and never persisted. Includes the currently configured radius
+    so the UI can show whether it already covers the most-exposed place.
+    """
+    audit = compute_privacy_audit(store.all_activities(with_series=False))
+    audit["current_radius_m"] = cfg.anonymize.privacy_radius_m
+    audit["radius_sufficient"] = (
+        cfg.anonymize.privacy_radius_m >= audit["recommended_radius_m"]
+        and audit["recommended_radius_m"] > 0
+    )
+    return audit
 
 
 @router.get("/insights/hr-trends")

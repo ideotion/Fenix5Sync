@@ -54,6 +54,7 @@ from .metrics import ActivityMetrics, compute_activity_metrics
 from .models import Activity, Lap, RunSummary, Trackpoint
 from .parse import ParseError, parse_fit_file
 from .pipeline import import_activities, open_store
+from .privacy_audit import compute_privacy_audit
 from .race import RacePrediction, compute_race_predictions
 from .recap import available_years, compute_recap
 from .records import compute_personal_records
@@ -162,6 +163,8 @@ __all__ = [
     # year-in-sport recap
     "compute_recap",
     "available_years",
+    # privacy audit
+    "compute_privacy_audit",
     # athlete suggestions
     "suggest_athlete",
     # logging

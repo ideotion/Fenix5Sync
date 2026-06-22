@@ -34,6 +34,7 @@ const API = (() => {
     duplicates: () => req("/insights/duplicates"),
     records: (sport) => req("/insights/records" + qs({ sport })),
     recap: (year) => req("/insights/recap" + qs({ year })),
+    privacyAudit: () => req("/insights/privacy-audit"),
     listActivities: (params) => req("/activities" + qs(params)),
     getActivity: (id) => req("/activities/" + id),
     activityZones: (id) => req("/activities/" + id + "/zones"),
