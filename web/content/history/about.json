@@ -1,0 +1,9 @@
+{
+  "title": "Liberate your history",
+  "rationale": "The watch holds only recent activities — your full history lives in your account export. Garmin's GDPR 'Full Data Export' and Strava's data download return your activities as ordinary FIT/GPX/TCX files (often gzip-compressed, inside nested zips), and both are exempt from the API paywalls. This imports those exports straight into your local archive and content-deduplicates them against what you already have, so a cloud export and a watch sync of the same activity collapse to one.",
+  "sources": [
+    {"id": "S1", "title": "Strava puts its API behind an $11.99/mo paywall — free data downloads & device integrations exempt", "publisher": "TechCrunch", "date": "2026-06-01", "url": "https://techcrunch.com/2026/06/01/strava-declares-war-on-scrapers-ahead-of-ipo/"},
+    {"id": "S2", "title": "How to Export Your Garmin Data (Full Data Export: original FIT/GPX/TCX, derived metrics excluded)", "publisher": "Gneta", "date": "2026-04-16", "url": "https://www.gneta.app/blog/export-garmin-data-guide"},
+    {"id": "S3", "title": "Garmin Connect+ paywall expands; CEO confirms more premium-only features", "publisher": "TechRadar", "date": "2025", "url": "https://www.techradar.com/health-fitness/smartwatches/garmin-quietly-confirms-our-worst-fears-about-garmin-connect-says-more-features-will-likely-be-paywalled-in-the-future"}
+  ]
+}

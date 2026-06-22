@@ -51,6 +51,7 @@ from .schemas import (
     ActivityDetail,
     ActivityList,
     ConfigModel,
+    ExportImportRequest,
     Health,
     LogsResponse,
     SegmentCreate,
@@ -477,6 +478,32 @@ def start_sync(
     cfg: Config = Depends(get_config), jobs: JobManager = Depends(get_jobs)
 ) -> SyncStatus:
     job = jobs.start(cfg)
+    return SyncStatus(**job.snapshot())
+
+
+@router.post("/sync/import-export", response_model=SyncStatus)
+def start_export_import(
+    body: ExportImportRequest,
+    cfg: Config = Depends(get_config),
+    jobs: JobManager = Depends(get_jobs),
+) -> SyncStatus:
+    """Liberate your history: import a Garmin/Strava account export from disk.
+
+    Runs the normal import pipeline with a one-off ``export``-mode config over the
+    given local path (the downloaded ``.zip`` or an unzipped folder). Nested zips
+    and gzip-compressed activity files are expanded into a temp dir; the source is
+    never modified, and everything is content-deduplicated against what you have.
+    """
+    import copy
+
+    path = Path(body.path).expanduser()
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"path not found: {path}")
+    one_off = copy.deepcopy(cfg)
+    one_off.source.mode = "export"
+    one_off.source.path = str(path)
+    one_off.source.recursive = True
+    job = jobs.start(one_off)
     return SyncStatus(**job.snapshot())
 
 

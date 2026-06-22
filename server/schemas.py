@@ -106,6 +106,12 @@ class LogsResponse(BaseModel):
     lines: list[str]
 
 
+class ExportImportRequest(BaseModel):
+    """Import an account export (Garmin/Strava .zip or folder) from a local path."""
+
+    path: str = Field(min_length=1)
+
+
 class SegmentCreate(BaseModel):
     """Create a personal segment from a reference activity's GPS track."""
 

@@ -96,6 +96,38 @@ def sync(ctx: typer.Context) -> None:
         )
 
 
+@app.command("import-export")
+def import_export(
+    ctx: typer.Context,
+    path: str = typer.Argument(..., help="Garmin/Strava account export .zip or folder."),
+) -> None:
+    """Liberate your history: import a Garmin/Strava account export from disk.
+
+    Expands nested zips and gzip-compressed activity files into a temp dir (the
+    source is never modified) and imports them, content-deduplicated against your
+    existing archive.
+    """
+    import copy
+    from pathlib import Path
+
+    src = Path(path).expanduser()
+    if not src.exists():
+        typer.secho(f"Path not found: {src}", fg=typer.colors.RED)
+        raise typer.Exit(1)
+    cfg = copy.deepcopy(_cfg(ctx))
+    cfg.source.mode = "export"
+    cfg.source.path = str(src)
+    cfg.source.recursive = True
+    typer.echo(f"Importing account export: {src}")
+    summary = import_activities(cfg)
+    typer.echo(
+        f"\nDone: found={summary.found} imported={summary.imported} "
+        f"skipped={summary.skipped} failed={summary.failed}"
+    )
+    for err in summary.errors:
+        typer.secho(f"  ! {err}", fg=typer.colors.RED)
+
+
 @app.command("list")
 def list_cmd(
     ctx: typer.Context,

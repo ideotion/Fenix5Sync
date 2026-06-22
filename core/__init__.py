@@ -18,6 +18,7 @@ from __future__ import annotations
 from importlib.metadata import PackageNotFoundError, version as _pkg_version
 
 from .anonymize import anonymize_activity, effective_options
+from .archive import expand_into as expand_export_archive
 from .athlete import suggest_athlete
 from .best_efforts import BestEffort, compute_best_efforts
 from .coach_plan import CoachGoal, Plan, PrescribedSession, compute_plan, plan_from_activities
@@ -102,6 +103,8 @@ __all__ = [
     "parse_activity_file",
     "detect_format",
     "ParseError",
+    # account-export ingestion
+    "expand_export_archive",
     # store / search
     "Store",
     "ActivityFilter",

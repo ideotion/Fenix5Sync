@@ -33,7 +33,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
-from . import importers
+from . import archive, importers
 from .config import Config, _expand
 from .logging_setup import get_logger
 
@@ -307,6 +307,42 @@ def _extract_zip_source(zip_path: Path, cfg: Config) -> Source | None:
     )
 
 
+def _source_from_export(cfg: Config) -> Source | None:
+    """Resolve ``source.path`` as a Garmin/Strava-style *account export*.
+
+    Accepts the downloaded ``.zip`` (including Garmin's zip-of-zips) or an already
+    unzipped folder, expands nested archives and gzip-compressed activity files
+    into a temp dir (the source is never modified), and returns a Source over the
+    surfaced FIT/TCX/GPX. Everything is then content-deduplicated as usual, so a
+    cloud export and a watch sync of the same activity collapse to one.
+    """
+    if not cfg.source.path:
+        logger.warning("export mode needs source.path (the export .zip or folder)")
+        return None
+    src = Path(_expand(cfg.source.path))
+    if not src.exists():
+        logger.warning("export source.path does not exist: %s", src)
+        return None
+    try:
+        tmpdir = Path(tempfile.mkdtemp(prefix="fenix5sync-export-"))
+    except OSError as exc:
+        logger.warning("could not create temp dir for export expansion: %s", exc)
+        return None
+
+    def cleanup() -> None:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+
+    files = archive.expand_into(src, tmpdir, formats=cfg.source.formats or None)
+    logger.info("Expanded %d activity file(s) from export %s", len(files), src)
+    return Source(
+        activity_dir=tmpdir,
+        files=sorted(files),
+        recursive=True,
+        description=f"export ({src}, {len(files)} file(s))",
+        cleanup=cleanup,
+    )
+
+
 def _source_from_file(cfg: Config) -> Source | None:
     """Resolve ``source.path`` as a single activity file."""
     if not cfg.source.path:
@@ -387,6 +423,8 @@ def locate_source(cfg: Config) -> Source | None:
         return _source_from_file(cfg)
     if mode == "zip":
         return _source_from_zip(cfg)
+    if mode == "export":
+        return _source_from_export(cfg)
     if mode == "mass_storage":
         return _detect_mass_storage(cfg)
     if mode == "mtp":
