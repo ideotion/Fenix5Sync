@@ -11,6 +11,18 @@ GitHub Releases page for the auto-generated notes per tag.
 ## [Unreleased]
 
 ### Added
+- **Home exercise library (35) + Tai Chi movement library (21).** The Sports at
+  Home form-model now ships the full data-driven library — including the complete
+  push-up progression (wall → counter → chair → knee → floor) — with each
+  exercise carrying its library metadata (pattern, tier, default/regression/
+  progression object, primary benefit, evidence refs, notes), surfaced beside the
+  player with citations. The Tai Chi tab ships 21 movement/breathing pacers
+  normalized from the authoring schema into the shared engine's canonical schema
+  (`scripts/normalize_incoming.py`, unit-tested), with level/focus/refs/notes
+  wired in. Still framed honestly as a simplified pacer, not instructed form. The
+  content packs are guarded by extended integrity tests (phase↔pose, citation
+  resolution, valid tiers/patterns/levels, and that every object id exists in the
+  engine's glyph registry).
 - **Form-model engine: pseudo-3-D, corrected feet, free weights.** The shared SVG
   movement engine now runs every joint through a unit-tested yaw projection
   (`web/js/formGeom.js`), so poses can carry optional depth (`z`); a gentle

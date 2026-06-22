@@ -1,72 +1,2971 @@
 {
-  "_note": "Simplified movement/breathing pacers for the Tai Chi tab, rendered by the SHARED form-model engine (web/js/formModel.js) — the same engine that powers Sports at Home. These are gentle tempo/breath guides, not instructed Tai Chi form (instructor-reviewed videos are the pending deliverable). Authored conservatively in the 240x340 joint model; movements use a wide, flowing range of motion. Only movements whose keyframes are verified ship here.",
+  "_note": "Simplified movement/breathing pacers for the Tai Chi tab, rendered by the SHARED form-model engine (web/js/formModel.js). Normalized from the per-phase authoring schema into the canonical views+phases schema by scripts/normalize_incoming.py. A gentle tempo/breath guide, not instructed Tai Chi form.",
   "ground_y": 318,
   "disclaimer": "A simplified breathing-and-tempo pacer — move slowly through a comfortable, full range. Not a substitute for instructed Tai Chi form. Stop for chest pain, breathlessness, dizziness, or new joint pain.",
   "movements": [
     {
-      "id": "commencement",
-      "name": "Opening — raise & lower arms",
-      "object": {"side": null, "front": null},
-      "targetReps": 4,
-      "staticLabels": ["Arms low", "Arms overhead", "Lower"],
-      "views": {
-        "side": {
-          "down": {"head": [120, 70], "sh": [118, 98], "hip": [116, 178], "knee": [114, 248], "ankle": [112, 312], "toe": [140, 312], "elb": [128, 138], "hand": [128, 178]},
-          "up": {"head": [120, 70], "sh": [118, 98], "hip": [116, 178], "knee": [114, 248], "ankle": [112, 312], "toe": [140, 312], "elb": [126, 60], "hand": [144, 24]}
-        }
+      "id": "tc_gather_part_clouds",
+      "name": "Gather & Part the Clouds",
+      "object": {
+        "side": null,
+        "front": null
       },
-      "phases": [
-        {"name": "Raise", "dur": 5000, "from": "down", "to": "up"},
-        {"name": "Hold", "dur": 1200, "from": "up", "to": "up"},
-        {"name": "Lower", "dur": 5000, "from": "up", "to": "down"},
-        {"name": "Settle", "dur": 1200, "from": "down", "to": "down"}
-      ],
-      "cues": {
-        "Raise": "Breathe <b>in</b> as the arms float all the way up overhead.",
-        "Hold": "Reach gently to the sky — tall and open.",
-        "Lower": "Breathe <b>out</b> as the arms sweep slowly down past the hips.",
-        "Settle": "Rest. Let the breath settle before the next cycle."
-      },
-      "staticCues": [
-        "Stand tall and relaxed, feet about hip-width, knees soft.",
-        "Float both arms forward and all the way up overhead as you breathe in.",
-        "Sweep the arms slowly down past your hips as you breathe out.",
-        "Keep shoulders soft and move through a full, comfortable range."
-      ]
-    },
-    {
-      "id": "weight-shift",
-      "name": "Weight shift — side to side",
-      "object": {"side": null, "front": null},
-      "targetReps": 3,
-      "staticLabels": ["Centre", "Weight left", "Centre"],
       "views": {
         "front": {
-          "center": {"head": [120, 70], "sh": [120, 100], "hip": [120, 180], "lknee": [104, 248], "rknee": [136, 248], "lankle": [102, 312], "rankle": [138, 312], "lelb": [100, 140], "relb": [140, 140], "lhand": [100, 182], "rhand": [140, 182]},
-          "left": {"head": [96, 72], "sh": [98, 102], "hip": [102, 184], "lknee": [90, 252], "rknee": [130, 244], "lankle": [102, 312], "rankle": [138, 312], "lelb": [76, 144], "relb": [120, 140], "lhand": [70, 190], "rhand": [120, 176]},
-          "right": {"head": [144, 72], "sh": [142, 102], "hip": [138, 184], "lknee": [110, 244], "rknee": [150, 252], "lankle": [102, 312], "rankle": [138, 312], "lelb": [120, 140], "relb": [164, 144], "lhand": [120, 176], "rhand": [170, 190]}
+          "Lift": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              76,
+              105
+            ],
+            "relb": [
+              164,
+              105
+            ],
+            "lhand": [
+              112,
+              126
+            ],
+            "rhand": [
+              128,
+              126
+            ]
+          },
+          "Part": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              80,
+              80
+            ],
+            "relb": [
+              160,
+              80
+            ],
+            "lhand": [
+              66,
+              120
+            ],
+            "rhand": [
+              174,
+              120
+            ]
+          },
+          "Gather": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              100,
+              140
+            ],
+            "relb": [
+              140,
+              140
+            ],
+            "lhand": [
+              112,
+              180
+            ],
+            "rhand": [
+              128,
+              180
+            ]
+          }
         }
       },
       "phases": [
-        {"name": "Left", "dur": 3500, "from": "center", "to": "left"},
-        {"name": "Hold left", "dur": 800, "from": "left", "to": "left"},
-        {"name": "Right", "dur": 7000, "from": "left", "to": "right"},
-        {"name": "Hold right", "dur": 800, "from": "right", "to": "right"},
-        {"name": "Centre", "dur": 3500, "from": "right", "to": "center"}
+        {
+          "name": "Lift",
+          "dur": 4000,
+          "from": "Gather",
+          "to": "Lift"
+        },
+        {
+          "name": "Part",
+          "dur": 5000,
+          "from": "Lift",
+          "to": "Part"
+        },
+        {
+          "name": "Gather",
+          "dur": 5000,
+          "from": "Part",
+          "to": "Gather"
+        }
       ],
       "cues": {
-        "Left": "Shift your weight fully across onto the <b>left</b> foot; let the arms float left.",
-        "Hold left": "Tall and balanced over the left leg — keep breathing.",
-        "Right": "Transfer slowly and fully across onto the <b>right</b> foot.",
-        "Hold right": "Steady over the right leg. Soft knees.",
-        "Centre": "Return to centre, weight even."
+        "Lift": "Breathe in - float both hands up to chest height, palms easing upward.",
+        "Part": "Keep breathing in - open the arms wide and high, like parting soft clouds.",
+        "Gather": "Breathe out - draw the hands down and together toward the belly."
       },
       "staticCues": [
-        "Stand with feet wider than hip-width, knees soft.",
-        "Shift your weight fully onto one foot, bending that knee, arms drifting with you.",
-        "Transfer smoothly and fully across to the other foot.",
-        "Move through a wide, controlled range; keep support nearby if balance is unsure."
-      ]
+        "Breathe in - float both hands up to chest height, palms easing upward.",
+        "Keep breathing in - open the arms wide and high, like parting soft clouds.",
+        "Breathe out - draw the hands down and together toward the belly."
+      ],
+      "staticLabels": [
+        "Lift",
+        "Part",
+        "Gather"
+      ],
+      "targetReps": 6,
+      "level": "standing",
+      "focus": "breathing",
+      "primary_benefit": "Slow, wide breathing paired to opening and gathering the arms, for relaxation and psychological wellbeing associated with regular Tai Chi practice (R09).",
+      "refs": [
+        "R09"
+      ],
+      "red_flags": true,
+      "notes": "Stay tall - do not sink the hips. Breathe in as the arms open and rise, out as they gather and lower. A simplified breath pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or living with a condition."
+    },
+    {
+      "id": "tc_ball_circles",
+      "name": "Ball-Holding Circles",
+      "object": {
+        "side": null,
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Top": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              118,
+              98
+            ],
+            "hip": [
+              116,
+              178
+            ],
+            "knee": [
+              114,
+              248
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              126,
+              138
+            ],
+            "hand": [
+              160,
+              120
+            ]
+          },
+          "Front": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              118,
+              98
+            ],
+            "hip": [
+              116,
+              178
+            ],
+            "knee": [
+              114,
+              248
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              143,
+              130
+            ],
+            "hand": [
+              180,
+              140
+            ]
+          },
+          "Bottom": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              118,
+              98
+            ],
+            "hip": [
+              116,
+              178
+            ],
+            "knee": [
+              114,
+              248
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              129,
+              137
+            ],
+            "hand": [
+              160,
+              160
+            ]
+          },
+          "Back": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              118,
+              98
+            ],
+            "hip": [
+              116,
+              178
+            ],
+            "knee": [
+              114,
+              248
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              102,
+              135
+            ],
+            "hand": [
+              140,
+              140
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Top",
+          "dur": 3500,
+          "from": "Back",
+          "to": "Top"
+        },
+        {
+          "name": "Front",
+          "dur": 3500,
+          "from": "Top",
+          "to": "Front"
+        },
+        {
+          "name": "Bottom",
+          "dur": 3500,
+          "from": "Front",
+          "to": "Bottom"
+        },
+        {
+          "name": "Back",
+          "dur": 3500,
+          "from": "Bottom",
+          "to": "Back"
+        }
+      ],
+      "cues": {
+        "Top": "Breathe in - cradle the ball at the top of a slow vertical circle.",
+        "Front": "Roll the ball forward and down, soft and round.",
+        "Bottom": "Breathe out - the ball reaches the low point of the circle.",
+        "Back": "Draw the ball up and back to begin again."
+      },
+      "staticCues": [
+        "Breathe in - cradle the ball at the top of a slow vertical circle.",
+        "Roll the ball forward and down, soft and round.",
+        "Breathe out - the ball reaches the low point of the circle.",
+        "Draw the ball up and back to begin again."
+      ],
+      "staticLabels": [
+        "Top",
+        "Front",
+        "Bottom"
+      ],
+      "targetReps": 5,
+      "level": "standing",
+      "focus": "mobility",
+      "primary_benefit": "Gentle shoulder and arm range-of-motion, in the spirit of the low-impact movement used in the Tai Chi for Arthritis program (R13).",
+      "refs": [
+        "R13"
+      ],
+      "red_flags": true,
+      "notes": "High, easy stance; let the shoulder, not the back, do the work. Breathe slowly and continuously around each circle. A mobility pacer, not instructed form; seek clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_spinal_twist",
+      "name": "Gentle Spinal Twist",
+      "object": {
+        "side": null,
+        "front": null
+      },
+      "views": {
+        "front": {
+          "Center": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              100,
+              140
+            ],
+            "relb": [
+              140,
+              140
+            ],
+            "lhand": [
+              100,
+              182
+            ],
+            "rhand": [
+              140,
+              182
+            ]
+          },
+          "Twist Left": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              76,
+              108
+            ],
+            "relb": [
+              143,
+              139
+            ],
+            "lhand": [
+              72,
+              150
+            ],
+            "rhand": [
+              110,
+              165
+            ]
+          },
+          "Twist Right": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              97,
+              139
+            ],
+            "relb": [
+              164,
+              108
+            ],
+            "lhand": [
+              130,
+              165
+            ],
+            "rhand": [
+              168,
+              150
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Center",
+          "dur": 3500,
+          "from": "Twist Right",
+          "to": "Center"
+        },
+        {
+          "name": "Twist Left",
+          "dur": 4500,
+          "from": "Center",
+          "to": "Twist Left"
+        },
+        {
+          "name": "Twist Right",
+          "dur": 4500,
+          "from": "Twist Left",
+          "to": "Twist Right"
+        }
+      ],
+      "cues": {
+        "Center": "Stand tall and centered, arms resting loose.",
+        "Twist Left": "Breathe out - let both arms swing gently to the left, eyes following.",
+        "Twist Right": "Breathe out - swing the arms gently to the right; keep hips soft."
+      },
+      "staticCues": [
+        "Stand tall and centered, arms resting loose.",
+        "Breathe out - let both arms swing gently to the left, eyes following.",
+        "Breathe out - swing the arms gently to the right; keep hips soft."
+      ],
+      "staticLabels": [
+        "Center",
+        "Twist Left",
+        "Twist Right"
+      ],
+      "targetReps": 6,
+      "level": "standing",
+      "focus": "mobility",
+      "primary_benefit": "Gentle rotational range-of-motion through the trunk, consistent with the easy mobility work of the Tai Chi for Arthritis program (R13).",
+      "refs": [
+        "R13"
+      ],
+      "red_flags": true,
+      "notes": "Keep the stance tall and the twist small and comfortable; let the arms swing freely. Exhale softly into each turn. A mobility pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_weight_shift_fwd_back",
+      "name": "Forward-Back Weight Shift",
+      "object": {
+        "side": null,
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Shift Back": {
+            "head": [
+              110,
+              74
+            ],
+            "sh": [
+              108,
+              102
+            ],
+            "hip": [
+              106,
+              182
+            ],
+            "knee": [
+              125,
+              249
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              116,
+              141
+            ],
+            "hand": [
+              150,
+              160
+            ]
+          },
+          "Shift Forward": {
+            "head": [
+              130,
+              72
+            ],
+            "sh": [
+              128,
+              100
+            ],
+            "hip": [
+              126,
+              180
+            ],
+            "knee": [
+              128,
+              250
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              133,
+              140
+            ],
+            "hand": [
+              170,
+              150
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Shift Back",
+          "dur": 4000,
+          "from": "Shift Forward",
+          "to": "Shift Back"
+        },
+        {
+          "name": "Shift Forward",
+          "dur": 4000,
+          "from": "Shift Back",
+          "to": "Shift Forward"
+        }
+      ],
+      "cues": {
+        "Shift Back": "Breathe out - settle the weight back, feet planted, knee softly bent.",
+        "Shift Forward": "Breathe in - glide the weight forward over the front foot, staying tall."
+      },
+      "staticCues": [
+        "Breathe out - settle the weight back, feet planted, knee softly bent.",
+        "Breathe in - glide the weight forward over the front foot, staying tall."
+      ],
+      "staticLabels": [
+        "Shift Back",
+        "Shift Forward",
+        "Shift Back"
+      ],
+      "targetReps": 8,
+      "level": "standing",
+      "focus": "balance",
+      "primary_benefit": "Forward-back weight-transfer practice for balance; regular Tai Chi practice reduces falls in older adults (R01, R02, R14). This single movement is one component, not independently tested.",
+      "refs": [
+        "R01",
+        "R02",
+        "R14"
+      ],
+      "red_flags": true,
+      "notes": "Feet stay planted; keep the stance high and the knee softly bent. Breathe in shifting forward, out settling back. Use a wall or chair nearby if unsteady. A balance pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_single_leg_supported",
+      "name": "Supported Single-Leg Stand",
+      "object": {
+        "side": null,
+        "front": "wall"
+      },
+      "views": {
+        "front": {
+          "Settle": {
+            "head": [
+              112,
+              70
+            ],
+            "sh": [
+              112,
+              100
+            ],
+            "hip": [
+              112,
+              180
+            ],
+            "lknee": [
+              97,
+              248
+            ],
+            "rknee": [
+              126,
+              249
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              68,
+              108
+            ],
+            "relb": [
+              128,
+              142
+            ],
+            "lhand": [
+              72,
+              150
+            ],
+            "rhand": [
+              140,
+              182
+            ]
+          },
+          "Lift & Hold": {
+            "head": [
+              108,
+              70
+            ],
+            "sh": [
+              108,
+              100
+            ],
+            "hip": [
+              108,
+              180
+            ],
+            "lknee": [
+              94,
+              248
+            ],
+            "rknee": [
+              150,
+              236
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              122,
+              294
+            ],
+            "lelb": [
+              64,
+              109
+            ],
+            "relb": [
+              152,
+              108
+            ],
+            "lhand": [
+              72,
+              150
+            ],
+            "rhand": [
+              148,
+              150
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Lift & Hold",
+          "dur": 4000,
+          "from": "Settle",
+          "to": "Lift & Hold"
+        },
+        {
+          "name": "Hold",
+          "dur": 8000,
+          "from": "Lift & Hold",
+          "to": "Lift & Hold",
+          "isHold": true
+        },
+        {
+          "name": "Settle",
+          "dur": 4000,
+          "from": "Lift & Hold",
+          "to": "Settle"
+        }
+      ],
+      "cues": {
+        "Settle": "Stand tall, one hand resting lightly on the wall.",
+        "Lift & Hold": "Breathe slow - shift onto the left leg, float the right foot up, and hold.",
+        "Hold": "Hold steady and tall — keep breathing slowly; never hold your breath."
+      },
+      "staticCues": [
+        "Breathe slow - shift onto the left leg, float the right foot up, and hold.",
+        "Hold steady and tall — keep breathing slowly; never hold your breath.",
+        "Stand tall, one hand resting lightly on the wall."
+      ],
+      "staticLabels": [
+        "Settle",
+        "Lift & Hold",
+        "Settle"
+      ],
+      "targetReps": 2,
+      "isHold": true,
+      "holdMs": 8000,
+      "level": "supported",
+      "focus": "balance",
+      "primary_benefit": "Single-leg standing balance with support; static and dynamic balance work of this kind is part of Tai Chi programs that reduce falls in older adults (R01, R02, R14).",
+      "refs": [
+        "R01",
+        "R02",
+        "R14"
+      ],
+      "red_flags": true,
+      "notes": "Keep one hand on a wall or sturdy chair throughout. Lift the foot only as high as is comfortable and breathe slowly while you hold. Lower if you feel unsteady. A balance pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_tandem_heel_toe",
+      "name": "Tandem (Heel-to-Toe) Stand",
+      "object": {
+        "side": null,
+        "front": "wall"
+      },
+      "views": {
+        "front": {
+          "Settle": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              76,
+              108
+            ],
+            "relb": [
+              164,
+              108
+            ],
+            "lhand": [
+              78,
+              150
+            ],
+            "rhand": [
+              162,
+              150
+            ]
+          },
+          "Tandem Hold": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              106,
+              248
+            ],
+            "rknee": [
+              134,
+              248
+            ],
+            "lankle": [
+              114,
+              312
+            ],
+            "rankle": [
+              126,
+              312
+            ],
+            "lelb": [
+              76,
+              108
+            ],
+            "relb": [
+              164,
+              108
+            ],
+            "lhand": [
+              76,
+              150
+            ],
+            "rhand": [
+              164,
+              150
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Tandem Hold",
+          "dur": 4000,
+          "from": "Settle",
+          "to": "Tandem Hold"
+        },
+        {
+          "name": "Hold",
+          "dur": 8000,
+          "from": "Tandem Hold",
+          "to": "Tandem Hold",
+          "isHold": true
+        },
+        {
+          "name": "Settle",
+          "dur": 4000,
+          "from": "Tandem Hold",
+          "to": "Settle"
+        }
+      ],
+      "cues": {
+        "Settle": "Stand with feet hip-width, hand near the wall, arms easy.",
+        "Tandem Hold": "Breathe slow - bring the feet into a narrow line, arms out, and hold steady.",
+        "Hold": "Hold steady and tall — keep breathing slowly; never hold your breath."
+      },
+      "staticCues": [
+        "Breathe slow - bring the feet into a narrow line, arms out, and hold steady.",
+        "Hold steady and tall — keep breathing slowly; never hold your breath.",
+        "Stand with feet hip-width, hand near the wall, arms easy."
+      ],
+      "staticLabels": [
+        "Settle",
+        "Tandem Hold",
+        "Settle"
+      ],
+      "targetReps": 2,
+      "isHold": true,
+      "holdMs": 8000,
+      "level": "supported",
+      "focus": "balance",
+      "primary_benefit": "Narrow heel-to-toe standing to challenge balance; this kind of stance work features in Tai Chi programs shown to reduce falls in older adults (R01, R14).",
+      "refs": [
+        "R01",
+        "R14"
+      ],
+      "red_flags": true,
+      "notes": "Keep a hand within reach of a wall or chair. Bring the feet into a narrow line only as far as feels safe; arms out helps balance. Breathe slowly and hold. A balance pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_knee_raise_supported",
+      "name": "Knee Raises with Support",
+      "object": {
+        "side": "wall",
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Stand": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              118,
+              98
+            ],
+            "hip": [
+              116,
+              178
+            ],
+            "knee": [
+              114,
+              248
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              122,
+              138
+            ],
+            "hand": [
+              160,
+              130
+            ]
+          },
+          "Knee Up": {
+            "head": [
+              120,
+              68
+            ],
+            "sh": [
+              118,
+              96
+            ],
+            "hip": [
+              116,
+              176
+            ],
+            "knee": [
+              183,
+              195
+            ],
+            "ankle": [
+              150,
+              250
+            ],
+            "toe": [
+              178,
+              250
+            ],
+            "elb": [
+              122,
+              136
+            ],
+            "hand": [
+              160,
+              130
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Stand",
+          "dur": 3500,
+          "from": "Knee Up",
+          "to": "Stand"
+        },
+        {
+          "name": "Knee Up",
+          "dur": 4000,
+          "from": "Stand",
+          "to": "Knee Up"
+        }
+      ],
+      "cues": {
+        "Stand": "Breathe out - stand tall, one hand resting on the wall.",
+        "Knee Up": "Breathe in - lift the near knee up and forward; alternate legs each cycle."
+      },
+      "staticCues": [
+        "Breathe out - stand tall, one hand resting on the wall.",
+        "Breathe in - lift the near knee up and forward; alternate legs each cycle."
+      ],
+      "staticLabels": [
+        "Stand",
+        "Knee Up",
+        "Stand"
+      ],
+      "targetReps": 6,
+      "level": "supported",
+      "focus": "balance",
+      "primary_benefit": "Standing single-leg balance and gentle hip control with support; balance work of this type is part of falls-prevention Tai Chi programs (R01, R14).",
+      "refs": [
+        "R01",
+        "R14"
+      ],
+      "red_flags": true,
+      "notes": "Keep one hand on the wall. Raise the knee only to a comfortable height, stay tall, and alternate legs each breath cycle. Breathe in lifting, out lowering. A balance pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_heel_toe_raises",
+      "name": "Heel & Toe Raises",
+      "object": {
+        "side": "wall",
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Heels Up": {
+            "head": [
+              120,
+              60
+            ],
+            "sh": [
+              118,
+              88
+            ],
+            "hip": [
+              116,
+              168
+            ],
+            "knee": [
+              135,
+              235
+            ],
+            "ankle": [
+              122,
+              298
+            ],
+            "toe": [
+              146,
+              312
+            ],
+            "elb": [
+              123,
+              128
+            ],
+            "hand": [
+              155,
+              150
+            ]
+          },
+          "Toes Up": {
+            "head": [
+              118,
+              72
+            ],
+            "sh": [
+              116,
+              100
+            ],
+            "hip": [
+              114,
+              180
+            ],
+            "knee": [
+              125,
+              249
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              136,
+              298
+            ],
+            "elb": [
+              113,
+              140
+            ],
+            "hand": [
+              150,
+              150
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Heels Up",
+          "dur": 3500,
+          "from": "Toes Up",
+          "to": "Heels Up"
+        },
+        {
+          "name": "Toes Up",
+          "dur": 3500,
+          "from": "Heels Up",
+          "to": "Toes Up"
+        }
+      ],
+      "cues": {
+        "Heels Up": "Breathe in - rise onto the balls of the feet, growing tall, hand on the wall.",
+        "Toes Up": "Breathe out - rock back onto the heels, lifting the toes."
+      },
+      "staticCues": [
+        "Breathe in - rise onto the balls of the feet, growing tall, hand on the wall.",
+        "Breathe out - rock back onto the heels, lifting the toes."
+      ],
+      "staticLabels": [
+        "Heels Up",
+        "Toes Up",
+        "Heels Up"
+      ],
+      "targetReps": 8,
+      "level": "supported",
+      "focus": "lower-limb",
+      "primary_benefit": "Activates the lower-leg muscles that support standing balance; lower-limb work of this kind is part of falls-prevention Tai Chi programs (R01, R14).",
+      "refs": [
+        "R01",
+        "R14"
+      ],
+      "red_flags": true,
+      "notes": "Hold a wall or chair for light support. Rise smoothly onto the balls of the feet, then rock back onto the heels - no bouncing. Breathe in rising, out rocking back. A movement pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_commencement",
+      "name": "Commencement",
+      "object": {
+        "side": null,
+        "front": null
+      },
+      "views": {
+        "front": {
+          "Rise": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              77,
+              89
+            ],
+            "relb": [
+              163,
+              89
+            ],
+            "lhand": [
+              100,
+              124
+            ],
+            "rhand": [
+              140,
+              124
+            ]
+          },
+          "Press": {
+            "head": [
+              120,
+              76
+            ],
+            "sh": [
+              120,
+              106
+            ],
+            "hip": [
+              120,
+              186
+            ],
+            "lknee": [
+              90,
+              249
+            ],
+            "rknee": [
+              150,
+              249
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              88,
+              137
+            ],
+            "relb": [
+              152,
+              137
+            ],
+            "lhand": [
+              104,
+              176
+            ],
+            "rhand": [
+              136,
+              176
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Rise",
+          "dur": 4000,
+          "from": "Press",
+          "to": "Rise"
+        },
+        {
+          "name": "Press",
+          "dur": 4500,
+          "from": "Rise",
+          "to": "Press"
+        }
+      ],
+      "cues": {
+        "Rise": "Breathe in - float both hands up to shoulder height, wrists soft.",
+        "Press": "Breathe out - press the hands gently down to the hips, sinking just slightly."
+      },
+      "staticCues": [
+        "Breathe in - float both hands up to shoulder height, wrists soft.",
+        "Breathe out - press the hands gently down to the hips, sinking just slightly."
+      ],
+      "staticLabels": [
+        "Rise",
+        "Press",
+        "Rise"
+      ],
+      "targetReps": 6,
+      "level": "standing",
+      "focus": "breathing",
+      "primary_benefit": "The opening breath of the form - slow paced breathing for relaxation and psychological wellbeing associated with regular Tai Chi practice (R09).",
+      "refs": [
+        "R09"
+      ],
+      "red_flags": true,
+      "notes": "Stay tall with only a slight sink on the press; let the breath lead the hands. Breathe in as the hands rise, out as they press down. A breath pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_part_wild_horse",
+      "name": "Parting the Wild Horse's Mane",
+      "object": {
+        "side": null,
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Hold Ball": {
+            "head": [
+              112,
+              74
+            ],
+            "sh": [
+              110,
+              102
+            ],
+            "hip": [
+              108,
+              182
+            ],
+            "knee": [
+              126,
+              250
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              120,
+              141
+            ],
+            "hand": [
+              158,
+              134
+            ]
+          },
+          "Part Bow": {
+            "head": [
+              132,
+              78
+            ],
+            "sh": [
+              130,
+              106
+            ],
+            "hip": [
+              128,
+              186
+            ],
+            "knee": [
+              141,
+              255
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              159,
+              134
+            ],
+            "hand": [
+              190,
+              110
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Hold Ball",
+          "dur": 4000,
+          "from": "Part Bow",
+          "to": "Hold Ball"
+        },
+        {
+          "name": "Part Bow",
+          "dur": 4500,
+          "from": "Hold Ball",
+          "to": "Part Bow"
+        }
+      ],
+      "cues": {
+        "Hold Ball": "Breathe out - sit the weight back, the lead hand cradling a ball in front.",
+        "Part Bow": "Breathe in - shift forward and sweep the lead hand up and out; alternate sides."
+      },
+      "staticCues": [
+        "Breathe out - sit the weight back, the lead hand cradling a ball in front.",
+        "Breathe in - shift forward and sweep the lead hand up and out; alternate sides."
+      ],
+      "staticLabels": [
+        "Hold Ball",
+        "Part Bow",
+        "Hold Ball"
+      ],
+      "targetReps": 5,
+      "level": "standing",
+      "focus": "coordination",
+      "primary_benefit": "Whole-body coordination and weight transfer in a high stance; practiced as part of a Tai Chi program, this style of movement is linked to reduced falls in older adults (R01, R02).",
+      "refs": [
+        "R01",
+        "R02"
+      ],
+      "red_flags": true,
+      "notes": "Keep the stance high and knee-sparing; shift smoothly and alternate sides each cycle. Breathe in opening and shifting forward, out gathering back. A simplified pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_brush_knee_push",
+      "name": "Brush Knee & Push",
+      "object": {
+        "side": null,
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Chamber": {
+            "head": [
+              112,
+              74
+            ],
+            "sh": [
+              110,
+              102
+            ],
+            "hip": [
+              108,
+              182
+            ],
+            "knee": [
+              126,
+              250
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              125,
+              139
+            ],
+            "hand": [
+              150,
+              110
+            ]
+          },
+          "Brush & Push": {
+            "head": [
+              132,
+              78
+            ],
+            "sh": [
+              130,
+              106
+            ],
+            "hip": [
+              128,
+              186
+            ],
+            "knee": [
+              141,
+              255
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              157,
+              136
+            ],
+            "hand": [
+              192,
+              120
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Chamber",
+          "dur": 4000,
+          "from": "Brush & Push",
+          "to": "Chamber"
+        },
+        {
+          "name": "Brush & Push",
+          "dur": 4500,
+          "from": "Chamber",
+          "to": "Brush & Push"
+        }
+      ],
+      "cues": {
+        "Chamber": "Breathe in - sit back, drawing the pushing hand up beside the ear.",
+        "Brush & Push": "Breathe out - shift forward and press the palm slowly ahead; alternate sides."
+      },
+      "staticCues": [
+        "Breathe in - sit back, drawing the pushing hand up beside the ear.",
+        "Breathe out - shift forward and press the palm slowly ahead; alternate sides."
+      ],
+      "staticLabels": [
+        "Chamber",
+        "Brush & Push",
+        "Chamber"
+      ],
+      "targetReps": 5,
+      "level": "standing",
+      "focus": "coordination",
+      "primary_benefit": "Coordinated step-and-push weight transfer; performed within a Tai Chi program, movement of this kind is associated with reduced falls in older adults (R01, R02).",
+      "refs": [
+        "R01",
+        "R02"
+      ],
+      "red_flags": true,
+      "notes": "High stance, front knee softly bent over the foot; press the palm slowly and alternate sides. Breathe in chambering, out pushing. A simplified pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_wave_hands_clouds",
+      "name": "Wave Hands Like Clouds",
+      "object": {
+        "side": null,
+        "front": null
+      },
+      "views": {
+        "front": {
+          "Cloud Left": {
+            "head": [
+              108,
+              70
+            ],
+            "sh": [
+              108,
+              100
+            ],
+            "hip": [
+              108,
+              180
+            ],
+            "lknee": [
+              94,
+              248
+            ],
+            "rknee": [
+              123,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              66,
+              116
+            ],
+            "relb": [
+              145,
+              125
+            ],
+            "lhand": [
+              108,
+              120
+            ],
+            "rhand": [
+              126,
+              162
+            ]
+          },
+          "Cloud Right": {
+            "head": [
+              132,
+              70
+            ],
+            "sh": [
+              132,
+              100
+            ],
+            "hip": [
+              132,
+              180
+            ],
+            "lknee": [
+              117,
+              248
+            ],
+            "rknee": [
+              146,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              97,
+              128
+            ],
+            "relb": [
+              177,
+              100
+            ],
+            "lhand": [
+              122,
+              162
+            ],
+            "rhand": [
+              140,
+              120
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Cloud Left",
+          "dur": 4500,
+          "from": "Cloud Right",
+          "to": "Cloud Left"
+        },
+        {
+          "name": "Cloud Right",
+          "dur": 4500,
+          "from": "Cloud Left",
+          "to": "Cloud Right"
+        }
+      ],
+      "cues": {
+        "Cloud Left": "Breathe in - shift left as the hands circle, upper hand high on the left.",
+        "Cloud Right": "Breathe out - shift right, the hands trading places, upper hand high on the right."
+      },
+      "staticCues": [
+        "Breathe in - shift left as the hands circle, upper hand high on the left.",
+        "Breathe out - shift right, the hands trading places, upper hand high on the right."
+      ],
+      "staticLabels": [
+        "Cloud Left",
+        "Cloud Right",
+        "Cloud Left"
+      ],
+      "targetReps": 6,
+      "level": "standing",
+      "focus": "coordination",
+      "primary_benefit": "Continuous side-to-side weight transfer with circling arms for coordination; as part of a Tai Chi practice this style of movement is linked to reduced falls (R01, R02, R14).",
+      "refs": [
+        "R01",
+        "R02",
+        "R14"
+      ],
+      "red_flags": true,
+      "notes": "Keep a high, even stance and let the waist turn the arms. Breathe slowly and continuously as the weight flows side to side. A simplified pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_repulse_monkey",
+      "name": "Repulse the Monkey",
+      "object": {
+        "side": null,
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Open Back": {
+            "head": [
+              120,
+              72
+            ],
+            "sh": [
+              118,
+              100
+            ],
+            "hip": [
+              116,
+              180
+            ],
+            "knee": [
+              125,
+              249
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              148,
+              127
+            ],
+            "hand": [
+              186,
+              124
+            ]
+          },
+          "Push & Retreat": {
+            "head": [
+              108,
+              76
+            ],
+            "sh": [
+              106,
+              104
+            ],
+            "hip": [
+              104,
+              184
+            ],
+            "knee": [
+              128,
+              250
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              142,
+              123
+            ],
+            "hand": [
+              180,
+              118
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Open Back",
+          "dur": 4000,
+          "from": "Push & Retreat",
+          "to": "Open Back"
+        },
+        {
+          "name": "Push & Retreat",
+          "dur": 4500,
+          "from": "Open Back",
+          "to": "Push & Retreat"
+        }
+      ],
+      "cues": {
+        "Open Back": "Breathe in - reach the forward hand out as the other opens back.",
+        "Push & Retreat": "Breathe out - settle the weight back and press the palm forward; alternate sides."
+      },
+      "staticCues": [
+        "Breathe in - reach the forward hand out as the other opens back.",
+        "Breathe out - settle the weight back and press the palm forward; alternate sides."
+      ],
+      "staticLabels": [
+        "Open Back",
+        "Push & Retreat",
+        "Open Back"
+      ],
+      "targetReps": 5,
+      "level": "standing",
+      "focus": "coordination",
+      "primary_benefit": "Backward-stepping coordination and weight transfer; practiced within a Tai Chi program, movement of this kind is associated with reduced falls in older adults (R01, R02).",
+      "refs": [
+        "R01",
+        "R02"
+      ],
+      "red_flags": true,
+      "notes": "Step back only onto stable ground and stay tall; alternate hands and sides. Breathe in opening, out pressing and settling back. A simplified pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_grasp_sparrows_tail",
+      "name": "Grasp the Sparrow's Tail (Simplified)",
+      "object": {
+        "side": null,
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Ward & Press": {
+            "head": [
+              132,
+              78
+            ],
+            "sh": [
+              130,
+              106
+            ],
+            "hip": [
+              128,
+              186
+            ],
+            "knee": [
+              141,
+              255
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              152,
+              140
+            ],
+            "hand": [
+              188,
+              126
+            ]
+          },
+          "Rollback": {
+            "head": [
+              112,
+              74
+            ],
+            "sh": [
+              110,
+              102
+            ],
+            "hip": [
+              108,
+              182
+            ],
+            "knee": [
+              126,
+              250
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              118,
+              141
+            ],
+            "hand": [
+              156,
+              150
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Ward & Press",
+          "dur": 4500,
+          "from": "Rollback",
+          "to": "Ward & Press"
+        },
+        {
+          "name": "Rollback",
+          "dur": 4500,
+          "from": "Ward & Press",
+          "to": "Rollback"
+        }
+      ],
+      "cues": {
+        "Ward & Press": "Breathe in - shift forward and press both hands gently ahead.",
+        "Rollback": "Breathe out - sit back, drawing the hands down and back in a soft arc."
+      },
+      "staticCues": [
+        "Breathe in - shift forward and press both hands gently ahead.",
+        "Breathe out - sit back, drawing the hands down and back in a soft arc."
+      ],
+      "staticLabels": [
+        "Ward & Press",
+        "Rollback",
+        "Ward & Press"
+      ],
+      "targetReps": 5,
+      "level": "standing",
+      "focus": "coordination",
+      "primary_benefit": "A four-part form compressed to a simple ward-and-rollback weight transfer for coordination; as part of a Tai Chi practice this style of movement is linked to reduced falls (R01, R02).",
+      "refs": [
+        "R01",
+        "R02"
+      ],
+      "red_flags": true,
+      "notes": "Simplified to two phases - not the full form. Keep the stance high and shift smoothly. Breathe in pressing forward, out rolling back. A simplified pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_golden_rooster_supported",
+      "name": "Golden Rooster Stands on One Leg (Supported)",
+      "object": {
+        "side": "wall",
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Settle": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              118,
+              98
+            ],
+            "hip": [
+              116,
+              178
+            ],
+            "knee": [
+              114,
+              248
+            ],
+            "ankle": [
+              112,
+              312
+            ],
+            "toe": [
+              140,
+              312
+            ],
+            "elb": [
+              113,
+              138
+            ],
+            "hand": [
+              150,
+              150
+            ]
+          },
+          "Rise & Hold": {
+            "head": [
+              120,
+              68
+            ],
+            "sh": [
+              118,
+              96
+            ],
+            "hip": [
+              116,
+              176
+            ],
+            "knee": [
+              185,
+              185
+            ],
+            "ankle": [
+              150,
+              238
+            ],
+            "toe": [
+              178,
+              234
+            ],
+            "elb": [
+              113,
+              56
+            ],
+            "hand": [
+              150,
+              44
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Rise & Hold",
+          "dur": 4000,
+          "from": "Settle",
+          "to": "Rise & Hold"
+        },
+        {
+          "name": "Hold",
+          "dur": 8000,
+          "from": "Rise & Hold",
+          "to": "Rise & Hold",
+          "isHold": true
+        },
+        {
+          "name": "Settle",
+          "dur": 4000,
+          "from": "Rise & Hold",
+          "to": "Settle"
+        }
+      ],
+      "cues": {
+        "Settle": "Stand tall, one hand resting on the wall.",
+        "Rise & Hold": "Breathe slow - lift the near knee high and raise the same-side hand; hold and balance.",
+        "Hold": "Hold steady and tall — keep breathing slowly; never hold your breath."
+      },
+      "staticCues": [
+        "Breathe slow - lift the near knee high and raise the same-side hand; hold and balance.",
+        "Hold steady and tall — keep breathing slowly; never hold your breath.",
+        "Stand tall, one hand resting on the wall."
+      ],
+      "staticLabels": [
+        "Settle",
+        "Rise & Hold",
+        "Settle"
+      ],
+      "targetReps": 2,
+      "isHold": true,
+      "holdMs": 8000,
+      "level": "supported",
+      "focus": "balance",
+      "primary_benefit": "Single-leg balance with a raised knee and arm, performed with support; balance work of this kind is part of Tai Chi programs that reduce falls in older adults (R01, R02, R14).",
+      "refs": [
+        "R01",
+        "R02",
+        "R14"
+      ],
+      "red_flags": true,
+      "notes": "Keep one hand on a wall or chair. Lift the knee only as high as is comfortable; raise the same-side hand and breathe slowly while you hold. Lower if unsteady. A balance pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_seated_cloud_hands",
+      "name": "Seated Cloud Hands",
+      "object": {
+        "side": "chair",
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Up": {
+            "head": [
+              114,
+              142
+            ],
+            "sh": [
+              112,
+              170
+            ],
+            "hip": [
+              110,
+              250
+            ],
+            "knee": [
+              180,
+              248
+            ],
+            "ankle": [
+              176,
+              312
+            ],
+            "toe": [
+              203,
+              312
+            ],
+            "elb": [
+              138,
+              201
+            ],
+            "hand": [
+              170,
+              180
+            ]
+          },
+          "Across": {
+            "head": [
+              114,
+              142
+            ],
+            "sh": [
+              112,
+              170
+            ],
+            "hip": [
+              110,
+              250
+            ],
+            "knee": [
+              180,
+              248
+            ],
+            "ankle": [
+              176,
+              312
+            ],
+            "toe": [
+              203,
+              312
+            ],
+            "elb": [
+              148,
+              187
+            ],
+            "hand": [
+              186,
+              196
+            ]
+          },
+          "Down": {
+            "head": [
+              114,
+              142
+            ],
+            "sh": [
+              112,
+              170
+            ],
+            "hip": [
+              110,
+              250
+            ],
+            "knee": [
+              180,
+              248
+            ],
+            "ankle": [
+              176,
+              312
+            ],
+            "toe": [
+              203,
+              312
+            ],
+            "elb": [
+              130,
+              206
+            ],
+            "hand": [
+              168,
+              214
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Up",
+          "dur": 4000,
+          "from": "Down",
+          "to": "Up"
+        },
+        {
+          "name": "Across",
+          "dur": 4000,
+          "from": "Up",
+          "to": "Across"
+        },
+        {
+          "name": "Down",
+          "dur": 4000,
+          "from": "Across",
+          "to": "Down"
+        }
+      ],
+      "cues": {
+        "Up": "Breathe in - sitting tall, float the hand up and across in a slow cloud.",
+        "Across": "Carry the hand smoothly across the body.",
+        "Down": "Breathe out - let the hand sink softly downward to begin again."
+      },
+      "staticCues": [
+        "Breathe in - sitting tall, float the hand up and across in a slow cloud.",
+        "Carry the hand smoothly across the body.",
+        "Breathe out - let the hand sink softly downward to begin again."
+      ],
+      "staticLabels": [
+        "Up",
+        "Across",
+        "Down"
+      ],
+      "targetReps": 5,
+      "level": "chair",
+      "focus": "mobility",
+      "primary_benefit": "Seated shoulder and trunk range-of-motion, in the spirit of the gentle, joint-friendly movement of the Tai Chi for Arthritis program (R13).",
+      "refs": [
+        "R13"
+      ],
+      "red_flags": true,
+      "notes": "Sit tall toward the front of a sturdy chair, feet flat. Let the hand float in slow clouds within a comfortable range. Breathe in rising, out sinking. A seated mobility pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_seated_openings",
+      "name": "Seated Arm Openings",
+      "object": {
+        "side": "chair",
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Open": {
+            "head": [
+              114,
+              142
+            ],
+            "sh": [
+              112,
+              170
+            ],
+            "hip": [
+              110,
+              250
+            ],
+            "knee": [
+              180,
+              248
+            ],
+            "ankle": [
+              176,
+              312
+            ],
+            "toe": [
+              203,
+              312
+            ],
+            "elb": [
+              152,
+              164
+            ],
+            "hand": [
+              178,
+              136
+            ]
+          },
+          "Gather": {
+            "head": [
+              114,
+              142
+            ],
+            "sh": [
+              112,
+              170
+            ],
+            "hip": [
+              110,
+              250
+            ],
+            "knee": [
+              180,
+              248
+            ],
+            "ankle": [
+              176,
+              312
+            ],
+            "toe": [
+              203,
+              312
+            ],
+            "elb": [
+              114,
+              210
+            ],
+            "hand": [
+              150,
+              196
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Open",
+          "dur": 4500,
+          "from": "Gather",
+          "to": "Open"
+        },
+        {
+          "name": "Gather",
+          "dur": 4500,
+          "from": "Open",
+          "to": "Gather"
+        }
+      ],
+      "cues": {
+        "Open": "Breathe in - sitting tall, sweep the hand up and open to the side.",
+        "Gather": "Breathe out - draw the hand in and down toward the lap."
+      },
+      "staticCues": [
+        "Breathe in - sitting tall, sweep the hand up and open to the side.",
+        "Breathe out - draw the hand in and down toward the lap."
+      ],
+      "staticLabels": [
+        "Open",
+        "Gather",
+        "Open"
+      ],
+      "targetReps": 6,
+      "level": "chair",
+      "focus": "breathing",
+      "primary_benefit": "Seated paced breathing with opening and gathering arms, for relaxation and psychological wellbeing associated with regular Tai Chi practice (R09).",
+      "refs": [
+        "R09"
+      ],
+      "red_flags": true,
+      "notes": "Sit tall and stable, feet flat on the floor. Breathe in as the arm opens, out as it gathers in. A seated breath pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_seated_marching",
+      "name": "Seated Marching",
+      "object": {
+        "side": "chair",
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Lift": {
+            "head": [
+              114,
+              142
+            ],
+            "sh": [
+              112,
+              170
+            ],
+            "hip": [
+              110,
+              250
+            ],
+            "knee": [
+              174,
+              221
+            ],
+            "ankle": [
+              198,
+              280
+            ],
+            "toe": [
+              220,
+              264
+            ],
+            "elb": [
+              133,
+              205
+            ],
+            "hand": [
+              150,
+              170
+            ]
+          },
+          "Lower": {
+            "head": [
+              114,
+              142
+            ],
+            "sh": [
+              112,
+              170
+            ],
+            "hip": [
+              110,
+              250
+            ],
+            "knee": [
+              180,
+              248
+            ],
+            "ankle": [
+              176,
+              312
+            ],
+            "toe": [
+              203,
+              312
+            ],
+            "elb": [
+              133,
+              205
+            ],
+            "hand": [
+              150,
+              170
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Lift",
+          "dur": 3500,
+          "from": "Lower",
+          "to": "Lift"
+        },
+        {
+          "name": "Lower",
+          "dur": 3500,
+          "from": "Lift",
+          "to": "Lower"
+        }
+      ],
+      "cues": {
+        "Lift": "Breathe in - lift one foot, raising the knee; alternate legs each cycle.",
+        "Lower": "Breathe out - lower the foot softly back to the floor."
+      },
+      "staticCues": [
+        "Breathe in - lift one foot, raising the knee; alternate legs each cycle.",
+        "Breathe out - lower the foot softly back to the floor."
+      ],
+      "staticLabels": [
+        "Lift",
+        "Lower",
+        "Lift"
+      ],
+      "targetReps": 8,
+      "level": "chair",
+      "focus": "lower-limb",
+      "primary_benefit": "Seated hip-flexor and leg activation supporting standing balance; lower-limb work of this kind features in falls-prevention Tai Chi programs (R14).",
+      "refs": [
+        "R14"
+      ],
+      "red_flags": true,
+      "notes": "Sit tall toward the front of a sturdy chair; lift each foot in turn to a comfortable height and alternate legs. Breathe in lifting, out lowering. A seated movement pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_ankle_calf_pumps",
+      "name": "Seated Ankle & Calf Pumps",
+      "object": {
+        "side": "chair",
+        "front": null
+      },
+      "views": {
+        "side": {
+          "Flex": {
+            "head": [
+              114,
+              142
+            ],
+            "sh": [
+              112,
+              170
+            ],
+            "hip": [
+              110,
+              250
+            ],
+            "knee": [
+              180,
+              248
+            ],
+            "ankle": [
+              176,
+              312
+            ],
+            "toe": [
+              198,
+              295
+            ],
+            "elb": [
+              133,
+              205
+            ],
+            "hand": [
+              150,
+              170
+            ]
+          },
+          "Point": {
+            "head": [
+              114,
+              142
+            ],
+            "sh": [
+              112,
+              170
+            ],
+            "hip": [
+              110,
+              250
+            ],
+            "knee": [
+              179,
+              240
+            ],
+            "ankle": [
+              180,
+              304
+            ],
+            "toe": [
+              207,
+              313
+            ],
+            "elb": [
+              133,
+              205
+            ],
+            "hand": [
+              150,
+              170
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Flex",
+          "dur": 3000,
+          "from": "Point",
+          "to": "Flex"
+        },
+        {
+          "name": "Point",
+          "dur": 3000,
+          "from": "Flex",
+          "to": "Point"
+        }
+      ],
+      "cues": {
+        "Flex": "Breathe in - keeping the heel down, lift the toes up toward the shin.",
+        "Point": "Breathe out - lift the heel and point the toes gently forward."
+      },
+      "staticCues": [
+        "Breathe in - keeping the heel down, lift the toes up toward the shin.",
+        "Breathe out - lift the heel and point the toes gently forward."
+      ],
+      "staticLabels": [
+        "Flex",
+        "Point",
+        "Flex"
+      ],
+      "targetReps": 10,
+      "level": "chair",
+      "focus": "lower-limb",
+      "primary_benefit": "Seated ankle and lower-leg activation supporting standing balance and circulation; lower-limb work of this kind features in falls-prevention Tai Chi programs (R14).",
+      "refs": [
+        "R14"
+      ],
+      "red_flags": true,
+      "notes": "Sit tall and stable, feet flat to start. Flex the toes up, then point them - slow and smooth, no force. Breathe in flexing, out pointing. A seated movement pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_gather_qi_close",
+      "name": "Gathering Qi to Close",
+      "object": {
+        "side": null,
+        "front": null
+      },
+      "views": {
+        "front": {
+          "Gather Wide": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              89,
+              68
+            ],
+            "relb": [
+              151,
+              132
+            ],
+            "lhand": [
+              62,
+              100
+            ],
+            "rhand": [
+              178,
+              100
+            ]
+          },
+          "Draw In": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              80,
+              119
+            ],
+            "relb": [
+              160,
+              119
+            ],
+            "lhand": [
+              108,
+              150
+            ],
+            "rhand": [
+              132,
+              150
+            ]
+          },
+          "Rest at Dantian": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              97,
+              138
+            ],
+            "relb": [
+              143,
+              138
+            ],
+            "lhand": [
+              116,
+              176
+            ],
+            "rhand": [
+              124,
+              176
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Gather Wide",
+          "dur": 5000,
+          "from": "Rest at Dantian",
+          "to": "Gather Wide"
+        },
+        {
+          "name": "Draw In",
+          "dur": 5000,
+          "from": "Gather Wide",
+          "to": "Draw In"
+        },
+        {
+          "name": "Rest at Dantian",
+          "dur": 5000,
+          "from": "Draw In",
+          "to": "Rest at Dantian"
+        }
+      ],
+      "cues": {
+        "Gather Wide": "Breathe in - sweep both arms wide and up, gathering the air.",
+        "Draw In": "Breathe out - draw the hands inward toward the chest.",
+        "Rest at Dantian": "Let the hands settle low at the belly, resting and still."
+      },
+      "staticCues": [
+        "Breathe in - sweep both arms wide and up, gathering the air.",
+        "Breathe out - draw the hands inward toward the chest.",
+        "Let the hands settle low at the belly, resting and still."
+      ],
+      "staticLabels": [
+        "Gather Wide",
+        "Draw In",
+        "Rest at Dantian"
+      ],
+      "targetReps": 4,
+      "level": "standing",
+      "focus": "breathing",
+      "primary_benefit": "A closing breath sequence - slow, wide breathing to settle, for relaxation and psychological wellbeing associated with regular Tai Chi practice (R09).",
+      "refs": [
+        "R09"
+      ],
+      "red_flags": true,
+      "notes": "Stay tall and unhurried; the breath leads the hands home to rest at the belly. Breathe in gathering wide, out drawing in and settling. A breath pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+    },
+    {
+      "id": "tc_arm_float_breathing",
+      "name": "Slow Breathing with Arm Float",
+      "object": {
+        "side": null,
+        "front": null
+      },
+      "views": {
+        "front": {
+          "Inhale Float": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              81,
+              122
+            ],
+            "relb": [
+              159,
+              122
+            ],
+            "lhand": [
+              112,
+              150
+            ],
+            "rhand": [
+              128,
+              150
+            ]
+          },
+          "Exhale Sink": {
+            "head": [
+              120,
+              70
+            ],
+            "sh": [
+              120,
+              100
+            ],
+            "hip": [
+              120,
+              180
+            ],
+            "lknee": [
+              104,
+              248
+            ],
+            "rknee": [
+              136,
+              248
+            ],
+            "lankle": [
+              102,
+              312
+            ],
+            "rankle": [
+              138,
+              312
+            ],
+            "lelb": [
+              97,
+              138
+            ],
+            "relb": [
+              143,
+              138
+            ],
+            "lhand": [
+              110,
+              178
+            ],
+            "rhand": [
+              130,
+              178
+            ]
+          }
+        }
+      },
+      "phases": [
+        {
+          "name": "Inhale Float",
+          "dur": 5000,
+          "from": "Exhale Sink",
+          "to": "Inhale Float"
+        },
+        {
+          "name": "Exhale Sink",
+          "dur": 6000,
+          "from": "Inhale Float",
+          "to": "Exhale Sink"
+        }
+      ],
+      "cues": {
+        "Inhale Float": "Breathe in slowly - let both hands float up to chest height, standing tall.",
+        "Exhale Sink": "Breathe out longer - let the hands sink down, soft and unhurried."
+      },
+      "staticCues": [
+        "Breathe in slowly - let both hands float up to chest height, standing tall.",
+        "Breathe out longer - let the hands sink down, soft and unhurried."
+      ],
+      "staticLabels": [
+        "Inhale Float",
+        "Exhale Sink",
+        "Inhale Float"
+      ],
+      "targetReps": 8,
+      "level": "standing",
+      "focus": "breathing",
+      "primary_benefit": "Slow paced breathing with a gentle arm float and a longer exhale, for relaxation and psychological wellbeing associated with regular Tai Chi practice (R09).",
+      "refs": [
+        "R09"
+      ],
+      "red_flags": true,
+      "notes": "Stand tall with no knee sink; keep the exhale longer than the inhale. Breathe in as the hands float up, out as they sink. A breath pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
     }
   ]
 }

@@ -9,6 +9,7 @@ citations), so the evidence trail stays intact as the pack grows.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -16,6 +17,13 @@ import pytest
 TAICHI = Path(__file__).resolve().parent.parent / "web" / "content" / "taichi"
 CONTENT = TAICHI / "overview.json"
 MOVEMENTS = TAICHI / "movements.json"
+FORM_MODEL_JS = Path(__file__).resolve().parent.parent / "web" / "js" / "formModel.js"
+
+
+def glyph_registry() -> set[str]:
+    """Object-glyph ids the shared engine can draw (parsed from formModel.js)."""
+    src = FORM_MODEL_JS.read_text(encoding="utf-8")
+    return set(re.findall(r"(\w+):\s*\(\)\s*=>", src))
 
 
 @pytest.fixture(scope="module")
@@ -77,7 +85,9 @@ def test_sessions_marked_pending(pack):
 
 def test_taichi_movements_drive_the_shared_engine(movements):
     mvs = movements["movements"]
-    assert mvs and movements.get("disclaimer")
+    assert len(mvs) == 21 and movements.get("disclaimer")
+    ids = [mv["id"] for mv in mvs]
+    assert len(ids) == len(set(ids)), "duplicate movement ids"
     for mv in mvs:
         assert mv["id"] and mv["name"] and mv["views"]
         pose_names = set()
@@ -91,3 +101,38 @@ def test_taichi_movements_drive_the_shared_engine(movements):
             assert ph["name"] in mv["cues"], f"{mv['id']} phase '{ph['name']}' has no cue"
         assert mv.get("targetReps") or mv.get("holdMs")
         assert mv["staticCues"]
+
+
+def test_taichi_hold_phase_is_static(movements):
+    # Normalized holds carry a from==to, isHold hold phase whose duration is the
+    # intended holdMs (the rise/lower transitions surround it).
+    for mv in movements["movements"]:
+        if not mv.get("isHold"):
+            continue
+        holds = [p for p in mv["phases"] if p.get("isHold")]
+        assert holds, f"{mv['id']} flagged isHold but has no hold phase"
+        for p in holds:
+            assert p["from"] == p["to"], f"{mv['id']} hold phase is not static"
+
+
+def test_taichi_movement_refs_resolve(pack, movements):
+    known = {b["ref_id"] for b in pack["bibliography"]}
+    for mv in movements["movements"]:
+        dangling = set(mv.get("refs", [])) - known
+        assert not dangling, f"{mv['id']} cites unknown refs {sorted(dangling)}"
+
+
+def test_taichi_movement_levels_are_valid(pack, movements):
+    levels = {lvl["id"] for lvl in pack["levels"]}
+    for mv in movements["movements"]:
+        assert mv.get("level") in levels, f"{mv['id']} unknown level {mv.get('level')}"
+        assert mv.get("focus"), f"{mv['id']} missing focus"
+
+
+def test_taichi_objects_exist_in_glyph_registry(movements):
+    glyphs = glyph_registry()
+    for mv in movements["movements"]:
+        for side in ("side", "front"):
+            gid = (mv.get("object") or {}).get(side)
+            if gid is not None:
+                assert gid in glyphs, f"{mv['id']} references unknown glyph {gid}"

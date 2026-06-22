@@ -52,14 +52,28 @@ const TaiChiView = (() => {
 
     let current = null;
     const stageHost = U.el("div", { class: "home-fm" });
+    const infoHost = U.el("div", { class: "home-ex-info" });
     const picker = U.el("div", { class: "home-ex-picker" }, list.map((mv) =>
       U.el("button", { class: "btn sm", text: mv.name, onclick: () => select(mv.id) })));
+
+    function mvInfo(mv) {
+      const tagline = [mv.level, mv.focus].filter(Boolean).join(" · ");
+      return U.el("div", { class: "card pad" }, [
+        U.el("div", { class: "tc-prog-head" }, [U.el("strong", { text: mv.name }), refChips(mv.refs)]),
+        tagline ? U.el("div", { class: "tc-met", text: tagline, style: "margin:2px 0 6px" }) : null,
+        mv.primary_benefit ? U.el("div", { class: "sub", text: mv.primary_benefit }) : null,
+        mv.notes ? U.el("div", { class: "set-hint", text: mv.notes }) : null,
+      ]);
+    }
 
     function select(id) {
       current = id;
       if (tcPlayer) tcPlayer.destroy();
+      const mv = list.find((m) => m.id === id);
       Array.from(picker.children).forEach((b, i) => b.classList.toggle("active", list[i].id === id));
-      tcPlayer = FormModel.create(stageHost, list.find((m) => m.id === id));
+      tcPlayer = FormModel.create(stageHost, mv);
+      infoHost.innerHTML = "";
+      infoHost.appendChild(mvInfo(mv));
     }
     select(list[0].id);
 
@@ -68,6 +82,7 @@ const TaiChiView = (() => {
       U.el("div", { class: "sub", text: (movements.disclaimer || "Move slowly, within comfort.") }),
       picker,
       stageHost,
+      infoHost,
     ]);
   }
 

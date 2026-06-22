@@ -555,6 +555,10 @@ td .muted { color: var(--text-faint); }
 .home-screen-refer a, .home-screen-ok a { color: var(--accent); }
 .home-ex-picker { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-bottom: var(--sp-4); }
 .home-ex-locked { opacity: .6; }
+.home-ex-info { margin-top: var(--sp-4); }
+.home-ex-prog { margin: var(--sp-2) 0 0; padding-left: 18px; font-size: 13px; color: var(--text-dim); }
+.home-ex-prog li { margin-bottom: 3px; }
+.home-ex-prog strong { color: var(--text); }
 .home-obj-moves { font-size: 12.5px; color: var(--text-dim); margin-top: 6px; }
 .home-cap { display: flex; align-items: center; gap: var(--sp-4); }
 .home-cap-time { font-size: 40px; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 70px; }
