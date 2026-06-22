@@ -13,12 +13,19 @@ from pathlib import Path
 
 import pytest
 
-CONTENT = Path(__file__).resolve().parent.parent / "web" / "content" / "taichi" / "overview.json"
+TAICHI = Path(__file__).resolve().parent.parent / "web" / "content" / "taichi"
+CONTENT = TAICHI / "overview.json"
+MOVEMENTS = TAICHI / "movements.json"
 
 
 @pytest.fixture(scope="module")
 def pack() -> dict:
     return json.loads(CONTENT.read_text(encoding="utf-8"))
+
+
+@pytest.fixture(scope="module")
+def movements() -> dict:
+    return json.loads(MOVEMENTS.read_text(encoding="utf-8"))
 
 
 def test_required_top_level_keys(pack):
@@ -64,3 +71,23 @@ def test_bibliography_entries_have_locators(pack):
 def test_sessions_marked_pending(pack):
     # Movement library + videos are not shipped yet; the pack must say so.
     assert pack["sessions"]["status"] == "pending"
+
+
+# ---- shared form-model engine: Tai Chi movement pacers ----
+
+def test_taichi_movements_drive_the_shared_engine(movements):
+    mvs = movements["movements"]
+    assert mvs and movements.get("disclaimer")
+    for mv in mvs:
+        assert mv["id"] and mv["name"] and mv["views"]
+        pose_names = set()
+        for view in mv["views"].values():
+            pose_names.update(view.keys())
+            for pose in view.values():
+                assert "head" in pose, f"{mv['id']} pose missing head joint"
+        for ph in mv["phases"]:
+            assert ph["from"] in pose_names and ph["to"] in pose_names, \
+                f"{mv['id']} phase '{ph['name']}' references a missing pose"
+            assert ph["name"] in mv["cues"], f"{mv['id']} phase '{ph['name']}' has no cue"
+        assert mv.get("targetReps") or mv.get("holdMs")
+        assert mv["staticCues"]

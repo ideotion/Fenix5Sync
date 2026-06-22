@@ -103,6 +103,7 @@ const FormModel = (() => {
 
     function frame(ts) {
       if (!playing || destroyed) return;
+      if (!svg.isConnected) { playing = false; return; }  // view was replaced — stop the loop
       const ph = ex.phases[phaseIdx];
       const dur = ph.dur * (ph.isHold ? 1 : tempoScale);
       if (!phaseStart) phaseStart = ts;
@@ -167,7 +168,8 @@ const FormModel = (() => {
       const keys = Object.keys(P);
       const mid = keys.find((k) => k !== restPoseName()) || keys[0];
       const seq = [P[restPoseName()], P[mid], P[restPoseName()]];
-      const labels = ex.targetReps ? ["Start", "Bottom", "Return"] : ["Stand", "Hold", "Stand"];
+      const labels = ex.staticLabels ||
+        (ex.targetReps ? ["Start", "Bottom", "Return"] : ["Stand", "Hold", "Stand"]);
       const v = ex.views.side ? "side" : "front";
       const mini = (p) => `<svg viewBox="0 0 240 340" role="img" aria-label="Key pose">${figureSVG(p, v, glyph((ex.object && ex.object[v]) || null))}</svg>`;
       staticWrap.innerHTML =
