@@ -1,34 +1,75 @@
 /* Form-model engine: tempo-paced SVG figures with the object drawn in place, so
    the user copies the setup, not just the pose. The figure doubles as the
-   pacer/metronome. A shared component (used by Sports at Home and Tai Chi).
-   Offline, dependency-free, themed from the app's CSS tokens, accessible
-   (respects prefers-reduced-motion with a static key-pose fallback).
+   pacer/metronome. A shared component (Sports at Home + Tai Chi). Offline,
+   dependency-free, themed from CSS tokens, accessible (reduced-motion safe).
 
-   Smoothness/quality: the SVG node tree is built once and only its attributes
-   are updated per frame (no per-frame innerHTML reparse → steady 60fps); limbs
-   are drawn as layered capsules (a background-coloured outline pass under a body
-   pass) so overlapping limbs read cleanly; a soft ground shadow tracks the
-   figure and a radial glow gently pulses on holds.
+   Rendering is built once and updated by attribute per frame (60fps). Optional
+   "wow" layers — all user-toggleable and persisted, so each person tunes it to
+   taste:
+     • Motion trails  — accent onion-skin echoes of recent poses.
+     • Breath ring    — a soft ring that pulses a calm breathing rhythm.
+     • Depth shading  — a top-lit gradient down the limbs.
+     • Sound          — Web Audio cues (phase, breath, rep/hold/finish); opt-in.
+   The static key-pose fallback (reduced motion) is always available.
 
-   Data-driven: renders any exercise/movement supplied as data (object glyphs are
-   the only thing in code). FormModel.create(hostEl, exercise, { onFinish }). */
+   FormModel.create(hostEl, exercise, { onFinish }) -> { destroy } */
 const FormModel = (() => {
   const SVGNS = "http://www.w3.org/2000/svg";
   const GROUND_Y = 318;
   let _seq = 0;
 
-  // easeInOutCubic — gentle acceleration/deceleration for organic motion.
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-  // Skeleton segments per view (parent→child pairs of joint names).
+  // ---- shared, persisted preferences ----
+  const PREF_KEY = "f5s-fm-prefs";
+  const DEFAULTS = { trails: true, ring: true, shading: true, sound: false };
+  function loadPrefs() {
+    try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(PREF_KEY)) || {}); }
+    catch (_) { return Object.assign({}, DEFAULTS); }
+  }
+  function savePrefs(p) { try { localStorage.setItem(PREF_KEY, JSON.stringify(p)); } catch (_) {} }
+  const prefs = loadPrefs();
+
+  // ---- tiny Web Audio synth (created lazily on a user gesture) ----
+  const Audio = (() => {
+    let ctx = null;
+    function ensure() {
+      if (ctx) return ctx;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) ctx = new AC();
+      return ctx;
+    }
+    function tone(freq, dur, { gain = 0.06, type = "sine", glideTo = null } = {}) {
+      if (!prefs.sound) return;
+      const c = ensure(); if (!c) return;
+      if (c.state === "suspended") c.resume();
+      const t0 = c.currentTime;
+      const osc = c.createOscillator(); const g = c.createGain();
+      osc.type = type; osc.frequency.setValueAtTime(freq, t0);
+      if (glideTo) osc.frequency.exponentialRampToValueAtTime(glideTo, t0 + dur);
+      g.gain.setValueAtTime(0, t0);
+      g.gain.linearRampToValueAtTime(gain, t0 + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g); g.connect(c.destination);
+      osc.start(t0); osc.stop(t0 + dur + 0.02);
+    }
+    return {
+      resume() { const c = ensure(); if (c && c.state === "suspended") c.resume(); },
+      breath(up) { tone(up ? 392 : 294, 0.5, { gain: 0.05, type: "sine", glideTo: up ? 523 : 247 }); },
+      tick() { tone(660, 0.05, { gain: 0.04, type: "triangle" }); },
+      secondTick() { tone(523, 0.04, { gain: 0.03, type: "triangle" }); },
+      rep() { tone(740, 0.09, { gain: 0.05 }); },
+      finish() { tone(659, 0.14, { gain: 0.06 }); setTimeout(() => tone(880, 0.22, { gain: 0.06 }), 130); },
+    };
+  })();
+
   const SEG = {
     side: [["ankle", "toe"], ["ankle", "knee"], ["knee", "hip"], ["hip", "sh"], ["sh", "elb"], ["elb", "hand"]],
     front: [["hip", "lknee"], ["lknee", "lankle"], ["hip", "rknee"], ["rknee", "rankle"],
       ["hip", "sh"], ["sh", "lelb"], ["lelb", "lhand"], ["sh", "relb"], ["relb", "rhand"]],
   };
 
-  // ---- object glyphs (drawn in place, tracking the body) ----
   const OBJECTS = {
     chair: () =>
       `<g class="fm-obj-fill"><rect x="140" y="232" width="60" height="10" rx="3"/></g>` +
@@ -46,7 +87,6 @@ const FormModel = (() => {
     return out;
   }
 
-  // String markup (used by the static-fallback minis) — same layered look.
   function markup(p, view, objFn) {
     const line = (a, b, cls) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" class="${cls}"/>`;
     let s = `<line class="fm-ground" x1="40" y1="${GROUND_Y}" x2="200" y2="${GROUND_Y}"/>`;
@@ -63,10 +103,12 @@ const FormModel = (() => {
     const onFinish = opts.onFinish || null;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const uid = "fm" + (++_seq);
+    const GHOSTS = 3, GHOST_GAP = 4;  // onion-skin depth + frame spacing
 
     let view = ex.views.front && !ex.views.side ? "front" : "side";
     let tempoScale = 1, raf = null, phaseIdx = 0, phaseStart = 0, reps = 0;
     let playing = false, staticMode = reduceMotion, destroyed = false;
+    let history = [], lastSecond = -1;
 
     const poses = () => ex.views[view] || ex.views.side || ex.views.front;
     const objFn = () => glyph((ex.object && ex.object[view]) || null);
@@ -102,13 +144,34 @@ const FormModel = (() => {
     const row1 = el("div", "fm-controls"); row1.append(playBtn, resetBtn, el("div", "fm-spring"), sideBtn, frontBtn);
     const row2 = el("div", "fm-controls"); row2.append(tempoNorm, tempoSlow, el("div", "fm-spring"), staticBtn);
 
+    // Display & sound preferences (shared + persisted).
+    const prefsPanel = el("details", "fm-prefs");
+    const prefDefs = [
+      ["trails", "Motion trails"], ["ring", "Breath ring"], ["shading", "Depth shading"], ["sound", "Sound"],
+    ];
+    prefsPanel.innerHTML = `<summary>Display &amp; sound</summary>`;
+    const prefRow = el("div", "fm-pref-row");
+    prefDefs.forEach(([key, label]) => {
+      const id = `${uid}-${key}`;
+      const wrap = el("label", "fm-pref");
+      const input = el("input"); input.type = "checkbox"; input.id = id; input.checked = !!prefs[key];
+      input.addEventListener("change", () => {
+        prefs[key] = input.checked; savePrefs(prefs);
+        if (key === "sound" && input.checked) Audio.resume();
+        applyPref(key);
+      });
+      wrap.append(input, document.createTextNode(" " + label));
+      prefRow.appendChild(wrap);
+    });
+    prefsPanel.appendChild(prefRow);
+
     const rpe = el("div", "fm-rpe");
     const staticWrap = el("div", "fm-static hidden");
 
-    const anim = el("div"); anim.append(stage, meta, bar, cue, row1, row2, rpe);
+    const anim = el("div"); anim.append(stage, meta, bar, cue, row1, row2, prefsPanel, rpe);
     host.append(anim, staticWrap);
 
-    // ---- persistent SVG scene (built once; attributes updated per frame) ----
+    // ---- persistent SVG scene ----
     const mk = (tag, attrs) => { const n = document.createElementNS(SVGNS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); return n; };
     svg.innerHTML =
       `<defs>` +
@@ -116,105 +179,153 @@ const FormModel = (() => {
       `<stop offset="0%" stop-color="var(--accent)" stop-opacity="0.22"/>` +
       `<stop offset="70%" stop-color="var(--accent)" stop-opacity="0.05"/>` +
       `<stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></radialGradient>` +
+      `<linearGradient id="${uid}-limb" gradientUnits="userSpaceOnUse" x1="0" y1="56" x2="0" y2="330">` +
+      `<stop offset="0%" stop-color="var(--text)" stop-opacity="1"/>` +
+      `<stop offset="100%" stop-color="var(--text)" stop-opacity="0.66"/></linearGradient>` +
       `<filter id="${uid}-soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5"/></filter>` +
       `</defs>`;
     const glowEll = mk("ellipse", { cx: 120, cy: 150, rx: 116, ry: 150, fill: `url(#${uid}-glow)`, class: "fm-glow" });
     const groundLine = mk("line", { x1: 40, y1: GROUND_Y, x2: 200, y2: GROUND_Y, class: "fm-ground" });
     const shadowEll = mk("ellipse", { cx: 120, cy: GROUND_Y + 9, rx: 46, ry: 9, class: "fm-shadow", filter: `url(#${uid}-soft)` });
+    const breathRing = mk("circle", { cx: 120, cy: 150, r: 74, class: "fm-breath" });
+    const ghostsGroup = mk("g", { class: "fm-ghosts" });
     const objGroup = mk("g", { class: "fm-object" });
     const figGroup = mk("g", { class: "fm-figure" });
-    svg.append(glowEll, groundLine, shadowEll, objGroup, figGroup);
+    svg.append(glowEll, breathRing, groundLine, shadowEll, ghostsGroup, objGroup, figGroup);
 
-    let segNodes = [], headOutline = null, headRing = null;
+    let segNodes = [], headOutline = null, headRing = null, ghostNodes = [];
+
+    function applyLines(lines, p) {
+      SEG[view].forEach(([a, b], i) => {
+        const pa = p[a], pb = p[b], ln = lines[i];
+        if (pa && pb) { ln.setAttribute("x1", pa[0]); ln.setAttribute("y1", pa[1]); ln.setAttribute("x2", pb[0]); ln.setAttribute("y2", pb[1]); ln.style.display = ""; }
+        else ln.style.display = "none";
+      });
+    }
+
     function buildFigure() {
-      figGroup.textContent = "";
-      const of = objFn();
-      objGroup.innerHTML = of ? of() : "";
-      segNodes = SEG[view].map(([a, b]) => ({ a, b, outline: mk("line", { class: "fm-bone-outline" }), core: mk("line", { class: "fm-bone" }) }));
-      segNodes.forEach((s) => figGroup.appendChild(s.outline));   // outlines under...
-      segNodes.forEach((s) => figGroup.appendChild(s.core));      // ...cores
+      figGroup.textContent = ""; ghostsGroup.textContent = ""; ghostNodes = [];
+      objGroup.innerHTML = (objFn() || (() => ""))();
+
+      // Onion-skin ghost layers (core-only), drawn behind the figure.
+      if (prefs.trails) {
+        for (let k = 0; k < GHOSTS; k++) {
+          const g = mk("g", { class: "fm-ghost", opacity: (0.20 - k * 0.05).toFixed(2) });
+          const lines = SEG[view].map(() => { const l = mk("line", { class: "fm-ghost-bone" }); g.appendChild(l); return l; });
+          ghostsGroup.appendChild(g); ghostNodes.push(lines);
+        }
+      }
+      segNodes = SEG[view].map(() => ({ outline: mk("line", { class: "fm-bone-outline" }), core: mk("line", { class: "fm-bone" }) }));
+      segNodes.forEach((s) => figGroup.appendChild(s.outline));
+      segNodes.forEach((s) => { applyShadingTo(s.core); figGroup.appendChild(s.core); });
       headOutline = mk("circle", { r: 18, class: "fm-head-outline" });
       headRing = mk("circle", { r: 16, class: "fm-head" });
       figGroup.append(headOutline, headRing);
     }
 
+    function applyShadingTo(coreLine) {
+      if (prefs.shading) coreLine.setAttribute("stroke", `url(#${uid}-limb)`);
+      else coreLine.removeAttribute("stroke");
+    }
+
     function drawPose(p) {
-      for (const s of segNodes) {
-        const a = p[s.a], b = p[s.b];
-        if (a && b) {
-          for (const n of [s.outline, s.core]) {
-            n.setAttribute("x1", a[0]); n.setAttribute("y1", a[1]); n.setAttribute("x2", b[0]); n.setAttribute("y2", b[1]);
-            n.style.display = "";
-          }
-        } else { s.outline.style.display = "none"; s.core.style.display = "none"; }
-      }
-      if (p.head) {
-        for (const n of [headOutline, headRing]) { n.setAttribute("cx", p.head[0]); n.setAttribute("cy", p.head[1]); n.style.display = ""; }
-      } else { headOutline.style.display = "none"; headRing.style.display = "none"; }
-      // Ground shadow tracks the hips and softens/widens as the figure lowers.
+      applyLines(segNodes.map((s) => s.outline), p);
+      applyLines(segNodes.map((s) => s.core), p);
+      if (p.head) { for (const n of [headOutline, headRing]) { n.setAttribute("cx", p.head[0]); n.setAttribute("cy", p.head[1]); n.style.display = ""; } }
+      else { headOutline.style.display = "none"; headRing.style.display = "none"; }
       const hx = p.hip ? p.hip[0] : 120, hy = p.hip ? p.hip[1] : 190;
       shadowEll.setAttribute("cx", hx.toFixed(1));
       shadowEll.setAttribute("rx", clamp(40 + (hy - 178) * 0.16, 36, 60).toFixed(1));
     }
 
-    function setGlow(o) { glowEll.style.opacity = o; }
-    function showRest() { drawPose(poses()[restPoseName()]); }
+    function updateGhosts() {
+      if (!ghostNodes.length) return;
+      for (let k = 0; k < ghostNodes.length; k++) {
+        const idx = history.length - 1 - (k + 1) * GHOST_GAP;
+        if (idx >= 0) { applyLines(ghostNodes[k], history[idx]); }
+        else ghostNodes[k].forEach((l) => (l.style.display = "none"));
+      }
+    }
+
+    const setGlow = (o) => { glowEll.style.opacity = o; };
+    function showRest() { history = []; drawPose(poses()[restPoseName()]); updateGhosts(); }
     function showPhaseText(name) { phaseEl.textContent = name; if (ex.cues && ex.cues[name]) cue.innerHTML = ex.cues[name]; }
 
     function frame(ts) {
       if (!playing || destroyed) return;
-      if (!svg.isConnected) { playing = false; return; }  // view replaced — stop the loop
+      if (!svg.isConnected) { playing = false; return; }
       const ph = ex.phases[phaseIdx];
       const dur = ph.dur * (ph.isHold ? 1 : tempoScale);
       if (!phaseStart) phaseStart = ts;
-      let t = (ts - phaseStart) / dur; if (t > 1) t = 1;
+      const elapsed = ts - phaseStart;
+      let t = elapsed / dur; if (t > 1) t = 1;
       const P = poses();
-      drawPose(lerpPose(P[ph.from] || P[restPoseName()], P[ph.to] || P[restPoseName()], ease(t)));
+      const cp = lerpPose(P[ph.from] || P[restPoseName()], P[ph.to] || P[restPoseName()], ease(t));
+      drawPose(cp);
+      history.push(cp); if (history.length > (GHOSTS + 1) * GHOST_GAP + 2) history.shift();
+      updateGhosts();
       prog.style.width = (t * 100).toFixed(1) + "%";
+
+      // Breath ring: a calm ~11 breaths/min pulse while moving.
+      if (prefs.ring) { breathRing.style.display = ""; breathRing.setAttribute("r", (74 + 9 * Math.sin(ts / 875)).toFixed(1)); }
+      else breathRing.style.display = "none";
+
       if (ph.isHold) {
-        const elapsed = ts - phaseStart;
         const left = Math.ceil((dur - elapsed) / 1000);
         countEl.textContent = left > 0 ? left + "s hold" : "";
-        setGlow((0.55 + 0.35 * Math.sin(elapsed / 650)).toFixed(3));  // calm breathing pulse
-      } else {
-        setGlow(0.7);
-      }
+        setGlow((0.55 + 0.35 * Math.sin(elapsed / 650)).toFixed(3));
+        const sec = Math.floor(elapsed / 1000);
+        if (sec !== lastSecond) { lastSecond = sec; if (sec > 0) Audio.secondTick(); }
+      } else { setGlow(0.7); }
+
       if (t >= 1) {
         phaseStart = 0; phaseIdx++;
         if (phaseIdx >= ex.phases.length) {
           phaseIdx = 0;
           if (ex.targetReps) {
-            reps++; countEl.textContent = reps + " / " + ex.targetReps;
+            reps++; countEl.textContent = reps + " / " + ex.targetReps; Audio.rep();
             if (reps >= ex.targetReps) return finishSet();
           } else return finishSet();
         }
-        showPhaseText(ex.phases[phaseIdx].name);
+        announcePhase(ex.phases[phaseIdx]);
       }
       raf = requestAnimationFrame(frame);
     }
 
+    function announcePhase(ph) {
+      showPhaseText(ph.name);
+      lastSecond = -1;
+      if (ph.isHold) { Audio.tick(); return; }
+      // Pitch the cue by direction: head rising = inhale/up, falling = exhale/down.
+      const P = poses();
+      const from = P[ph.from] || {}, to = P[ph.to] || {};
+      if (from.head && to.head) Audio.breath(to.head[1] < from.head[1]);
+      else Audio.tick();
+    }
+
     function start() {
       if (staticMode) return;
+      Audio.resume();
       playing = true; playBtn.textContent = "Pause"; rpe.classList.remove("show");
       if (!ex.targetReps) countEl.textContent = "";
-      setGlow(0.7);
-      showPhaseText(ex.phases[phaseIdx].name);
+      setGlow(0.7); history = []; lastSecond = -1;
+      announcePhase(ex.phases[phaseIdx]);
       raf = requestAnimationFrame(frame);
     }
     function pause() { playing = false; playBtn.textContent = "Resume"; if (raf) cancelAnimationFrame(raf); }
     function finishSet() {
       playing = false; if (raf) cancelAnimationFrame(raf);
       playBtn.textContent = "Start"; phaseEl.textContent = "Done"; cue.innerHTML = "Nice work."; prog.style.width = "100%";
-      setGlow(0.9);
+      setGlow(0.9); breathRing.style.display = "none"; Audio.finish();
       buildRpe();
     }
     function reset() {
       playing = false; if (raf) cancelAnimationFrame(raf);
-      phaseIdx = 0; phaseStart = 0; reps = 0;
+      phaseIdx = 0; phaseStart = 0; reps = 0; history = []; lastSecond = -1;
       playBtn.textContent = "Start"; phaseEl.textContent = "Ready"; cue.innerHTML = "";
       prog.style.width = "0%"; rpe.classList.remove("show"); rpe.innerHTML = "";
       countEl.textContent = ex.targetReps ? "0 / " + ex.targetReps : "";
-      setGlow(0.32);
+      setGlow(0.32); breathRing.style.display = "none";
       showRest();
     }
 
@@ -232,7 +343,6 @@ const FormModel = (() => {
       });
     }
 
-    // ---- static fallback (reduced motion / opt-in) ----
     function renderStatic() {
       const v = ex.views.side ? "side" : "front";
       const P = ex.views[v];
@@ -253,14 +363,20 @@ const FormModel = (() => {
       if (on) { pause(); renderStatic(); } else { reset(); }
     }
 
+    // Live-apply a changed preference without losing place.
+    function applyPref(key) {
+      if (key === "trails") { buildFigure(); if (!playing) showRest(); }
+      else if (key === "shading") { segNodes.forEach((s) => applyShadingTo(s.core)); }
+      else if (key === "ring" && !playing) { breathRing.style.display = "none"; }
+    }
+
     function setView(v) {
-      if (v === "front" && !ex.views.front) return;
-      if (v === "side" && !ex.views.side) return;
+      if ((v === "front" && !ex.views.front) || (v === "side" && !ex.views.side)) return;
       view = v;
       sideBtn.classList.toggle("active", v === "side");
       frontBtn.classList.toggle("active", v === "front");
-      buildFigure();              // rebuild nodes for the new view's skeleton
-      if (!playing) showRest();   // a running set keeps going, drawing into new nodes
+      buildFigure();
+      if (!playing) showRest();
     }
     function setTempo(slow) {
       tempoScale = slow ? 1.6 : 1;
