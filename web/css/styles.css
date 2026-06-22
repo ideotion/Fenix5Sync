@@ -568,6 +568,12 @@ td .muted { color: var(--text-faint); }
 .fm-pref { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); cursor: pointer; user-select: none; }
 .fm-pref input { accent-color: var(--accent); cursor: pointer; margin: 0; }
 
+/* Pseudo-3-D turn row + free-weight implement glyph. */
+.fm-3d { margin-top: var(--sp-2); }
+.fm-yaw input[type="range"] { accent-color: var(--accent); cursor: pointer; width: 110px; vertical-align: middle; }
+.fm-yaw input[type="range"]:disabled { opacity: .4; cursor: default; }
+.fm-impl line, .fm-impl rect, .fm-impl circle, .fm-impl path { vector-effect: non-scaling-stroke; }
+
 /* ---------- Form-model: cartoon avatar figure ---------- */
 .fm-cartoon-outline { stroke: #2a1c12; stroke-width: 25; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 .fm-cartoon-bone { stroke: var(--accent); stroke-width: 19; stroke-linecap: round; stroke-linejoin: round; fill: none; }

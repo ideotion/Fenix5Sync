@@ -11,6 +11,17 @@ GitHub Releases page for the auto-generated notes per tag.
 ## [Unreleased]
 
 ### Added
+- **Form-model engine: pseudo-3-D, corrected feet, free weights.** The shared SVG
+  movement engine now runs every joint through a unit-tested yaw projection
+  (`web/js/formGeom.js`), so poses can carry optional depth (`z`); a gentle
+  auto-turn toggle and a manual turn slider give a subtle 3-D feel (persisted).
+  Side-view feet gain a synthesized heel so the foot reads as a wedge and the toe
+  leads the facing direction, plus a mirror/face control to flip left/right. New
+  object glyphs: `counter` and `step` (rooms) and `dumbbell`/`kettlebell`
+  (free weights that track the hands). All existing preferences, 60 fps
+  attribute-only updates, and the reduced-motion static fallback are preserved.
+  The projection/foot/shading math is verified under Node via a new pytest gate
+  (`tests/test_js_units.py`, `tests/js/`).
 - **FIT Salvage** — recover corrupt/truncated `.FIT` files locally: walks the
   record stream to the last complete record, repairs the header/CRC and
   re-parses (deriving the summary from records when the session trailer was
