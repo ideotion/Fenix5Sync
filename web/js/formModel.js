@@ -32,6 +32,23 @@ const FormModel = (() => {
   const prefs = loadPrefs();
 
   // ---- tiny Web Audio synth (created lazily on a user gesture) ----
+  // One sound "type" per visual theme: the dark theme gets a warm sine timbre,
+  // the light theme a brighter triangle timbre (with its own frequency set). The
+  // active theme is read at cue time, so sound follows the theme toggle live.
+  const PALETTES = {
+    dark: {  // "Warm"
+      type: "sine", gain: 0.06,
+      breathUp: [330, 494], breathDown: [277, 196],
+      tick: 587, second: 440, rep: 660, finishA: 587, finishB: 784,
+    },
+    light: {  // "Bright"
+      type: "triangle", gain: 0.045,
+      breathUp: [523, 784], breathDown: [392, 294],
+      tick: 988, second: 740, rep: 1047, finishA: 784, finishB: 1175,
+    },
+  };
+  const palette = () => PALETTES[document.documentElement.getAttribute("data-theme")] || PALETTES.dark;
+
   const Audio = (() => {
     let ctx = null;
     function ensure() {
@@ -40,27 +57,29 @@ const FormModel = (() => {
       if (AC) ctx = new AC();
       return ctx;
     }
-    function tone(freq, dur, { gain = 0.06, type = "sine", glideTo = null } = {}) {
+    function tone(freq, dur, { gain, type, glideTo = null } = {}) {
       if (!prefs.sound) return;
       const c = ensure(); if (!c) return;
       if (c.state === "suspended") c.resume();
+      const pal = palette();
       const t0 = c.currentTime;
       const osc = c.createOscillator(); const g = c.createGain();
-      osc.type = type; osc.frequency.setValueAtTime(freq, t0);
+      osc.type = type || pal.type;
+      osc.frequency.setValueAtTime(freq, t0);
       if (glideTo) osc.frequency.exponentialRampToValueAtTime(glideTo, t0 + dur);
       g.gain.setValueAtTime(0, t0);
-      g.gain.linearRampToValueAtTime(gain, t0 + 0.012);
+      g.gain.linearRampToValueAtTime(gain != null ? gain : pal.gain, t0 + 0.012);
       g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
       osc.connect(g); g.connect(c.destination);
       osc.start(t0); osc.stop(t0 + dur + 0.02);
     }
     return {
       resume() { const c = ensure(); if (c && c.state === "suspended") c.resume(); },
-      breath(up) { tone(up ? 392 : 294, 0.5, { gain: 0.05, type: "sine", glideTo: up ? 523 : 247 }); },
-      tick() { tone(660, 0.05, { gain: 0.04, type: "triangle" }); },
-      secondTick() { tone(523, 0.04, { gain: 0.03, type: "triangle" }); },
-      rep() { tone(740, 0.09, { gain: 0.05 }); },
-      finish() { tone(659, 0.14, { gain: 0.06 }); setTimeout(() => tone(880, 0.22, { gain: 0.06 }), 130); },
+      breath(up) { const p = palette(); const f = up ? p.breathUp : p.breathDown; tone(f[0], 0.5, { glideTo: f[1] }); },
+      tick() { tone(palette().tick, 0.05, { gain: palette().gain * 0.7 }); },
+      secondTick() { tone(palette().second, 0.04, { gain: palette().gain * 0.55 }); },
+      rep() { tone(palette().rep, 0.09); },
+      finish() { const p = palette(); tone(p.finishA, 0.14); setTimeout(() => tone(p.finishB, 0.22), 130); },
     };
   })();
 
