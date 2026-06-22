@@ -1,0 +1,13 @@
+{
+  "title": "Year in Sport",
+  "subtitle": "Your private, ownable recap — computed from your own archive, no account, no cloud.",
+  "decision_date": "2026-06-22",
+  "source_doc": "docs/recap/decision-brief.md",
+  "rationale": "The annual recap was a free staple for roughly a decade. In December 2025 both major platforms moved it behind a subscription within days of each other, drawing wide criticism. A recap computed locally from data you already own restores something that used to be free — and the share artifact is a self-contained file anyone can open with no login.",
+  "sources": [
+    {"id": "S1", "title": "Strava Puts Popular 'Year in Sport' Recap Behind an $80 Paywall (free since 2016)", "publisher": "Ars Technica / Slashdot", "date": "2025-12-19", "url": "https://news.slashdot.org/story/25/12/19/2158235/"},
+    {"id": "S2", "title": "Garmin locks year-in-review (Rundown) behind a subscription paywall", "publisher": "Notebookcheck", "date": "2025-12-04", "url": "https://www.notebookcheck.net/Garmin-locks-year-in-review-behind-subscription-paywall-users-react-angrily.1177473.0.html"},
+    {"id": "S3", "title": "Strava follows Garmin in locking its Year in Sport behind a paywall", "publisher": "Gadgets & Wearables", "date": "2025-12-20", "url": "https://gadgetsandwearables.com/2025/12/20/strava-year-in-sport/"},
+    {"id": "S4", "title": "Dear Strava, we have a paywall problem that's gone a step too far", "publisher": "T3", "date": "2025-12-24", "url": "https://www.t3.com/tech/dear-strava-we-have-a-paywall-problem-thats-gone-a-step-too-far"}
+  ]
+}

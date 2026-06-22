@@ -38,6 +38,7 @@ from core.hr_trends import compute_hr_trends
 from core.logging_setup import read_recent_logs
 from core.metrics import compute_activity_metrics
 from core.race import compute_race_predictions
+from core.recap import compute_recap
 from core.search import ActivityFilter
 from core.splits import MILE_M, compute_splits
 from core.store import Store
@@ -172,6 +173,21 @@ def insights_records(
     ]
     full = [store.get_activity(i, with_series=True) for i in ids]
     return compute_personal_records([a for a in full if a is not None])
+
+
+@router.get("/insights/recap")
+def insights_recap(
+    year: int | None = Query(None, description="Calendar year; omit for an all-time recap."),
+    store: Store = Depends(get_store),
+) -> dict:
+    """Private Year-in-Sport recap, computed from activity summaries (no cloud).
+
+    Aggregates totals, per-sport and per-period breakdowns, headline highlights
+    and consistency metrics over the local archive -- a free, ownable equivalent
+    of the annual recaps the major platforms now put behind a subscription. The
+    GUI renders a self-contained, shareable card; nothing leaves the machine.
+    """
+    return compute_recap(store.all_activities(with_series=False), year=year)
 
 
 @router.get("/insights/hr-trends")

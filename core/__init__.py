@@ -55,6 +55,7 @@ from .models import Activity, Lap, RunSummary, Trackpoint
 from .parse import ParseError, parse_fit_file
 from .pipeline import import_activities, open_store
 from .race import RacePrediction, compute_race_predictions
+from .recap import available_years, compute_recap
 from .records import compute_personal_records
 from .search import ActivityFilter, build_where
 from .splits import Split, compute_splits
@@ -158,6 +159,9 @@ __all__ = [
     "find_duplicate_groups",
     # personal records
     "compute_personal_records",
+    # year-in-sport recap
+    "compute_recap",
+    "available_years",
     # athlete suggestions
     "suggest_athlete",
     # logging
