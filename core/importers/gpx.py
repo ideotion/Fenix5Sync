@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Parse GPX 1.1 tracks into the canonical Activity model.
 
 GPX is the most widely supported interchange format (Strava, Komoot, Wahoo,
@@ -10,7 +11,9 @@ altitude series. Namespaces are ignored (we match on local element names).
 
 from __future__ import annotations
 
-import xml.etree.ElementTree as ET
+# defusedxml hardens stdlib XML parsing against entity-expansion / external-entity
+# attacks in untrusted activity files (GPX from arbitrary exporters).
+import defusedxml.ElementTree as ET
 from pathlib import Path
 
 from ..models import Activity, Trackpoint

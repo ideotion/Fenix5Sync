@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Typed request/response models for the JSON API (drives /docs)."""
 
 from __future__ import annotations

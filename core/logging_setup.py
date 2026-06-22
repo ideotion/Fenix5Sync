@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Structured logging: a dated log file plus console output.
 
 The same run log is surfaced in the GUI via :func:`read_recent_logs`. Setup is

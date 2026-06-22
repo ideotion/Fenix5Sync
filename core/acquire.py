@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Acquire activity files from a Garmin device or a local source.
 
 The source is treated as **strictly read-only**: this module only ever *reads*

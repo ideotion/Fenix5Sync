@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Integrity checks for the bundled Coach (training-program) content pack.
 
 Guards the evidence trail: every ref_id cited anywhere must resolve to a real

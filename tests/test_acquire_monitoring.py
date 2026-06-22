@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The locator scans GARMIN/Monitor alongside GARMIN/Activity (wellness on sync)."""
 
 from __future__ import annotations

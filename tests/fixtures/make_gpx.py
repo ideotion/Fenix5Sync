@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Build a small, valid GPX 1.1 file for tests (namespaced like real exports).
 
 Test support code, not part of the shipped library. The generated file has one

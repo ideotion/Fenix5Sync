@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for the dynamic-coach sensor layer (CoachState).
 
 Activities are scored on the *duration* basis (no athlete thresholds), where load

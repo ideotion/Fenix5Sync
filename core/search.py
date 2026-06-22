@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Activity search/filtering.
 
 Pure SQL-fragment construction (no database handle), so it is trivially testable

@@ -1,10 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for all-time personal records and the records endpoint."""
 
 from __future__ import annotations
 
 import datetime as _dt
 import time
-from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient

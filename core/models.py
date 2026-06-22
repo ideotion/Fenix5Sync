@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Domain models for Fenix5Sync.
 
 These are plain dataclasses with no dependency on the web or CLI layers, so the

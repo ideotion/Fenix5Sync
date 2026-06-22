@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """FastAPI application factory.
 
 Builds an app that exposes the core over JSON (under ``/api``), serves the

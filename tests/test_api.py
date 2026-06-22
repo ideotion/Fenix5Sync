@@ -1,9 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """API tests using FastAPI's TestClient against a temp-configured app."""
 
 from __future__ import annotations
 
 import time
-from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient

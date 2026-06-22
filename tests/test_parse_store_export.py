@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """End-to-end core test: parse -> store -> export, plus dedupe and resilience."""
 
 from __future__ import annotations
@@ -9,7 +10,6 @@ import pytest
 import json
 
 from core import (
-    ActivityFilter,
     ParseError,
     Store,
     activities_ndjson,

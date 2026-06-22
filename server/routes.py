@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """JSON API routes, mounted under ``/api``.
 
 Each request opens a short-lived :class:`~core.store.Store` (SQLite is cheap to

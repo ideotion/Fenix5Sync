@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Export activities to CSV, JSON, GPX, TCX and the original raw file.
 
 Design notes:
@@ -105,7 +106,7 @@ def activity_to_dict(activity: Activity, include_series: bool = True) -> dict[st
         "device_product": activity.device_product,
         "imported_at": _iso(activity.imported_at),
         "extra": activity.extra,
-        "laps": [lap_to_dict(l) for l in activity.laps],
+        "laps": [lap_to_dict(lap) for lap in activity.laps],
     }
     if include_series:
         data["trackpoints"] = [trackpoint_to_dict(tp) for tp in activity.trackpoints]
@@ -286,9 +287,9 @@ def _tcx_time(dt) -> str | None:
 def _split_points_by_lap(activity: Activity, laps: list[Lap]) -> list[list[Trackpoint]]:
     """Assign trackpoints to laps by timestamp; all into lap 0 if not splittable."""
     pts = activity.trackpoints
-    if len(laps) <= 1 or any(l.start_time is None for l in laps):
+    if len(laps) <= 1 or any(lap.start_time is None for lap in laps):
         return [list(pts)] + [[] for _ in laps[1:]]
-    starts = [l.start_time for l in laps]
+    starts = [lap.start_time for lap in laps]
     buckets: list[list[Trackpoint]] = [[] for _ in laps]
     for tp in pts:
         idx = 0

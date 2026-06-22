@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for the dynamic-coach controller (compute_plan).
 
 States are constructed directly so the plan logic is exercised in isolation from
@@ -66,7 +67,10 @@ def test_maintain_holds_fitness():
 
 def test_deload_week_has_less_load_than_the_build_week():
     p = compute_plan(_state(), CoachGoal(kind="build"), horizon_days=28)
-    week = lambda i: sum(s["target_load"] for s in p.sessions[i * 7:(i + 1) * 7])
+
+    def week(i):
+        return sum(s["target_load"] for s in p.sessions[i * 7:(i + 1) * 7])
+
     assert week(3) < week(0)  # the 4th week is a deload
 
 

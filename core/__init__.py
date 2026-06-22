@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Fenix5Sync core library.
 
 A pure-Python toolkit to acquire, deduplicate, parse, store, search and export

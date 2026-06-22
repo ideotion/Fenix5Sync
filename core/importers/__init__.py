@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Pluggable activity importers.
 
 A small registry maps a *format id* (``fit`` / ``tcx`` / ``gpx``) to an

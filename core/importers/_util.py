@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Small, dependency-free helpers shared by the XML-based importers (TCX/GPX).
 
 Kept separate so the individual format parsers stay focused on mapping their
@@ -9,7 +10,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Iterable
 
-from ..geo import haversine_m  # re-exported for the importers (shared geo helper)
+from ..geo import haversine_m as haversine_m  # noqa: F401  re-exported for importers
 
 
 # --------------------------------------------------------------------------- #

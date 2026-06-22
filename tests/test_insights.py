@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for the insights/analytics aggregation and its API endpoint."""
 
 from __future__ import annotations

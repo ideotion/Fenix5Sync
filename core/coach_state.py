@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Dynamic-coach state -- the *sensor* layer the adaptive coach reads (pure, stdlib-only).
 
 The dynamic coach is a closed-loop controller, not a chatbot: it never generates

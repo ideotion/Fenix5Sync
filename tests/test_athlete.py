@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for athlete-profile parsing/suggestions and the suggestions endpoint."""
 
 from __future__ import annotations

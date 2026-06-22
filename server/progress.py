@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Background import jobs with pollable / streamable progress.
 
 An import can take a while (acquire + parse many files), so it runs in a worker

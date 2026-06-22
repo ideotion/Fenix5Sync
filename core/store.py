@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """SQLite persistence for activities, laps, trackpoints and the import ledger.
 
 Writes are atomic (one transaction per activity) so a crash mid-import never

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Fenix5Sync installer — Debian/Ubuntu bootstrap, idempotent and safe to re-run.
 #
 # Two ways to run it:

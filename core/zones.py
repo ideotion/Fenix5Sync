@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Heart-rate and power training-zone analysis (pure, stdlib-only).
 
 Computes time-in-zone from an activity's trackpoint series, given athlete

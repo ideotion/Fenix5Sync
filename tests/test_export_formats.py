@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for TCX export, raw passthrough, and the export API (incl. anonymize)."""
 
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Even-distance splits over an activity's track (pure, stdlib-only).
 
 Breaks the recorded series into fixed-distance segments -- 1 km by default, or

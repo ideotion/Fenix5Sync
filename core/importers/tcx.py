@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Parse Garmin TCX (Training Center XML) into the canonical Activity model.
 
 TCX is what many non-Garmin platforms and older devices export. We read the
@@ -10,7 +11,9 @@ so files from any exporter parse the same way.
 
 from __future__ import annotations
 
-import xml.etree.ElementTree as ET
+# defusedxml hardens stdlib XML parsing against entity-expansion / external-entity
+# attacks in untrusted activity files (TCX from arbitrary exporters).
+import defusedxml.ElementTree as ET
 from pathlib import Path
 
 from ..models import Activity, Lap, Trackpoint

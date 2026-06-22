@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """VO₂max estimate and race-time predictions for a single activity (pure, stdlib).
 
 An open, defensible take on the two numbers runners most want -- explicitly **not**

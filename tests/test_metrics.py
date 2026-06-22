@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for per-activity performance metrics and the metrics API endpoint."""
 
 from __future__ import annotations

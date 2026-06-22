@@ -1,16 +1,16 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for cross-source semantic duplicate detection and its endpoint."""
 
 from __future__ import annotations
 
 import datetime as _dt
 import time
-from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
 from core import find_duplicate_groups
-from core.config import AthleteConfig, write_config
+from core.config import write_config
 from core.models import Activity
 from server.app import create_app
 

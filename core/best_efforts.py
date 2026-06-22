@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Best-efforts and mean-max curves for a single activity (pure, stdlib-only).
 
 Two complementary "peak performance" views, both computed from one activity's

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Shared pytest fixtures.
 
 Provides a generated (and committed) sample ``.FIT`` file plus a fully isolated

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for HR/power training-zone analysis and the zones API endpoint."""
 
 from __future__ import annotations
