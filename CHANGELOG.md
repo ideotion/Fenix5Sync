@@ -11,6 +11,41 @@ GitHub Releases page for the auto-generated notes per tag.
 ## [Unreleased]
 
 ### Added
+- **Coach: objective → personalized plan → calendar.** A new objective form in
+  the Coach tab (and `POST /api/coach/plan`, `fenix5sync plan …`) turns a goal
+  (5K/10K/half/marathon/general, dates or weeks, optional goal time, days, level)
+  into a dated base→build→peak→taper→race plan with step-back weeks, a tune-up
+  effort and rest days. Each session carries a pace/heart-rate/effort target as a
+  RANGE with a confidence and the evidence grade behind it (VDOT/Riegel/Karvonen/
+  RPE), and the whole plan exports as an `.ics` calendar (`GET /api/coach/plan.ics`,
+  `--ics PATH`). Pure/stdlib core (`core/plan_builder.py`, `core/ics.py`), reusing
+  the adaptive controller for the periodized skeleton. Honest by construction: the
+  10% rule is never asserted as injury-protective, ACWR is a signal only, ranges
+  widen for low mileage, and it is framed as training information, not medical
+  advice.
+- **Home exercise library (35) + Tai Chi movement library (21).** The Sports at
+  Home form-model now ships the full data-driven library — including the complete
+  push-up progression (wall → counter → chair → knee → floor) — with each
+  exercise carrying its library metadata (pattern, tier, default/regression/
+  progression object, primary benefit, evidence refs, notes), surfaced beside the
+  player with citations. The Tai Chi tab ships 21 movement/breathing pacers
+  normalized from the authoring schema into the shared engine's canonical schema
+  (`scripts/normalize_incoming.py`, unit-tested), with level/focus/refs/notes
+  wired in. Still framed honestly as a simplified pacer, not instructed form. The
+  content packs are guarded by extended integrity tests (phase↔pose, citation
+  resolution, valid tiers/patterns/levels, and that every object id exists in the
+  engine's glyph registry).
+- **Form-model engine: pseudo-3-D, corrected feet, free weights.** The shared SVG
+  movement engine now runs every joint through a unit-tested yaw projection
+  (`web/js/formGeom.js`), so poses can carry optional depth (`z`); a gentle
+  auto-turn toggle and a manual turn slider give a subtle 3-D feel (persisted).
+  Side-view feet gain a synthesized heel so the foot reads as a wedge and the toe
+  leads the facing direction, plus a mirror/face control to flip left/right. New
+  object glyphs: `counter` and `step` (rooms) and `dumbbell`/`kettlebell`
+  (free weights that track the hands). All existing preferences, 60 fps
+  attribute-only updates, and the reduced-motion static fallback are preserved.
+  The projection/foot/shading math is verified under Node via a new pytest gate
+  (`tests/test_js_units.py`, `tests/js/`).
 - **FIT Salvage** — recover corrupt/truncated `.FIT` files locally: walks the
   record stream to the last complete record, repairs the header/CRC and
   re-parses (deriving the summary from records when the session trailer was

@@ -153,6 +153,7 @@ fenix5sync export 12 -f gpx --anonymize # scrub location & sensitive data
 fenix5sync export --bulk --format csv
 fenix5sync salvage broken.fit --import # recover a corrupt/truncated FIT file
 fenix5sync archive               # full-fidelity NDJSON archive of everything
+fenix5sync plan -g 10k --target-date 2026-09-30 --time 50:00 --ics plan.ics  # objective -> dated plan + calendar
 fenix5sync serve --open          # run the GUI/API
 fenix5sync init-config           # write a default config file
 ```

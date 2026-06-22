@@ -119,3 +119,36 @@ def test_config_get_and_put(client: TestClient):
     cfg["server"]["host"] = "0.0.0.0"
     bad = client.put("/api/config", json=cfg)
     assert bad.status_code == 422
+
+
+def test_coach_plan_endpoint_returns_a_dated_agenda(client: TestClient):
+    body = {
+        "goal_distance": "10k", "start_date": "2026-07-01", "target_date": "2026-09-30",
+        "target_time": "50:00", "level": "intermediate", "available_days": [1, 3, 5, 6],
+    }
+    r = client.post("/api/coach/plan", json=body)
+    assert r.status_code == 200
+    plan = r.json()
+    assert plan["weeks"] >= 8 and plan["sessions"]
+    assert plan["sessions"][-1]["phase"] == "race"
+    assert plan["summary"]["race_pace"] == "5:00/km"
+    # The honesty caveats must ride along.
+    caveats = " ".join(plan["evidence"]["caveats"]).lower()
+    assert "10% rule" in caveats and "not validated" in caveats
+
+
+def test_coach_plan_ics_download(client: TestClient):
+    r = client.get("/api/coach/plan.ics", params={
+        "goal_distance": "5k", "start_date": "2026-07-01", "weeks": 8,
+        "target_time": "22:00", "available_days": "2,4,6",
+    })
+    assert r.status_code == 200
+    assert "text/calendar" in r.headers["content-type"]
+    assert "attachment" in r.headers["content-disposition"]
+    body = r.text
+    assert body.startswith("BEGIN:VCALENDAR") and "BEGIN:VEVENT" in body
+
+
+def test_coach_plan_rejects_bad_distance(client: TestClient):
+    r = client.post("/api/coach/plan", json={"goal_distance": "ultra"})
+    assert r.status_code == 422

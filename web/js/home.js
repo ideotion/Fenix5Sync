@@ -119,7 +119,29 @@ const HomeView = (() => {
     }));
 
     const stageHost = U.el("div", { class: "home-fm" });
-    host.append(picker, stageHost);
+    const infoHost = U.el("div", { class: "home-ex-info" });
+    host.append(picker, stageHost, infoHost);
+
+    function exInfo(ex) {
+      const tagline = [ex.pattern, ex.tier].filter(Boolean).join(" · ");
+      const rows = [];
+      if (ex.primary_benefit) rows.push(U.el("div", { class: "sub", text: ex.primary_benefit }));
+      const prog = [];
+      if (ex.default_object) prog.push(["Default", ex.default_object]);
+      if (ex.regression_object) prog.push(["Easier", ex.regression_object]);
+      if (ex.progression_lever) prog.push(["Progress", ex.progression_lever]);
+      if (prog.length) rows.push(U.el("ul", { class: "home-ex-prog" }, prog.map(([k, v]) =>
+        U.el("li", {}, [U.el("strong", { text: k + ": " }), document.createTextNode(v)]))));
+      if (ex.notes) rows.push(U.el("div", { class: "set-hint", text: ex.notes }));
+      return U.el("div", { class: "card pad" }, [
+        U.el("div", { class: "tc-prog-head" }, [
+          U.el("strong", { text: ex.name }),
+          refChips(ex.refs),
+        ]),
+        tagline ? U.el("div", { class: "tc-met", text: tagline, style: "margin:2px 0 6px" }) : null,
+        ...rows,
+      ]);
+    }
 
     function select(id) {
       currentEx = id;
@@ -127,6 +149,8 @@ const HomeView = (() => {
       const ex = exercises.find((e) => e.id === id);
       Array.from(picker.children).forEach((b, i) => b.classList.toggle("active", exercises[i].id === id));
       player = FormModel.create(stageHost, ex);
+      infoHost.innerHTML = "";
+      infoHost.appendChild(exInfo(ex));
     }
 
     // Default to the first non-locked exercise.

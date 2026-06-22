@@ -10,6 +10,7 @@ exist (so the engine never interpolates against a missing keyframe).
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -17,6 +18,17 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent / "web" / "content" / "home"
 OVERVIEW = ROOT / "overview.json"
 EXERCISES = ROOT / "exercises.json"
+FORM_MODEL_JS = Path(__file__).resolve().parent.parent / "web" / "js" / "formModel.js"
+
+
+def glyph_registry() -> set[str]:
+    """The object-glyph ids the engine can actually draw (OBJECTS + IMPLEMENTS).
+
+    Parsed from formModel.js so content can never reference a glyph the engine
+    has no markup for. The registries are zero-arg arrow values keyed by id.
+    """
+    src = FORM_MODEL_JS.read_text(encoding="utf-8")
+    return set(re.findall(r"(\w+):\s*\(\)\s*=>", src))
 
 
 @pytest.fixture(scope="module")
@@ -86,13 +98,52 @@ def test_objects_have_required_fields(pack):
 
 # ---- exercise library (drives the form-model engine) ----
 
+PUSHUP_PROGRESSION = [
+    "wall-pushup", "countertop-pushup", "incline-pushup-chair", "knee-pushup", "full-pushup",
+]
+
+
 def test_exercise_library_shape(library):
     exs = library["exercises"]
-    assert exs
+    assert len(exs) == 35, "the full home library ships 35 exercises"
     ids = [e["id"] for e in exs]
     assert len(ids) == len(set(ids)), "duplicate exercise ids"
-    # The two proven exemplars from the reference prototype must be present.
-    assert {"sts", "wall"} <= set(ids)
+    # The full push-up progression (wall -> counter -> chair -> knee -> floor)
+    # must be present and in ascending order.
+    assert set(PUSHUP_PROGRESSION) <= set(ids)
+    positions = [ids.index(p) for p in PUSHUP_PROGRESSION]
+    assert positions == sorted(positions), "push-up progression is out of order"
+
+
+def test_every_exercise_carries_library_metadata(library):
+    for ex in library["exercises"]:
+        for key in ("pattern", "tier", "primary_benefit", "refs", "notes"):
+            assert ex.get(key), f"{ex['id']} missing library field {key}"
+
+
+def test_exercise_refs_resolve(pack, library):
+    known = {b["ref_id"] for b in pack["bibliography"]}
+    for ex in library["exercises"]:
+        dangling = set(ex.get("refs", [])) - known
+        assert not dangling, f"{ex['id']} cites unknown refs {sorted(dangling)}"
+
+
+def test_exercise_tiers_and_patterns_are_valid(pack, library):
+    tiers = {lvl["id"] for lvl in pack["levels"]}
+    patterns = {p["id"] for p in pack["movement_patterns"]}
+    for ex in library["exercises"]:
+        assert ex["tier"] in tiers, f"{ex['id']} unknown tier {ex['tier']}"
+        assert ex["pattern"] in patterns, f"{ex['id']} unknown pattern {ex['pattern']}"
+
+
+def test_exercise_objects_exist_in_glyph_registry(library):
+    glyphs = glyph_registry()
+    assert {"chair", "wall", "counter", "step"} <= glyphs
+    for ex in library["exercises"]:
+        for side in ("side", "front"):
+            gid = (ex.get("object") or {}).get(side)
+            if gid is not None:
+                assert gid in glyphs, f"{ex['id']} references unknown glyph {gid}"
 
 
 def test_phases_reference_existing_poses(library):
@@ -112,6 +163,12 @@ def test_phases_reference_existing_poses(library):
         assert ex["staticCues"], f"{ex['id']} needs a static fallback"
 
 
-def test_isometric_flag_present_for_wall(library):
-    wall = next(e for e in library["exercises"] if e["id"] == "wall")
-    assert wall.get("isometric") is True
+def test_isometric_holds_are_flagged(library):
+    # Isometric exercises hold (holdMs, no targetReps) and carry the flag the
+    # home UI uses to gate them behind the PAR-Q+ readiness check.
+    holds = [e for e in library["exercises"] if e.get("isometric")]
+    assert holds, "expected isometric holds in the library"
+    wph = next(e for e in library["exercises"] if e["id"] == "wall-press-hold")
+    assert wph.get("isometric") is True and wph.get("holdMs")
+    for e in holds:
+        assert e.get("holdMs") and not e.get("targetReps"), f"{e['id']} bad hold shape"

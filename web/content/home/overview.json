@@ -42,7 +42,8 @@
     {"id": "carry", "name": "Carry / loaded gait", "progression": "bottle carries, then backpack carries", "note": "High transfer to daily life; gentle on joints; scales by fill level."},
     {"id": "rotation", "name": "Rotation / anti-rotation", "progression": "light-load trunk work", "note": "Trunk stability for everyday tasks."},
     {"id": "balance", "name": "Balance / gait", "progression": "supported single-leg stance, then tandem stand, then reaching and stepping tasks", "note": "The falls-prevention core for fragile users."},
-    {"id": "aerobic", "name": "Aerobic snacks", "progression": "marching, then sit-to-stand intervals, then stairs", "note": "Delivers the accumulated aerobic dose."}
+    {"id": "aerobic", "name": "Aerobic snacks", "progression": "marching, then sit-to-stand intervals, then stairs", "note": "Delivers the accumulated aerobic dose."},
+    {"id": "isometric", "name": "Isometric holds (plank / wall / anti-rotation)", "progression": "shorter holds, then longer holds, then a harder lever or longer body line", "note": "Trunk and postural endurance; keep breathing throughout — never hold your breath."}
   ],
   "screening": {
     "model": "PAR-Q+ (international standard for self-administered pre-participation screening)",

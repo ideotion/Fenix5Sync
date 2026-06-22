@@ -3,12 +3,17 @@
    pacer/metronome. A shared component (Sports at Home + Tai Chi). Offline,
    dependency-free, themed from CSS tokens, accessible (reduced-motion safe).
 
-   Rendering is built once and updated by attribute per frame (60fps). Optional
-   "wow" layers — all user-toggleable and persisted, so each person tunes it to
-   taste:
+   Rendering is built once and updated by attribute per frame (60fps). Every
+   joint is run through a pseudo-3-D yaw projection (web/js/formGeom.js) before
+   it is drawn, so authored depth (z) will turn the figure for real; with today's
+   flat (z=0) poses the projection is the identity at yaw 0, i.e. fully
+   back-compatible. A gentle auto-yaw and a manual turn slider give a subtle 3-D
+   feel now; a mirror/face control flips left/right (fixing foot facing).
+
+   Optional, user-toggleable, persisted "wow" layers:
      • Motion trails  — accent onion-skin echoes of recent poses.
      • Breath ring    — a soft ring that pulses a calm breathing rhythm.
-     • Depth shading  — a top-lit gradient down the limbs.
+     • Depth shading  — a top-/front-lit gradient down the limbs.
      • Sound          — Web Audio cues (phase, breath, rep/hold/finish); opt-in.
    The static key-pose fallback (reduced motion) is always available.
 
@@ -16,16 +21,23 @@
 const FormModel = (() => {
   const SVGNS = "http://www.w3.org/2000/svg";
   const GROUND_Y = 318;
+  const Geom = (typeof FormGeom !== "undefined") ? FormGeom : null;
   let _seq = 0;
 
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const DEG = (Geom && Geom.DEG) || Math.PI / 180;
 
   // ---- shared, persisted preferences ----
   const PREF_KEY = "f5s-fm-prefs";
-  const DEFAULTS = { trails: true, ring: true, shading: true, sound: false, figure: "minimal", character: "neutral" };
+  const DEFAULTS = {
+    trails: true, ring: true, shading: true, sound: false,
+    figure: "minimal", character: "neutral",
+    mirror: false, autoYaw: false, yaw: 0,
+  };
   const FIGURES = [["minimal", "Minimal"], ["cartoon", "Cartoon"]];
   const CHARACTERS = [["neutral", "Neutral"], ["female", "Female"], ["male", "Male"]];
+  const YAW_AMP = 15 * DEG;        // gentle auto-turn amplitude (~+/-15 degrees)
   function loadPrefs() {
     try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(PREF_KEY)) || {}); }
     catch (_) { return Object.assign({}, DEFAULTS); }
@@ -85,12 +97,17 @@ const FormModel = (() => {
     };
   })();
 
+  // Side view grows a foot wedge: ankle->heel (back), heel->toe (sole) plus the
+  // existing ankle->toe (front). The heel is synthesized each frame from
+  // ankle+toe (FormGeom.heel), so the toe always leads the facing direction.
   const SEG = {
-    side: [["ankle", "toe"], ["ankle", "knee"], ["knee", "hip"], ["hip", "sh"], ["sh", "elb"], ["elb", "hand"]],
+    side: [["ankle", "toe"], ["ankle", "heel"], ["heel", "toe"], ["ankle", "knee"],
+      ["knee", "hip"], ["hip", "sh"], ["sh", "elb"], ["elb", "hand"]],
     front: [["hip", "lknee"], ["lknee", "lankle"], ["hip", "rknee"], ["rknee", "rankle"],
       ["hip", "sh"], ["sh", "lelb"], ["lelb", "lhand"], ["sh", "relb"], ["relb", "rhand"]],
   };
 
+  // Static "room" objects, drawn once as markup behind the figure.
   const OBJECTS = {
     chair: () =>
       `<g class="fm-obj-fill"><rect x="140" y="232" width="60" height="10" rx="3"/></g>` +
@@ -99,24 +116,58 @@ const FormModel = (() => {
     wall: () =>
       `<g class="fm-obj-fill"><rect x="72" y="40" width="10" height="${GROUND_Y - 40}" rx="3"/></g>` +
       `<g class="fm-obj"><line x1="82" y1="40" x2="82" y2="${GROUND_Y}"/></g>`,
+    // Countertop / heavy table edge: a high brace for supported standing work.
+    counter: () =>
+      `<g class="fm-obj-fill"><rect x="150" y="196" width="56" height="12" rx="3"/></g>` +
+      `<g class="fm-obj"><line x1="156" y1="208" x2="156" y2="312"/><line x1="200" y1="208" x2="200" y2="312"/></g>`,
+    // A single step / low stair for step-ups and stair snacks.
+    step: () =>
+      `<g class="fm-obj-fill"><rect x="150" y="286" width="58" height="${GROUND_Y - 286}" rx="2"/></g>` +
+      `<g class="fm-obj"><line x1="150" y1="286" x2="208" y2="286"/></g>`,
   };
+  // Free-weight implements track a hand each (front: both hands), drawn at the
+  // projected joint via a transform so they follow the movement.
+  const IMPLEMENTS = {
+    dumbbell: () =>
+      `<line class="fm-obj" x1="-11" y1="0" x2="11" y2="0"/>` +
+      `<rect class="fm-obj-fill" x="-13" y="-7" width="5" height="14" rx="1.5"/>` +
+      `<rect class="fm-obj-fill" x="8" y="-7" width="5" height="14" rx="1.5"/>`,
+    kettlebell: () =>
+      `<path class="fm-obj" d="M -5 -10 A 6 6 0 0 1 5 -10" fill="none"/>` +
+      `<circle class="fm-obj-fill" cx="0" cy="2" r="9"/>`,
+  };
+  const isImplement = (id) => !!(id && IMPLEMENTS[id]);
   const glyph = (id) => (id && OBJECTS[id] ? OBJECTS[id] : null);
 
   function lerpPose(a, b, t) {
     const out = {};
-    for (const k in a) if (b[k]) out[k] = [a[k][0] + (b[k][0] - a[k][0]) * t, a[k][1] + (b[k][1] - a[k][1]) * t];
+    for (const k in a) if (b[k]) {
+      const az = a[k].length > 2 ? a[k][2] : 0, bz = b[k].length > 2 ? b[k][2] : 0;
+      const x = a[k][0] + (b[k][0] - a[k][0]) * t, y = a[k][1] + (b[k][1] - a[k][1]) * t;
+      const z = az + (bz - az) * t;
+      out[k] = (az || bz) ? [x, y, z] : [x, y];
+    }
     return out;
   }
 
+  // Project a joint to screen space (the only place yaw/depth is applied).
+  function proj(coord, yaw) {
+    if (!Geom) return [coord[0], coord[1]];
+    return Geom.projectXY(coord, yaw);
+  }
+
+  // Static-fallback markup (reduced motion): no yaw, no implements — a calm,
+  // robust key-pose diagram. New room objects render here automatically.
   function markup(p, view, objFn) {
+    const withHeel = view === "side" && p.ankle && p.toe ? Object.assign({ heel: Geom ? Geom.heel(p.ankle, p.toe) : p.ankle }, p) : p;
     const line = (a, b, cls) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" class="${cls}"/>`;
     let s = `<line class="fm-ground" x1="40" y1="${GROUND_Y}" x2="200" y2="${GROUND_Y}"/>`;
     if (objFn) s += objFn();
     let out = "", core = "";
-    for (const [a, b] of SEG[view]) if (p[a] && p[b]) { out += line(p[a], p[b], "fm-bone-outline"); core += line(p[a], p[b], "fm-bone"); }
+    for (const [a, b] of SEG[view]) if (withHeel[a] && withHeel[b]) { out += line(withHeel[a], withHeel[b], "fm-bone-outline"); core += line(withHeel[a], withHeel[b], "fm-bone"); }
     s += out + core;
-    if (p.head) s += `<circle cx="${p.head[0]}" cy="${p.head[1]}" r="18" class="fm-head-outline"/>` +
-      `<circle cx="${p.head[0]}" cy="${p.head[1]}" r="16" class="fm-head"/>`;
+    if (withHeel.head) s += `<circle cx="${withHeel.head[0]}" cy="${withHeel.head[1]}" r="18" class="fm-head-outline"/>` +
+      `<circle cx="${withHeel.head[0]}" cy="${withHeel.head[1]}" r="16" class="fm-head"/>`;
     return s;
   }
 
@@ -129,11 +180,26 @@ const FormModel = (() => {
     let view = ex.views.front && !ex.views.side ? "front" : "side";
     let tempoScale = 1, raf = null, phaseIdx = 0, phaseStart = 0, reps = 0;
     let playing = false, staticMode = reduceMotion, destroyed = false;
-    let history = [], lastSecond = -1;
+    let history = [], lastSecond = -1, yawRad = 0;
 
     const poses = () => ex.views[view] || ex.views.side || ex.views.front;
-    const objFn = () => glyph((ex.object && ex.object[view]) || null);
+    const objId = () => (ex.object && ex.object[view]) || null;
+    const objFn = () => glyph(objId());
     const restPoseName = () => (poses().stand ? "stand" : Object.keys(poses())[0]);
+
+    // Manual turn (slider) when auto-yaw is off; gentle oscillation when on.
+    function yawAt(ts) {
+      if (prefs.autoYaw) return playing ? YAW_AMP * Math.sin((ts || 0) / 2200) : 0;
+      return (prefs.yaw || 0) * DEG;
+    }
+
+    // Add a synthesized heel to a side-view pose so the foot reads correctly.
+    function withFoot(p) {
+      if (view !== "side" || !Geom || !p.ankle || !p.toe) return p;
+      const out = Object.assign({}, p);
+      out.heel = Geom.heel(p.ankle, p.toe);
+      return out;
+    }
 
     // ---- DOM ----
     host.innerHTML = "";
@@ -156,14 +222,32 @@ const FormModel = (() => {
     const resetBtn = el("button", "btn", "Reset");
     const sideBtn = el("button", "btn sm active", "Side");
     const frontBtn = el("button", "btn sm", "Front");
+    const mirrorBtn = el("button", "btn sm", "Mirror");
+    mirrorBtn.setAttribute("aria-pressed", prefs.mirror ? "true" : "false");
+    if (prefs.mirror) mirrorBtn.classList.add("active");
     if (!ex.views.front) frontBtn.disabled = true;
     if (!ex.views.side) { sideBtn.classList.remove("active"); frontBtn.classList.add("active"); sideBtn.disabled = true; }
     const tempoNorm = el("button", "btn sm active", "Normal");
     const tempoSlow = el("button", "btn sm", "Slow");
     const staticBtn = el("button", "btn sm", staticMode ? "Show animation" : "Static view");
 
-    const row1 = el("div", "fm-controls"); row1.append(playBtn, resetBtn, el("div", "fm-spring"), sideBtn, frontBtn);
+    const row1 = el("div", "fm-controls"); row1.append(playBtn, resetBtn, el("div", "fm-spring"), sideBtn, frontBtn, mirrorBtn);
     const row2 = el("div", "fm-controls"); row2.append(tempoNorm, tempoSlow, el("div", "fm-spring"), staticBtn);
+
+    // Pseudo-3-D turn: a gentle auto-yaw toggle plus a manual angle slider. NOTE
+    // (honest): with today's flat poses a full 90deg turn would degenerate to a
+    // line, so this stays a subtle tilt; it becomes a true turn once poses carry
+    // depth (z). Persisted across sessions.
+    const yawRow = el("div", "fm-controls fm-3d");
+    const autoWrap = el("label", "fm-pref");
+    const autoYaw = el("input"); autoYaw.type = "checkbox"; autoYaw.checked = !!prefs.autoYaw;
+    autoWrap.append(autoYaw, document.createTextNode(" Auto-turn (3-D)"));
+    const yawWrap = el("label", "fm-pref fm-yaw");
+    const yawSlider = el("input"); yawSlider.type = "range"; yawSlider.min = "-45"; yawSlider.max = "45"; yawSlider.step = "1";
+    yawSlider.value = String(prefs.yaw || 0); yawSlider.disabled = !!prefs.autoYaw;
+    yawSlider.setAttribute("aria-label", "Turn angle in degrees");
+    yawWrap.append(document.createTextNode("Turn "), yawSlider);
+    yawRow.append(autoWrap, el("div", "fm-spring"), yawWrap);
 
     // Display & sound preferences (shared + persisted).
     const prefsPanel = el("details", "fm-prefs");
@@ -209,7 +293,7 @@ const FormModel = (() => {
     const rpe = el("div", "fm-rpe");
     const staticWrap = el("div", "fm-static hidden");
 
-    const anim = el("div"); anim.append(stage, meta, bar, cue, row1, row2, prefsPanel, rpe);
+    const anim = el("div"); anim.append(stage, meta, bar, cue, row1, row2, yawRow, prefsPanel, rpe);
     host.append(anim, staticWrap);
 
     // ---- persistent SVG scene ----
@@ -229,25 +313,43 @@ const FormModel = (() => {
     const groundLine = mk("line", { x1: 40, y1: GROUND_Y, x2: 200, y2: GROUND_Y, class: "fm-ground" });
     const shadowEll = mk("ellipse", { cx: 120, cy: GROUND_Y + 9, rx: 46, ry: 9, class: "fm-shadow", filter: `url(#${uid}-soft)` });
     const breathRing = mk("circle", { cx: 120, cy: 150, r: 74, class: "fm-breath" });
+    // worldGroup carries the mirror/face flip; ambient layers stay centered.
+    const worldGroup = mk("g", { class: "fm-world" });
     const ghostsGroup = mk("g", { class: "fm-ghosts" });
-    const objGroup = mk("g", { class: "fm-object" });
+    const envGroup = mk("g", { class: "fm-object" });    // static room objects
+    const implGroup = mk("g", { class: "fm-implements" }); // tracking free weights
     const figGroup = mk("g", { class: "fm-figure" });
-    svg.append(glowEll, breathRing, groundLine, shadowEll, ghostsGroup, objGroup, figGroup);
+    worldGroup.append(ghostsGroup, envGroup, implGroup, figGroup);
+    svg.append(glowEll, breathRing, groundLine, shadowEll, worldGroup);
 
     let segNodes = [], headOutline = null, headRing = null, ghostNodes = [], faceNodes = null;
-    let charNodes = null, headR = 16;
+    let charNodes = null, headR = 16, implNodes = [];
 
     function applyLines(lines, p) {
       SEG[view].forEach(([a, b], i) => {
         const pa = p[a], pb = p[b], ln = lines[i];
-        if (pa && pb) { ln.setAttribute("x1", pa[0]); ln.setAttribute("y1", pa[1]); ln.setAttribute("x2", pb[0]); ln.setAttribute("y2", pb[1]); ln.style.display = ""; }
-        else ln.style.display = "none";
+        if (pa && pb) {
+          const qa = proj(pa, yawRad), qb = proj(pb, yawRad);
+          ln.setAttribute("x1", qa[0]); ln.setAttribute("y1", qa[1]); ln.setAttribute("x2", qb[0]); ln.setAttribute("y2", qb[1]); ln.style.display = "";
+        } else ln.style.display = "none";
       });
+    }
+
+    function applyMirror() {
+      worldGroup.setAttribute("transform", prefs.mirror ? "translate(240 0) scale(-1 1)" : "");
     }
 
     function buildFigure() {
       figGroup.textContent = ""; ghostsGroup.textContent = ""; ghostNodes = [];
-      objGroup.innerHTML = (objFn() || (() => ""))();
+      const oid = objId();
+      envGroup.innerHTML = (!isImplement(oid) && OBJECTS[oid]) ? OBJECTS[oid]() : "";
+
+      // Free-weight implements: one per tracked hand (front view: both hands).
+      implGroup.textContent = ""; implNodes = [];
+      if (isImplement(oid)) {
+        const keys = view === "side" ? ["hand"] : ["lhand", "rhand"];
+        keys.forEach((k) => { const g = mk("g", { class: "fm-impl" }); g.innerHTML = IMPLEMENTS[oid](); implGroup.appendChild(g); implNodes.push([k, g]); });
+      }
 
       // Onion-skin ghost layers (core-only), drawn behind the figure.
       if (prefs.trails) {
@@ -301,6 +403,7 @@ const FormModel = (() => {
       figGroup.append(headOutline, headRing);
       front.forEach((n) => figGroup.appendChild(n));   // male hair cap (over head)
       if (faceNodes) figGroup.append(faceNodes.mouth, faceNodes.eyeL, faceNodes.eyeR);
+      applyMirror();
     }
 
     function applyShadingTo(coreLine) {
@@ -310,11 +413,21 @@ const FormModel = (() => {
       else coreLine.removeAttribute("stroke");
     }
 
-    function drawPose(p) {
+    function drawPose(raw) {
+      const p = withFoot(raw);
       applyLines(segNodes.map((s) => s.outline), p);
       applyLines(segNodes.map((s) => s.core), p);
+      // Subtle per-limb depth shading from projected z (no-op for flat poses).
+      if (prefs.shading && Geom) {
+        SEG[view].forEach(([a, b], i) => {
+          if (p[a] && p[b]) {
+            const d = (Geom.project(p[a], yawRad).depth + Geom.project(p[b], yawRad).depth) / 2;
+            segNodes[i].core.setAttribute("stroke-opacity", Geom.depthShade(d).toFixed(3));
+          }
+        });
+      }
       if (p.head) {
-        const hx = p.head[0], hy = p.head[1];
+        const hp = proj(p.head, yawRad), hx = hp[0], hy = hp[1];
         headOutline.setAttribute("cx", hx); headOutline.setAttribute("cy", hy); headOutline.style.display = "";
         headRing.setAttribute("cx", hx); headRing.setAttribute("cy", hy); headRing.style.display = "";
         if (faceNodes) {
@@ -323,7 +436,7 @@ const FormModel = (() => {
             faceNodes.eyeR.setAttribute("cx", hx + 7); faceNodes.eyeR.setAttribute("cy", hy - 3);
             faceNodes.eyeR.style.display = "";
             faceNodes.mouth.setAttribute("d", `M ${hx - 7} ${hy + 6} Q ${hx} ${hy + 12} ${hx + 7} ${hy + 6}`);
-          } else {  // side view — face looks forward (+x)
+          } else {  // side view — face looks forward (+x); mirror flips the whole world group
             faceNodes.eyeL.setAttribute("cx", hx + 6); faceNodes.eyeL.setAttribute("cy", hy - 3);
             faceNodes.eyeR.style.display = "none";
             faceNodes.mouth.setAttribute("d", `M ${hx + 2} ${hy + 7} Q ${hx + 9} ${hy + 11} ${hx + 13} ${hy + 5}`);
@@ -334,15 +447,20 @@ const FormModel = (() => {
         headOutline.style.display = "none"; headRing.style.display = "none";
         if (faceNodes) { faceNodes.eyeL.style.display = "none"; faceNodes.eyeR.style.display = "none"; faceNodes.mouth.style.display = "none"; }
       }
-      const hx = p.hip ? p.hip[0] : 120, hy = p.hip ? p.hip[1] : 190;
-      shadowEll.setAttribute("cx", hx.toFixed(1));
-      shadowEll.setAttribute("rx", clamp(40 + (hy - 178) * 0.16, 36, 60).toFixed(1));
+      // Free-weight implements follow the projected hand(s).
+      implNodes.forEach(([k, g]) => {
+        if (p[k]) { const q = proj(p[k], yawRad); g.setAttribute("transform", `translate(${q[0].toFixed(1)} ${q[1].toFixed(1)})`); g.style.display = ""; }
+        else g.style.display = "none";
+      });
+      const hipp = p.hip ? proj(p.hip, yawRad) : [120, 190];
+      shadowEll.setAttribute("cx", hipp[0].toFixed(1));
+      shadowEll.setAttribute("rx", clamp(40 + (hipp[1] - 178) * 0.16, 36, 60).toFixed(1));
       updateChar(p);
     }
 
     function updateChar(p) {
       if (!charNodes) return;
-      const h = p.head;
+      const h = p.head ? proj(p.head, yawRad) : null;
       const show = (n, on) => { if (n) n.style.display = on ? "" : "none"; };
       if (charNodes.hairBack) { if (h) { charNodes.hairBack.setAttribute("cx", h[0]); charNodes.hairBack.setAttribute("cy", h[1]); } show(charNodes.hairBack, !!h); }
       if (charNodes.lockL) { if (h) { charNodes.lockL.setAttribute("cx", (h[0] - headR * 0.78).toFixed(1)); charNodes.lockL.setAttribute("cy", (h[1] + headR * 0.6).toFixed(1)); } show(charNodes.lockL, !!h); }
@@ -351,7 +469,7 @@ const FormModel = (() => {
       if (charNodes.skirt) {
         const kneeY = p.lknee ? p.lknee[1] : (p.knee ? p.knee[1] : (p.hip ? p.hip[1] + 60 : 0));
         if (p.hip) {
-          const hipx = p.hip[0], hyy = p.hip[1], thighY = (hyy + kneeY) / 2;
+          const hp = proj(p.hip, yawRad), hipx = hp[0], hyy = hp[1], thighY = (hyy + kneeY) / 2;
           charNodes.skirt.setAttribute("d", `M ${(hipx - 26).toFixed(1)} ${thighY.toFixed(1)} L ${hipx} ${(hyy - 16).toFixed(1)} L ${(hipx + 26).toFixed(1)} ${thighY.toFixed(1)} Z`);
         }
         show(charNodes.skirt, !!p.hip);
@@ -368,19 +486,20 @@ const FormModel = (() => {
     }
 
     const setGlow = (o) => { glowEll.style.opacity = o; };
-    function showRest() { history = []; drawPose(poses()[restPoseName()]); updateGhosts(); }
+    function showRest() { history = []; yawRad = yawAt(0); const rp = withFoot(poses()[restPoseName()]); drawPose(rp); history.push(rp); updateGhosts(); }
     function showPhaseText(name) { phaseEl.textContent = name; if (ex.cues && ex.cues[name]) cue.innerHTML = ex.cues[name]; }
 
     function frame(ts) {
       if (!playing || destroyed) return;
       if (!svg.isConnected) { playing = false; return; }
+      yawRad = yawAt(ts);
       const ph = ex.phases[phaseIdx];
       const dur = ph.dur * (ph.isHold ? 1 : tempoScale);
       if (!phaseStart) phaseStart = ts;
       const elapsed = ts - phaseStart;
       let t = elapsed / dur; if (t > 1) t = 1;
       const P = poses();
-      const cp = lerpPose(P[ph.from] || P[restPoseName()], P[ph.to] || P[restPoseName()], ease(t));
+      const cp = withFoot(lerpPose(P[ph.from] || P[restPoseName()], P[ph.to] || P[restPoseName()], ease(t)));
       drawPose(cp);
       history.push(cp); if (history.length > (GHOSTS + 1) * GHOST_GAP + 2) history.shift();
       updateGhosts();
@@ -469,7 +588,8 @@ const FormModel = (() => {
       const mid = Object.keys(P).find((k) => k !== restPoseName()) || Object.keys(P)[0];
       const seq = [P[restPoseName()], P[mid], P[restPoseName()]];
       const labels = ex.staticLabels || (ex.targetReps ? ["Start", "Bottom", "Return"] : ["Stand", "Hold", "Stand"]);
-      const of = glyph((ex.object && ex.object[v]) || null);
+      const oid = (ex.object && ex.object[v]) || null;
+      const of = isImplement(oid) ? null : glyph(oid);
       const mini = (p) => `<svg viewBox="0 0 240 340" role="img" aria-label="Key pose">${markup(p, v, of)}</svg>`;
       staticWrap.innerHTML =
         `<div class="fm-triptych">` + seq.map((p, i) => `<figure>${mini(p)}<figcaption>${labels[i]}</figcaption></figure>`).join("") + `</div>` +
@@ -486,8 +606,10 @@ const FormModel = (() => {
     // Live-apply a changed preference without losing place.
     function applyPref(key) {
       if (key === "trails" || key === "figure") { buildFigure(); if (!playing) showRest(); }
-      else if (key === "shading") { segNodes.forEach((s) => applyShadingTo(s.core)); }
+      else if (key === "shading") { segNodes.forEach((s) => applyShadingTo(s.core)); if (!playing) showRest(); }
       else if (key === "ring" && !playing) { breathRing.style.display = "none"; }
+      else if (key === "mirror") { applyMirror(); }
+      else if (key === "yaw") { if (!playing) showRest(); }
     }
 
     function setView(v) {
@@ -503,14 +625,30 @@ const FormModel = (() => {
       tempoNorm.classList.toggle("active", !slow);
       tempoSlow.classList.toggle("active", slow);
     }
+    function setMirror(on) {
+      prefs.mirror = on; savePrefs(prefs);
+      mirrorBtn.classList.toggle("active", on);
+      mirrorBtn.setAttribute("aria-pressed", on ? "true" : "false");
+      applyMirror();
+    }
 
     playBtn.onclick = () => (playing ? pause() : start());
     resetBtn.onclick = reset;
     sideBtn.onclick = () => setView("side");
     frontBtn.onclick = () => setView("front");
+    mirrorBtn.onclick = () => setMirror(!prefs.mirror);
     tempoNorm.onclick = () => setTempo(false);
     tempoSlow.onclick = () => setTempo(true);
     staticBtn.onclick = () => applyStatic(!staticMode);
+    autoYaw.addEventListener("change", () => {
+      prefs.autoYaw = autoYaw.checked; savePrefs(prefs);
+      yawSlider.disabled = autoYaw.checked;
+      if (!playing) showRest();
+    });
+    yawSlider.addEventListener("input", () => {
+      prefs.yaw = Number(yawSlider.value) || 0; savePrefs(prefs);
+      applyPref("yaw");
+    });
 
     buildFigure();
     reset();
