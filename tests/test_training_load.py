@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for training-load / form (CTL/ATL/TSB) analytics and its API endpoint."""
 
 from __future__ import annotations
@@ -5,7 +6,6 @@ from __future__ import annotations
 import datetime as _dt
 import math
 import time
-from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient

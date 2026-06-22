@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Training-load & form analytics -- the Performance Management Chart (pure, stdlib-only).
 
 Turns a local activity history into the three numbers serious endurance athletes

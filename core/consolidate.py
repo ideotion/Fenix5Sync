@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Cross-source duplicate detection (pure, stdlib-only).
 
 The exact-content SHA-256 dedupe in :mod:`core.dedupe` only catches byte-identical

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Cross-activity heart-rate & efficiency trends (pure, stdlib-only).
 
 Tracks how the aerobic engine changes over time from activity *summaries* only

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Per-activity performance metrics (pure, stdlib-only).
 
 The advanced single-workout numbers serious athletes look at beyond the basic
@@ -27,7 +28,6 @@ and uses no third-party dependency.
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 from typing import Sequence
 

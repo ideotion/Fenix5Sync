@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Optional, non-destructive anonymization of activities for export/sharing.
 
 The local archive is the lossless source of truth and is **never** modified by
@@ -28,7 +29,7 @@ from typing import Any
 
 from .config import AnonymizeConfig
 from .geo import haversine_m, offset_point
-from .models import Activity, Lap, Trackpoint
+from .models import Activity, Trackpoint
 
 # Reference instant used when rebasing dates (preserves intervals, hides "when").
 _DATE_ANCHOR = _dt.datetime(2000, 1, 1, 0, 0, 0)

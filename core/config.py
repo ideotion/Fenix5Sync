@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Configuration loading for Fenix5Sync.
 
 A single YAML file drives source path/mode, storage and DB locations, export

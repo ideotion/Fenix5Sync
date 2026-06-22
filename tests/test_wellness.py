@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for monitoring-file wellness parsing and daily summarization."""
 
 from __future__ import annotations

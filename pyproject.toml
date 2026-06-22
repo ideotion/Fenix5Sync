@@ -25,12 +25,18 @@ dependencies = [
     "fitparse>=1.2",
     "pyyaml>=6.0",
     "typer>=0.12",
+    "defusedxml>=0.7",   # hardened XML parsing for untrusted GPX/TCX imports
 ]
 
 [project.optional-dependencies]
 test = [
     "pytest>=8.0",
     "httpx>=0.27",   # required by fastapi.testclient
+]
+dev = [
+    "ruff>=0.6",
+    "bandit>=1.7",
+    "pip-audit>=2.7",
 ]
 
 [project.scripts]
@@ -46,3 +52,23 @@ packages = ["core", "core.importers", "server", "cli"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["web/vendor"]
+# Uses ruff's default lint set (pyflakes F + pycodestyle E); the codebase is
+# clean under it. Re-exports are marked with an explicit `as` alias + noqa.
+
+[tool.bandit]
+# Scope: application code only (tests intentionally use asserts, temp files, etc.).
+exclude_dirs = ["tests", "web"]
+# Reviewed false positives (see AUDIT notes):
+#   B608 — all dynamic SQL in core/store.py uses constant column-name identifiers
+#          and bound (?) parameters; the only interpolated clauses are the
+#          whitelisted sort column (core/search.py SORTABLE) and a normalised
+#          ASC/DESC order, so no user input reaches the SQL string.
+#   B104 — cli/main.py compares the configured host to "0.0.0.0"/"::" purely to
+#          choose a loopback address for the browser-open probe; it is not a bind.
+#          (The actual bind is loopback-enforced in core/config.py.)
+skips = ["B608", "B104"]

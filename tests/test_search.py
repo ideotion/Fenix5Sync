@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Search/filter tests against a store populated with synthetic activities."""
 
 from __future__ import annotations

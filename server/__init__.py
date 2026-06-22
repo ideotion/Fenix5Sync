@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Fenix5Sync HTTP server (FastAPI).
 
 Exposes the core library over a JSON API bound to loopback only and serves the

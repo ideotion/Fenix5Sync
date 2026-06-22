@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for multi-format import: detection, TCX/GPX parsing, sources, pipeline."""
 
 from __future__ import annotations

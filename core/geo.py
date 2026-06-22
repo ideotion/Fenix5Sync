@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Geographic helpers (pure, stdlib-only).
 
 Small functions shared across the codebase: great-circle distance and a

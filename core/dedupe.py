@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Content-based deduplication helpers.
 
 Files are identified by the SHA-256 of their *contents*, not their filename, so

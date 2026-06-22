@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """FIT parsing via fitparse.
 
 Extracts a session-level summary, per-lap summaries and record-level time series

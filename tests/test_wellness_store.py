@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tests for wellness storage, sync-pipeline routing, and the wellness endpoint."""
 
 from __future__ import annotations

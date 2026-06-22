@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Import pipeline: acquire -> dedupe -> parse -> store.
 
 Orchestrates the core modules into a single idempotent run and returns a
@@ -10,7 +11,6 @@ live progress.
 from __future__ import annotations
 
 import datetime as _dt
-from pathlib import Path
 from typing import Callable
 
 from . import acquire

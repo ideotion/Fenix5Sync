@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """A tiny, dependency-free FIT encoder used to generate test fixtures.
 
 This is *test* support code, not part of the shipped library: it lets us create

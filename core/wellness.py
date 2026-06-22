@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Daily wellness / readiness summaries from Garmin *monitoring* files (stdlib + fitparse).
 
 The watch writes separate **monitoring** FIT files (steps, all-day heart rate, and

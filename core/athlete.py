@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Athlete-profile suggestions from the local archive (pure, stdlib-only).
 
 Helps fill in the athlete config without typing: the **observed maximum heart

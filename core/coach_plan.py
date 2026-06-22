@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Dynamic-coach controller -- turns CoachState + a goal into an adaptive plan (pure, stdlib-only).
 
 This is the *controller* half of the LLM-less dynamic coach (the sensor half is
@@ -294,7 +295,7 @@ def _size_week(weekly_budget: float, week_roles: dict[int, str], goal: CoachGoal
         for wd in flex_wd:
             out[wd][1] = per_flex
 
-    return {wd: (k, l) for wd, (k, l) in out.items()}
+    return {wd: (k, ld) for wd, (k, ld) in out.items()}
 
 
 def _phase(d: date, goal: CoachGoal, week_index: int, target_ramp: float) -> tuple[str, float]:
@@ -387,7 +388,7 @@ def compute_plan(
             week_plan = _size_week(weekly_budget, week_roles, goal)
             if i == 0:
                 week1_budget = weekly_budget
-                week1_load = sum(l for _, l in week_plan.values())
+                week1_load = sum(ld for _, ld in week_plan.values())
 
         kind, load = week_plan[d.weekday()]
 

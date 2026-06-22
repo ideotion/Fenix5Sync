@@ -251,10 +251,17 @@ All exports run locally; nothing leaves your machine.
 git clone https://github.com/ideotion/Fenix5Sync.git
 cd Fenix5Sync
 python3 -m venv .venv && . .venv/bin/activate
-pip install -e ".[test]"
+pip install -e ".[test,dev]"
 pytest                 # core (parse->store->export, dedupe, search) + API tests
+ruff check .                                       # lint
+bandit -ll -c pyproject.toml -r core server cli    # security (medium+)
+pip-audit                                           # dependency vulnerabilities
 fenix5sync serve --open
 ```
+
+CI runs the same lint, security and test checks. See
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for the contribution workflow and
+[`SECURITY.md`](SECURITY.md) for vulnerability reporting.
 
 The test suite generates a small valid `.FIT` fixture with a stdlib-only encoder
 (`tests/fixtures/make_fit.py`) and exercises the full pipeline end-to-end.
@@ -272,10 +279,12 @@ install.sh Debian bootstrap installer
 
 ### Dependencies
 
-Python: `fastapi`, `uvicorn`, `fitparse`, `pyyaml`, `typer` (plus `pytest`,
-`httpx` for tests). System (optional but recommended): `jmtpfs` (MTP),
-`gpsbabel` (GPX — there is also a built-in GPX writer fallback). Frontend:
-Chart.js is vendored in `web/vendor/` (MIT); no other JS dependencies, no CDN.
+Python: `fastapi`, `uvicorn`, `fitparse`, `pyyaml`, `typer`, `defusedxml`
+(hardened XML parsing for imported GPX/TCX) — plus `pytest`, `httpx` for tests and
+`ruff`, `bandit`, `pip-audit` in the `dev` extra. System (optional but
+recommended): `jmtpfs` (MTP), `gpsbabel` (GPX — there is also a built-in GPX
+writer fallback). Frontend: Chart.js is vendored in `web/vendor/` (MIT); no other
+JS dependencies, no CDN.
 
 ### Releases
 

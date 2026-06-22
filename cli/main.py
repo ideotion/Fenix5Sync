@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Thin CLI for development and headless automation.
 
 Commands wrap the core pipeline and the server. Nothing here contains business

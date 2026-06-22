@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """All-time personal records from the local archive (pure, stdlib-only).
 
 Aggregates each activity's best efforts (fastest time to cover each standard

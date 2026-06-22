@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Integrity checks for the bundled Tai Chi content pack.
 
 This content is rendered by the offline Tai Chi tab; the tests guard its shape and
