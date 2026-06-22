@@ -200,6 +200,84 @@ const HomeView = (() => {
     return card;
   }
 
+  // ---------- session builder (balanced, time-budgeted) ----------
+  const BUILD_KEY = "f5s-home-builder";
+  const SEED_KEY = "f5s-home-seed";
+  function loadBuild() { try { return JSON.parse(localStorage.getItem(BUILD_KEY)) || {}; } catch (_) { return {}; } }
+  function saveBuild(b) { try { localStorage.setItem(BUILD_KEY, JSON.stringify(b)); } catch (_) {} }
+  function nextSeed() {
+    let n = 1; try { n = (Number(localStorage.getItem(SEED_KEY)) || 0) + 1; localStorage.setItem(SEED_KEY, String(n)); } catch (_) {}
+    return n;
+  }
+
+  function startSession(session) {
+    const host = U.el("div");
+    U.setView(host);
+    SessionPlayer.create(host, session, { title: "Sports at Home session", onExit: render });
+  }
+
+  function builderCard() {
+    if (typeof SessionBuilder === "undefined") return null;
+    const b = loadBuild();
+    const card = U.el("div", { class: "card pad", style: "margin-top:var(--sp-5)" });
+    const sel = (opts, val) => {
+      const s = U.el("select");
+      opts.forEach(([v, label]) => { const o = U.el("option", { value: v, text: label }); if (String(v) === String(val)) o.selected = true; s.appendChild(o); });
+      return s;
+    };
+    const length = sel([[5, "5 min"], [10, "10 min"], [15, "15 min"], [20, "20 min"], [30, "30 min"], [45, "45 min"]], b.lengthMin || 15);
+    const sets = sel([[1, "1 set"], [2, "2 sets"], [3, "3 sets"], [4, "4 sets"]], b.sets || 2);
+    const reps = U.el("input", { type: "number", min: "4", max: "20", value: b.reps || 10 });
+    const equip = sel([["bodyweight", "Bodyweight"], ["household", "Household objects"], ["weights", "Free weights"]], b.equipment || "bodyweight");
+    const focus = sel([["full_body", "Full body"], ["lower_body", "Lower body"], ["upper_body", "Upper body"], ["core", "Core"], ["balance", "Balance"]], b.focus || "full_body");
+    const field = (label, node) => U.el("label", { class: "coach-field" }, [U.el("span", { class: "coach-field-l", text: label }), node]);
+    const preview = U.el("div", { class: "coach-plan-preview" });
+
+    function opts() {
+      return {
+        lengthMin: Number(length.value), sets: Number(sets.value), reps: Number(reps.value),
+        equipment: equip.value, focus: focus.value,
+        tier: (getScreen() || {}).tier || "standing", cleared: isometricOk(), seed: nextSeed(),
+      };
+    }
+    function buildAndShow() {
+      const o = opts();
+      saveBuild({ lengthMin: o.lengthMin, sets: o.sets, reps: o.reps, equipment: o.equipment, focus: o.focus });
+      const session = SessionBuilder.buildHome(library.exercises || [], o);
+      preview.innerHTML = "";
+      preview.appendChild(sessionPreview(session, "Start session", () => startSession(session)));
+    }
+
+    card.append(
+      U.el("h3", { class: "tc-h", text: "Build a balanced session" }),
+      U.el("div", { class: "sub", style: "margin-bottom:var(--sp-3)", text: "A time-budgeted session covering lower body, upper body and core (plus balance for fragile starters), warmed up and cooled down. Free weights swap in a dumbbell/kettlebell where it’s safe; isometrics stay locked until you pass the readiness check." }),
+      U.el("div", { class: "coach-form" }, [
+        field("Length", length), field("Sets", sets), field("Reps", reps),
+        field("Equipment", equip), field("Focus", focus),
+      ]),
+      U.el("div", { style: "margin-top:var(--sp-3)" }, [
+        U.el("button", { class: "btn primary", text: "Build session", onclick: buildAndShow }),
+      ]),
+      preview,
+    );
+    return card;
+  }
+
+  function sessionPreview(session, startLabel, onStart) {
+    const wrap = U.el("div", { style: "margin-top:var(--sp-4)" });
+    const cov = session.coverageOk ? "covers all target regions" : "partial coverage (small pool)";
+    wrap.appendChild(U.el("div", { class: "sub", text: `${session.items.length} exercises · ~${session.minutes} min · ${cov}` }));
+    wrap.appendChild(U.el("ol", { class: "sp-plan-list" }, session.items.map((i) =>
+      U.el("li", {}, [
+        U.el("span", { class: "sp-plan-role", text: i.role === "warmup" ? "warm-up" : i.role === "cooldown" ? "cool-down" : i.region.replace("_", " ") }),
+        U.el("span", { class: "sp-plan-name", text: i.name }),
+        U.el("span", { class: "sp-plan-dose", text: i.sets > 1 ? `${i.sets}×` : "" }),
+      ])
+    )));
+    wrap.appendChild(U.el("button", { class: "btn primary", style: "margin-top:var(--sp-3)", text: startLabel, onclick: onStart }));
+    return wrap;
+  }
+
   function draw() {
     const root = U.el("div", { class: "tc home" });
     root.appendChild(U.el("div", { class: "page-head" }, [
@@ -225,6 +303,13 @@ const HomeView = (() => {
     guidedHost = U.el("div", { class: "card pad" });
     drawGuided(guidedHost);
     root.appendChild(guidedHost);
+
+    // Session builder (balanced, time-budgeted, runs through the engine).
+    const builder = builderCard();
+    if (builder) {
+      root.appendChild(U.el("h2", { class: "tc-section", text: "Build a session" }));
+      root.appendChild(builder);
+    }
 
     // Capacity check.
     root.appendChild(capacityCard());

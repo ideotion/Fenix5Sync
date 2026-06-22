@@ -86,6 +86,61 @@ const TaiChiView = (() => {
     ]);
   }
 
+  // ---------- session builder (length-adjustable flow) ----------
+  const BUILD_KEY = "f5s-taichi-builder";
+  const SEED_KEY = "f5s-taichi-seed";
+  function loadBuild() { try { return JSON.parse(localStorage.getItem(BUILD_KEY)) || {}; } catch (_) { return {}; } }
+  function saveBuild(b) { try { localStorage.setItem(BUILD_KEY, JSON.stringify(b)); } catch (_) {} }
+  function nextSeed() {
+    let n = 1; try { n = (Number(localStorage.getItem(SEED_KEY)) || 0) + 1; localStorage.setItem(SEED_KEY, String(n)); } catch (_) {}
+    return n;
+  }
+  function startSession(session) {
+    const host = U.el("div");
+    U.setView(host);
+    SessionPlayer.create(host, session, { title: "Tai Chi flow", onExit: render });
+  }
+
+  function builderCard() {
+    const list = (movements && movements.movements) || [];
+    if (!list.length || typeof SessionBuilder === "undefined") return null;
+    const b = loadBuild();
+    const sel = (opts, val) => {
+      const s = U.el("select");
+      opts.forEach(([v, label]) => { const o = U.el("option", { value: v, text: label }); if (String(v) === String(val)) o.selected = true; s.appendChild(o); });
+      return s;
+    };
+    const length = sel([[5, "5 min"], [10, "10 min"], [15, "15 min"], [20, "20 min"], [30, "30 min"]], b.lengthMin || 15);
+    const level = sel([["chair", "Chair / fragile"], ["supported", "Supported"], ["standing", "Standing"]], b.level || "standing");
+    const focus = sel([["full", "Whole flow"], ["balance", "Balance"], ["mobility", "Mobility"], ["lower-limb", "Lower limb"], ["breathing", "Breathing"]], b.focus || "full");
+    const field = (label, node) => U.el("label", { class: "coach-field" }, [U.el("span", { class: "coach-field-l", text: label }), node]);
+    const preview = U.el("div", { class: "coach-plan-preview" });
+
+    function buildAndShow() {
+      const o = { lengthMin: Number(length.value), level: level.value, focus: focus.value, seed: nextSeed() };
+      saveBuild({ lengthMin: o.lengthMin, level: o.level, focus: o.focus });
+      const session = SessionBuilder.buildTaiChi(list, o);
+      preview.innerHTML = "";
+      const wrap = U.el("div", { style: "margin-top:var(--sp-4)" });
+      wrap.appendChild(U.el("div", { class: "sub", text: `${session.items.length} movements · ~${session.minutes} min` }));
+      wrap.appendChild(U.el("ol", { class: "sp-plan-list" }, session.items.map((i) =>
+        U.el("li", {}, [
+          U.el("span", { class: "sp-plan-role", text: i.role === "warmup" ? "open" : i.role === "cooldown" ? "close" : i.region }),
+          U.el("span", { class: "sp-plan-name", text: i.name }),
+        ]))));
+      wrap.appendChild(U.el("button", { class: "btn primary", style: "margin-top:var(--sp-3)", text: "Start flow", onclick: () => startSession(session) }));
+      preview.appendChild(wrap);
+    }
+
+    return U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [
+      U.el("h3", { class: "tc-h", text: "Build a flow" }),
+      U.el("div", { class: "sub", style: "margin-bottom:var(--sp-3)", text: "A length-adjustable sequence covering balance, mobility, lower-limb and breathing, opening and closing on the breath. Balance is always included at the chair/fragile level. A gentle pacer, not instructed form." }),
+      U.el("div", { class: "coach-form" }, [field("Length", length), field("Level", level), field("Focus", focus)]),
+      U.el("div", { style: "margin-top:var(--sp-3)" }, [U.el("button", { class: "btn primary", text: "Build flow", onclick: buildAndShow })]),
+      preview,
+    ]);
+  }
+
   function draw() {
     const root = U.el("div", { class: "tc" });
     root.appendChild(U.el("div", { class: "page-head" }, [
@@ -102,6 +157,9 @@ const TaiChiView = (() => {
 
     const pacer = movementPacer();
     if (pacer) root.appendChild(pacer);
+
+    const builder = builderCard();
+    if (builder) root.appendChild(builder);
 
     if (data.sessions) {
       root.appendChild(U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [
