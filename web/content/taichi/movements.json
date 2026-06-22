@@ -1,0 +1,72 @@
+{
+  "_note": "Simplified movement/breathing pacers for the Tai Chi tab, rendered by the SHARED form-model engine (web/js/formModel.js) — the same engine that powers Sports at Home. These are gentle tempo/breath guides, not instructed Tai Chi form (instructor-reviewed videos are the pending deliverable). Authored conservatively in the 240x340 joint model; only movements whose keyframes are verified ship here.",
+  "ground_y": 318,
+  "disclaimer": "A simplified breathing-and-tempo pacer — move slowly and within comfort. Not a substitute for instructed Tai Chi form. Stop for chest pain, breathlessness, dizziness, or new joint pain.",
+  "movements": [
+    {
+      "id": "commencement",
+      "name": "Opening — raise & lower arms",
+      "object": {"side": null, "front": null},
+      "targetReps": 4,
+      "staticLabels": ["Arms down", "Arms raised", "Lower"],
+      "views": {
+        "side": {
+          "down": {"head": [120, 70], "sh": [118, 98], "hip": [116, 178], "knee": [114, 248], "ankle": [112, 312], "toe": [140, 312], "elb": [118, 132], "hand": [120, 168]},
+          "up": {"head": [120, 70], "sh": [118, 98], "hip": [116, 178], "knee": [114, 248], "ankle": [112, 312], "toe": [140, 312], "elb": [150, 100], "hand": [182, 100]}
+        }
+      },
+      "phases": [
+        {"name": "Raise", "dur": 4000, "from": "down", "to": "up"},
+        {"name": "Hold", "dur": 800, "from": "up", "to": "up"},
+        {"name": "Lower", "dur": 4000, "from": "up", "to": "down"},
+        {"name": "Settle", "dur": 800, "from": "down", "to": "down"}
+      ],
+      "cues": {
+        "Raise": "Breathe <b>in</b> as the arms float up to shoulder height.",
+        "Hold": "Soft shoulders, tall spine.",
+        "Lower": "Breathe <b>out</b> as the arms sink slowly down.",
+        "Settle": "Rest. Let the breath settle before the next cycle."
+      },
+      "staticCues": [
+        "Stand tall and relaxed, feet about hip-width, knees soft.",
+        "Float both arms forward and up to shoulder height as you breathe in.",
+        "Lower the arms slowly as you breathe out.",
+        "Keep shoulders soft throughout; move only within comfort."
+      ]
+    },
+    {
+      "id": "weight-shift",
+      "name": "Weight shift — side to side",
+      "object": {"side": null, "front": null},
+      "targetReps": 3,
+      "staticLabels": ["Centre", "Weight left", "Centre"],
+      "views": {
+        "front": {
+          "center": {"head": [120, 70], "sh": [120, 100], "hip": [120, 180], "lknee": [104, 248], "rknee": [136, 248], "lankle": [102, 312], "rankle": [138, 312], "lelb": [100, 140], "relb": [140, 140], "lhand": [100, 182], "rhand": [140, 182]},
+          "left": {"head": [108, 72], "sh": [108, 102], "hip": [112, 182], "lknee": [100, 250], "rknee": [136, 246], "lankle": [102, 312], "rankle": [138, 312], "lelb": [88, 142], "relb": [128, 142], "lhand": [88, 184], "rhand": [128, 184]},
+          "right": {"head": [132, 72], "sh": [132, 102], "hip": [128, 182], "lknee": [104, 246], "rknee": [140, 250], "lankle": [102, 312], "rankle": [138, 312], "lelb": [112, 142], "relb": [152, 142], "lhand": [112, 184], "rhand": [152, 184]}
+        }
+      },
+      "phases": [
+        {"name": "Left", "dur": 3000, "from": "center", "to": "left"},
+        {"name": "Hold left", "dur": 600, "from": "left", "to": "left"},
+        {"name": "Right", "dur": 6000, "from": "left", "to": "right"},
+        {"name": "Hold right", "dur": 600, "from": "right", "to": "right"},
+        {"name": "Centre", "dur": 3000, "from": "right", "to": "center"}
+      ],
+      "cues": {
+        "Left": "Shift your weight smoothly onto the <b>left</b> foot.",
+        "Hold left": "Tall and balanced — keep breathing.",
+        "Right": "Transfer slowly across onto the <b>right</b> foot.",
+        "Hold right": "Steady. Soft knees.",
+        "Centre": "Return to centre, weight even."
+      },
+      "staticCues": [
+        "Stand with feet a little wider than hip-width, knees soft.",
+        "Shift your weight slowly onto one foot, staying tall.",
+        "Transfer smoothly across to the other foot.",
+        "Keep a hand near support if your balance is unsure."
+      ]
+    }
+  ]
+}

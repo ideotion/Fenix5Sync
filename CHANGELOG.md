@@ -11,6 +11,11 @@ GitHub Releases page for the auto-generated notes per tag.
 ## [Unreleased]
 
 ### Added
+- **FIT Salvage** — recover corrupt/truncated `.FIT` files locally: walks the
+  record stream to the last complete record, repairs the header/CRC and
+  re-parses (deriving the summary from records when the session trailer was
+  lost). Available as `fenix5sync salvage`, `POST /api/salvage`, and a "Recover
+  a corrupt file" panel on Import/Sync. The original is never modified.
 - **Sports at Home** — guided, evidence-based home training with household
   objects: a bundled offline content pack + curation report, a PAR-Q+-style
   readiness screen (client-only) that gates isometric work, a data-driven SVG

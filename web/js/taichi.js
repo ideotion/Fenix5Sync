@@ -4,6 +4,8 @@
    research deliverables arrive. Every claim links to its source. */
 const TaiChiView = (() => {
   let data = null;
+  let movements = null;
+  let tcPlayer = null;
 
   const GRADE_COLOR = {
     "Strong": "--accent-strong", "Strong–Moderate": "--accent-strong",
@@ -21,6 +23,10 @@ const TaiChiView = (() => {
       U.setView(U.el("div", { class: "empty", text: "Could not load Tai Chi content: " + e.message }));
       return;
     }
+    if (movements === null) {
+      try { movements = await (await fetch("/content/taichi/movements.json")).json(); }
+      catch (_) { movements = { movements: [] }; }
+    }
     draw();
   }
 
@@ -37,6 +43,34 @@ const TaiChiView = (() => {
     }));
   }
 
+  // Movement & breathing pacer — driven by the SHARED form-model engine
+  // (the same engine that powers Sports at Home). Honest framing: a tempo/breath
+  // guide, not instructed Tai Chi form.
+  function movementPacer() {
+    const list = (movements && movements.movements) || [];
+    if (!list.length || typeof FormModel === "undefined") return null;
+
+    let current = null;
+    const stageHost = U.el("div", { class: "home-fm" });
+    const picker = U.el("div", { class: "home-ex-picker" }, list.map((mv) =>
+      U.el("button", { class: "btn sm", text: mv.name, onclick: () => select(mv.id) })));
+
+    function select(id) {
+      current = id;
+      if (tcPlayer) tcPlayer.destroy();
+      Array.from(picker.children).forEach((b, i) => b.classList.toggle("active", list[i].id === id));
+      tcPlayer = FormModel.create(stageHost, list.find((m) => m.id === id));
+    }
+    select(list[0].id);
+
+    return U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [
+      U.el("h3", { class: "tc-h", text: "Movement & breathing pacer" }),
+      U.el("div", { class: "sub", text: (movements.disclaimer || "Move slowly, within comfort.") }),
+      picker,
+      stageHost,
+    ]);
+  }
+
   function draw() {
     const root = U.el("div", { class: "tc" });
     root.appendChild(U.el("div", { class: "page-head" }, [
@@ -50,6 +84,9 @@ const TaiChiView = (() => {
       U.el("strong", { text: "Please read — " }),
       document.createTextNode(data.disclaimer),
     ]));
+
+    const pacer = movementPacer();
+    if (pacer) root.appendChild(pacer);
 
     if (data.sessions) {
       root.appendChild(U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [

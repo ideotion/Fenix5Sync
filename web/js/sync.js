@@ -31,6 +31,7 @@ const SyncView = (() => {
     ]));
 
     root.appendChild(await exportPanel());
+    root.appendChild(salvagePanel());
 
     const summary = U.el("div", { id: "sync-summary", style: "margin-top:var(--sp-5);display:none" });
     root.appendChild(summary);
@@ -92,6 +93,61 @@ const SyncView = (() => {
       if (btn) btn.disabled = false;
       setStatus("Idle.");
     }
+  }
+
+  function salvagePanel() {
+    const input = U.el("input", { type: "text", id: "salvage-path", style: "flex:1;min-width:240px",
+      placeholder: "Choose a corrupt or truncated .FIT file…" });
+    const browse = U.el("button", { class: "btn", onclick: async () => {
+      const picked = await Picker.open({ mode: "file", exts: [".fit"], title: "Choose a .FIT file to recover" });
+      if (picked) input.value = picked;
+    } }, [U.el("span", { text: "Browse…" })]);
+    const out = U.el("div", { class: "salvage-out", style: "margin-top:var(--sp-3)" });
+
+    const attempt = U.el("button", { class: "btn", id: "salvage-btn", onclick: async () => {
+      const path = input.value.trim();
+      if (!path) { U.toast("Choose a .FIT file to recover.", "bad"); return; }
+      attempt.disabled = true; out.innerHTML = "";
+      out.appendChild(U.spinner("Attempting recovery…"));
+      try {
+        const r = await API.salvage(path, false);
+        renderReport(r, path);
+      } catch (e) { out.innerHTML = ""; out.appendChild(U.el("div", { class: "sub", text: "Salvage failed: " + e.message })); }
+      finally { attempt.disabled = false; }
+    } }, [U.el("span", { text: "Attempt salvage" })]);
+
+    function renderReport(r, path) {
+      out.innerHTML = "";
+      if (!r.ok) {
+        out.appendChild(U.el("div", { class: "sub", text: `Could not recover this file (${r.reason}).` }));
+        return;
+      }
+      const p = r.preview || {};
+      out.appendChild(U.el("div", { class: "card pad" }, [
+        U.el("div", {}, [
+          U.el("strong", { text: `Recovered ${r.records_recovered} records ` }),
+          U.el("span", { class: "sub", text: `(${r.recovery_pct}% of the data; stopped: ${r.reason}).` }),
+        ]),
+        p.trackpoints != null ? U.el("div", { class: "sub", style: "margin-top:4px",
+          text: `Activity preview: ${U.cap(p.sport || "unknown")} · ${p.trackpoints} trackpoints · ${p.laps} laps · ${U.fmtDateTime(p.start_time)}` }) : null,
+        p.trackpoints ? U.el("button", { class: "btn primary", style: "margin-top:var(--sp-3)", onclick: async (e) => {
+          e.target.disabled = true;
+          try {
+            const r2 = await API.salvage(path, true);
+            const imp = r2.imported || {};
+            U.toast(imp.imported ? `Recovered activity imported.` : "Recovered, but it was already in your archive.", imp.imported ? "good" : "");
+            onEnd({ status: "done", summary: imp });
+          } catch (err) { U.toast("Import failed: " + err.message, "bad"); }
+        } }, [U.el("span", { text: "Import recovered activity" })]) : null,
+      ]));
+    }
+
+    return U.el("div", { class: "card pad", style: "margin-top:var(--sp-5)" }, [
+      U.el("h3", { style: "margin:0 0 4px", text: "Recover a corrupt file" }),
+      U.el("div", { class: "sub", text: "Your watch rebooted and left a file that won't import? Salvage recovers every readable record — locally, with your original untouched." }),
+      U.el("div", { class: "browse-row", style: "margin-top:var(--sp-3)" }, [input, browse, attempt]),
+      out,
+    ]);
   }
 
   async function start() {

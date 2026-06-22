@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import tempfile
 from pathlib import Path
 from typing import Any, Iterator
 
@@ -37,9 +38,11 @@ from core.export import (
 from core.hr_trends import compute_hr_trends
 from core.logging_setup import read_recent_logs
 from core.metrics import compute_activity_metrics
+from core.pipeline import import_activities
 from core.race import compute_race_predictions
 from core.privacy_audit import compute_privacy_audit
 from core.recap import compute_recap
+from core.salvage import salvage_fit_file
 from core.search import ActivityFilter
 from core.segments import compute_segment_efforts, segment_from_activity
 from core.splits import MILE_M, compute_splits
@@ -54,6 +57,7 @@ from .schemas import (
     ExportImportRequest,
     Health,
     LogsResponse,
+    SalvageRequest,
     SegmentCreate,
     Stats,
     SyncStatus,
@@ -581,6 +585,50 @@ def start_export_import(
     one_off.source.recursive = True
     job = jobs.start(one_off)
     return SyncStatus(**job.snapshot())
+
+
+@router.post("/salvage")
+def salvage(
+    body: SalvageRequest,
+    cfg: Config = Depends(get_config),
+) -> dict:
+    """Recover a corrupt/truncated FIT file, locally and offline.
+
+    Walks the record stream to the last complete record, repairs the header and
+    CRC, and re-parses — deriving the summary from records when the session
+    trailer was lost. The original is only read, never modified. With
+    ``import: true`` the recovered activity is also stored (content-deduplicated).
+    """
+    import copy
+
+    path = Path(body.path).expanduser()
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"file not found: {path}")
+
+    report, activity = salvage_fit_file(path)
+    preview = None
+    if activity is not None:
+        preview = {
+            "sport": activity.sport,
+            "start_time": activity.start_time.isoformat() if activity.start_time else None,
+            "trackpoints": len(activity.trackpoints),
+            "laps": len(activity.laps),
+        }
+
+    imported = None
+    if body.do_import and report.ok and report.repaired is not None and activity is not None:
+        tmp = tempfile.NamedTemporaryFile(prefix="fenix5sync-salvaged-", suffix=".fit", delete=False)
+        try:
+            tmp.write(report.repaired)
+            tmp.close()
+            one_off = copy.deepcopy(cfg)
+            one_off.source.mode = "file"
+            one_off.source.path = tmp.name
+            imported = import_activities(one_off).as_dict()
+        finally:
+            Path(tmp.name).unlink(missing_ok=True)
+
+    return {**report.as_dict(), "preview": preview, "imported": imported}
 
 
 @router.get("/sync", response_model=SyncStatus | None)

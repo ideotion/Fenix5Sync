@@ -151,6 +151,7 @@ fenix5sync show 12               # one activity's summary + laps
 fenix5sync export 12 --format tcx      # per-activity (csv|json|gpx|tcx|raw)
 fenix5sync export 12 -f gpx --anonymize # scrub location & sensitive data
 fenix5sync export --bulk --format csv
+fenix5sync salvage broken.fit --import # recover a corrupt/truncated FIT file
 fenix5sync archive               # full-fidelity NDJSON archive of everything
 fenix5sync serve --open          # run the GUI/API
 fenix5sync init-config           # write a default config file

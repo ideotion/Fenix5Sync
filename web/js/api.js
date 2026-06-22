@@ -48,6 +48,7 @@ const API = (() => {
     activityRacePredictions: (id) => req("/activities/" + id + "/race-predictions"),
     startSync: () => req("/sync", { method: "POST" }),
     startExportImport: (path) => req("/sync/import-export", { method: "POST", body: JSON.stringify({ path }) }),
+    salvage: (path, doImport) => req("/salvage", { method: "POST", body: JSON.stringify({ path, import: !!doImport }) }),
     syncStatus: (jobId) => req("/sync/" + jobId),
     activeSync: () => req("/sync"),
     logs: (lines = 300) => req("/logs" + qs({ lines })),
