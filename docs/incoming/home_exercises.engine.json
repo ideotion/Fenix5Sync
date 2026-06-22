@@ -1,0 +1,4201 @@
+[
+  {
+    "id": "supported-squat",
+    "name": "Supported Squat",
+    "pattern": "squat",
+    "tier": "seated",
+    "object": {
+      "side": "chair",
+      "front": null
+    },
+    "targetReps": 10,
+    "staticLabels": [
+      "Start",
+      "Bottom",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            113,
+            138
+          ],
+          "hand": [
+            150,
+            150
+          ]
+        },
+        "b": {
+          "head": [
+            136,
+            89
+          ],
+          "sh": [
+            125,
+            115
+          ],
+          "hip": [
+            92,
+            188
+          ],
+          "knee": [
+            125,
+            249
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            111,
+            152
+          ],
+          "hand": [
+            150,
+            150
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2200,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2000,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Hold the chair; sit hips <b>back and down</b>",
+      "Up": "Drive through heels to stand tall"
+    },
+    "staticCues": [
+      "Stand facing a sturdy chair and rest your hands lightly on its back.",
+      "Push your hips back as your knees bend, keeping most weight in your heels.",
+      "Use the chair only for balance, not to pull yourself up.",
+      "Stop at a depth that stays pain-free and controlled."
+    ]
+  },
+  {
+    "id": "bodyweight-squat",
+    "name": "Bodyweight Squat",
+    "pattern": "squat",
+    "tier": "standing",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 12,
+    "staticLabels": [
+      "Start",
+      "Bottom",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            136,
+            134
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        },
+        "b": {
+          "head": [
+            148,
+            103
+          ],
+          "sh": [
+            133,
+            127
+          ],
+          "hip": [
+            91,
+            195
+          ],
+          "knee": [
+            132,
+            251
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            172,
+            118
+          ],
+          "hand": [
+            211,
+            117
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2200,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2000,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Hips back, chest tall, knees over toes",
+      "Up": "Stand and squeeze the glutes"
+    },
+    "staticCues": [
+      "Stand with feet about shoulder-width apart, arms reaching forward for balance.",
+      "Sit your hips back and down while keeping your chest up.",
+      "Lower to a depth you can control with heels flat.",
+      "Press the floor away to return to standing."
+    ]
+  },
+  {
+    "id": "backpack-goblet-squat",
+    "name": "Backpack Goblet Squat",
+    "pattern": "squat",
+    "tier": "loaded",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 10,
+    "staticLabels": [
+      "Start",
+      "Bottom",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            119,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            85,
+            121
+          ],
+          "hand": [
+            124,
+            120
+          ]
+        },
+        "b": {
+          "head": [
+            149,
+            114
+          ],
+          "sh": [
+            132,
+            137
+          ],
+          "hip": [
+            85,
+            202
+          ],
+          "knee": [
+            134,
+            252
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            99,
+            159
+          ],
+          "hand": [
+            138,
+            159
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2200,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2000,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Hug the pack to your chest; sink straight down",
+      "Up": "Stand tall, ribs down"
+    },
+    "staticCues": [
+      "Hold a loaded backpack against your chest like a goblet.",
+      "Squat straight down with an upright torso, elbows inside your knees.",
+      "Keep the pack close so your trunk stays braced.",
+      "Choose a load that leaves 2-3 reps in reserve at a moderate effort."
+    ]
+  },
+  {
+    "id": "split-squat",
+    "name": "Split Squat",
+    "pattern": "squat",
+    "tier": "loaded",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 8,
+    "staticLabels": [
+      "Start",
+      "Bottom",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            131,
+            71
+          ],
+          "sh": [
+            127,
+            99
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            124,
+            139
+          ],
+          "hand": [
+            120,
+            178
+          ]
+        },
+        "b": {
+          "head": [
+            120,
+            85
+          ],
+          "sh": [
+            116,
+            113
+          ],
+          "hip": [
+            105,
+            192
+          ],
+          "knee": [
+            138,
+            254
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            113,
+            152
+          ],
+          "hand": [
+            109,
+            191
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2200,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2000,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Drop the back knee <b>straight down</b>",
+      "Up": "Push through the front heel"
+    },
+    "staticCues": [
+      "Stand in a split stance with one foot forward and the other back (rear foot implied).",
+      "Lower by dropping the back knee toward the floor, torso upright.",
+      "Keep the front knee tracking over the front foot.",
+      "Hold a chair nearby for balance if needed; do all reps, then switch sides."
+    ]
+  },
+  {
+    "id": "single-leg-sit-to-stand",
+    "name": "Single-Leg Sit-to-Stand",
+    "pattern": "squat",
+    "tier": "loaded",
+    "object": {
+      "side": "chair",
+      "front": null
+    },
+    "targetReps": 6,
+    "staticLabels": [
+      "Start",
+      "Seated",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            136,
+            134
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        },
+        "b": {
+          "head": [
+            145,
+            107
+          ],
+          "sh": [
+            129,
+            131
+          ],
+          "hip": [
+            85,
+            197
+          ],
+          "knee": [
+            130,
+            250
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            169,
+            122
+          ],
+          "hand": [
+            207,
+            121
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2400,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2200,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Lower under control to lightly tap the seat",
+      "Up": "Stand on one leg, arms forward"
+    },
+    "staticCues": [
+      "Sit tall on a sturdy chair with one foot planted and the other lifted.",
+      "Stand up using mostly the planted leg, reaching your arms forward.",
+      "Lower slowly to tap the seat, then drive back up.",
+      "Use a higher seat or a light hand assist if the full rep is too hard."
+    ]
+  },
+  {
+    "id": "hip-hinge-groove",
+    "name": "Hip-Hinge Groove (Broomstick)",
+    "pattern": "hinge",
+    "tier": "standing",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 10,
+    "staticLabels": [
+      "Start",
+      "Hinge",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            136,
+            134
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        },
+        "b": {
+          "head": [
+            190,
+            131
+          ],
+          "sh": [
+            165,
+            144
+          ],
+          "hip": [
+            95,
+            182
+          ],
+          "knee": [
+            116,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            165,
+            184
+          ],
+          "hand": [
+            165,
+            223
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2200,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2000,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Push hips <b>back</b>; keep the stick on your spine",
+      "Up": "Snap hips forward to stand"
+    },
+    "staticCues": [
+      "Hold a broomstick along your spine, touching the back of your head, upper back, and tailbone.",
+      "Push your hips straight back with soft knees, letting your chest tip forward.",
+      "Keep all three contact points on the stick to groove a neutral spine.",
+      "Return by squeezing your glutes to bring the hips forward."
+    ]
+  },
+  {
+    "id": "bodyweight-hinge",
+    "name": "Bodyweight Hip Hinge",
+    "pattern": "hinge",
+    "tier": "standing",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 12,
+    "staticLabels": [
+      "Start",
+      "Hinge",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            136,
+            134
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        },
+        "b": {
+          "head": [
+            190,
+            131
+          ],
+          "sh": [
+            165,
+            144
+          ],
+          "hip": [
+            95,
+            182
+          ],
+          "knee": [
+            116,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            169,
+            184
+          ],
+          "hand": [
+            168,
+            223
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2200,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2000,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Hips back, hands sliding down the shins",
+      "Up": "Stand and squeeze the glutes"
+    },
+    "staticCues": [
+      "Stand tall with soft knees and hands resting on the front of your thighs.",
+      "Hinge at the hips, sliding your hands down toward your shins.",
+      "Keep your back flat and feel a stretch in the hamstrings.",
+      "Drive the hips forward to return to standing."
+    ]
+  },
+  {
+    "id": "backpack-rdl",
+    "name": "Backpack Romanian Deadlift",
+    "pattern": "hinge",
+    "tier": "loaded",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 10,
+    "staticLabels": [
+      "Start",
+      "Hinge",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            121,
+            138
+          ],
+          "hand": [
+            123,
+            177
+          ]
+        },
+        "b": {
+          "head": [
+            212,
+            145
+          ],
+          "sh": [
+            185,
+            153
+          ],
+          "hip": [
+            109,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            187,
+            193
+          ],
+          "hand": [
+            187,
+            232
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2200,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2000,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Hips back, pack close to the legs",
+      "Up": "Stand tall, glutes squeezed"
+    },
+    "staticCues": [
+      "Hold a loaded backpack by its top handle in front of your thighs.",
+      "Hinge the hips back with nearly straight legs, lowering the pack along your legs.",
+      "Keep the pack close and your spine long throughout.",
+      "Stand by driving the hips forward; pick a load with 2-3 reps in reserve."
+    ]
+  },
+  {
+    "id": "single-leg-hinge",
+    "name": "Single-Leg Hinge",
+    "pattern": "hinge",
+    "tier": "loaded",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 8,
+    "staticLabels": [
+      "Start",
+      "Hinge",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            136,
+            134
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        },
+        "b": {
+          "head": [
+            219,
+            152
+          ],
+          "sh": [
+            192,
+            159
+          ],
+          "hip": [
+            114,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            193,
+            199
+          ],
+          "hand": [
+            193,
+            238
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2400,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2200,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Tip forward as the free leg floats <b>back</b>",
+      "Up": "Return tall and balanced"
+    },
+    "staticCues": [
+      "Balance on one leg with a soft knee, the other leg ready to float behind you (implied).",
+      "Hinge forward at the hip while the free leg extends back like a seesaw.",
+      "Keep your hips level and your spine long.",
+      "Touch a wall or chair for balance; complete all reps, then switch legs."
+    ]
+  },
+  {
+    "id": "towel-hamstring-slider",
+    "name": "Towel Hamstring Slider",
+    "pattern": "hinge",
+    "tier": "loaded",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 8,
+    "staticLabels": [
+      "Bridge",
+      "Slide",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            42,
+            300
+          ],
+          "sh": [
+            70,
+            305
+          ],
+          "hip": [
+            133,
+            256
+          ],
+          "knee": [
+            197,
+            284
+          ],
+          "ankle": [
+            142,
+            316
+          ],
+          "toe": [
+            170,
+            316
+          ],
+          "elb": [
+            109,
+            312
+          ],
+          "hand": [
+            148,
+            315
+          ]
+        },
+        "b": {
+          "head": [
+            42,
+            300
+          ],
+          "sh": [
+            70,
+            305
+          ],
+          "hip": [
+            144,
+            275
+          ],
+          "knee": [
+            213,
+            290
+          ],
+          "ankle": [
+            153,
+            311
+          ],
+          "toe": [
+            181,
+            311
+          ],
+          "elb": [
+            109,
+            312
+          ],
+          "hand": [
+            148,
+            315
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2600,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2400,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Slide heels out, lowering the hips with <b>control</b>",
+      "Up": "Curl heels back, lift the hips"
+    },
+    "staticCues": [
+      "Lie on your back on a smooth floor, heels on a towel, hips lifted into a bridge.",
+      "Slowly slide your heels away, letting your hips lower under control.",
+      "Curl the heels back in to lift the hips back to the bridge.",
+      "Reduce the slide distance if you feel hamstring cramping or strain."
+    ]
+  },
+  {
+    "id": "wall-pushup",
+    "name": "Wall Push-Up",
+    "pattern": "push",
+    "tier": "seated",
+    "object": {
+      "side": "wall",
+      "front": null
+    },
+    "targetReps": 12,
+    "staticLabels": [
+      "Start",
+      "Bottom",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            134,
+            72
+          ],
+          "sh": [
+            130,
+            100
+          ],
+          "hip": [
+            119,
+            179
+          ],
+          "knee": [
+            109,
+            249
+          ],
+          "ankle": [
+            100,
+            312
+          ],
+          "toe": [
+            128,
+            312
+          ],
+          "elb": [
+            161,
+            125
+          ],
+          "hand": [
+            195,
+            105
+          ]
+        },
+        "b": {
+          "head": [
+            175,
+            82
+          ],
+          "sh": [
+            166,
+            108
+          ],
+          "hip": [
+            141,
+            185
+          ],
+          "knee": [
+            120,
+            251
+          ],
+          "ankle": [
+            100,
+            312
+          ],
+          "toe": [
+            128,
+            312
+          ],
+          "elb": [
+            186,
+            143
+          ],
+          "hand": [
+            195,
+            105
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2000,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 1800,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Bend the elbows; bring your chest toward the wall",
+      "Up": "Press the wall away"
+    },
+    "staticCues": [
+      "Stand arm's length from a wall with hands at shoulder height and width.",
+      "Bend your elbows to bring your chest toward the wall, body in one line.",
+      "Press firmly through your hands to return.",
+      "Step closer to the wall to make it easier, farther to make it harder."
+    ]
+  },
+  {
+    "id": "countertop-pushup",
+    "name": "Countertop Push-Up",
+    "pattern": "push",
+    "tier": "standing",
+    "object": {
+      "side": "counter",
+      "front": null
+    },
+    "targetReps": 12,
+    "staticLabels": [
+      "Start",
+      "Bottom",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            184,
+            94
+          ],
+          "sh": [
+            172,
+            120
+          ],
+          "hip": [
+            137,
+            192
+          ],
+          "knee": [
+            106,
+            254
+          ],
+          "ankle": [
+            78,
+            312
+          ],
+          "toe": [
+            106,
+            312
+          ],
+          "elb": [
+            162,
+            158
+          ],
+          "hand": [
+            200,
+            168
+          ]
+        },
+        "b": {
+          "head": [
+            206,
+            107
+          ],
+          "sh": [
+            191,
+            131
+          ],
+          "hip": [
+            149,
+            198
+          ],
+          "knee": [
+            112,
+            258
+          ],
+          "ankle": [
+            78,
+            312
+          ],
+          "toe": [
+            106,
+            312
+          ],
+          "elb": [
+            162,
+            158
+          ],
+          "hand": [
+            200,
+            168
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2000,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 1800,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Lower the chest toward the counter edge",
+      "Up": "Push back to a straight body"
+    },
+    "staticCues": [
+      "Place your hands on a stable kitchen counter, shoulder-width apart.",
+      "Walk your feet back so your body forms a straight, angled line.",
+      "Bend the elbows to lower your chest toward the counter, then press up.",
+      "A higher surface is easier; a lower one is harder."
+    ]
+  },
+  {
+    "id": "incline-pushup-chair",
+    "name": "Incline Push-Up (Chair)",
+    "pattern": "push",
+    "tier": "loaded",
+    "object": {
+      "side": "chair",
+      "front": null
+    },
+    "targetReps": 10,
+    "staticLabels": [
+      "Start",
+      "Bottom",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            204,
+            132
+          ],
+          "sh": [
+            185,
+            153
+          ],
+          "hip": [
+            132,
+            212
+          ],
+          "knee": [
+            85,
+            264
+          ],
+          "ankle": [
+            42,
+            312
+          ],
+          "toe": [
+            70,
+            312
+          ],
+          "elb": [
+            174,
+            191
+          ],
+          "hand": [
+            188,
+            228
+          ]
+        },
+        "b": {
+          "head": [
+            222,
+            150
+          ],
+          "sh": [
+            201,
+            169
+          ],
+          "hip": [
+            142,
+            222
+          ],
+          "knee": [
+            90,
+            269
+          ],
+          "ankle": [
+            42,
+            312
+          ],
+          "toe": [
+            70,
+            312
+          ],
+          "elb": [
+            170,
+            194
+          ],
+          "hand": [
+            188,
+            228
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2000,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 1800,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Lower the chest to the seat edge",
+      "Up": "Press up to a straight line"
+    },
+    "staticCues": [
+      "Place both hands on the seat of a sturdy, stable chair.",
+      "Walk your feet back into an angled plank with a straight body.",
+      "Bend the elbows to bring your chest to the seat, then press up.",
+      "Secure the chair against a wall so it cannot slide."
+    ]
+  },
+  {
+    "id": "knee-pushup",
+    "name": "Knee Push-Up",
+    "pattern": "push",
+    "tier": "loaded",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 10,
+    "staticLabels": [
+      "Start",
+      "Bottom",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            199,
+            219
+          ],
+          "sh": [
+            175,
+            233
+          ],
+          "hip": [
+            106,
+            273
+          ],
+          "knee": [
+            45,
+            308
+          ],
+          "ankle": [
+            23,
+            248
+          ],
+          "toe": [
+            37,
+            224
+          ],
+          "elb": [
+            154,
+            267
+          ],
+          "hand": [
+            175,
+            300
+          ]
+        },
+        "b": {
+          "head": [
+            208,
+            236
+          ],
+          "sh": [
+            182,
+            247
+          ],
+          "hip": [
+            109,
+            280
+          ],
+          "knee": [
+            45,
+            308
+          ],
+          "ankle": [
+            23,
+            248
+          ],
+          "toe": [
+            37,
+            224
+          ],
+          "elb": [
+            150,
+            270
+          ],
+          "hand": [
+            175,
+            300
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2000,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 1800,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Lower the chest toward the floor",
+      "Up": "Press up, hips in line"
+    },
+    "staticCues": [
+      "Kneel on a mat with hands under your shoulders and knees behind your hips.",
+      "Keep a straight line from head to knees as you bend the elbows.",
+      "Lower your chest toward the floor, then press back up.",
+      "Place a cushion under the knees for comfort and shorten the range as needed."
+    ]
+  },
+  {
+    "id": "full-pushup",
+    "name": "Full Push-Up",
+    "pattern": "push",
+    "tier": "loaded",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 8,
+    "staticLabels": [
+      "Start",
+      "Bottom",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            209,
+            144
+          ],
+          "sh": [
+            188,
+            162
+          ],
+          "hip": [
+            127,
+            214
+          ],
+          "knee": [
+            73,
+            259
+          ],
+          "ankle": [
+            24,
+            300
+          ],
+          "toe": [
+            48,
+            314
+          ],
+          "elb": [
+            184,
+            202
+          ],
+          "hand": [
+            200,
+            238
+          ]
+        },
+        "b": {
+          "head": [
+            220,
+            158
+          ],
+          "sh": [
+            197,
+            174
+          ],
+          "hip": [
+            132,
+            221
+          ],
+          "knee": [
+            76,
+            262
+          ],
+          "ankle": [
+            24,
+            300
+          ],
+          "toe": [
+            48,
+            314
+          ],
+          "elb": [
+            175,
+            208
+          ],
+          "hand": [
+            200,
+            238
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2000,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 1800,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Lower with elbows about 45\u00b0 from the body",
+      "Up": "Press the floor away, body in one line"
+    },
+    "staticCues": [
+      "Start in a plank with hands under the shoulders and body in a straight line.",
+      "Bend the elbows to lower your chest toward the floor.",
+      "Press the floor away to return, keeping the hips level.",
+      "Drop to knees if your form breaks down before finishing the set."
+    ]
+  },
+  {
+    "id": "wall-press-hold",
+    "name": "Wall Press Hold",
+    "pattern": "push",
+    "tier": "standing",
+    "isometric": true,
+    "object": {
+      "side": "wall",
+      "front": null
+    },
+    "holdMs": 30000,
+    "staticLabels": [
+      "Set",
+      "Hold",
+      "Release"
+    ],
+    "views": {
+      "side": {
+        "stand": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            136,
+            134
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        },
+        "hold": {
+          "head": [
+            150,
+            75
+          ],
+          "sh": [
+            144,
+            103
+          ],
+          "hip": [
+            128,
+            181
+          ],
+          "knee": [
+            113,
+            249
+          ],
+          "ankle": [
+            100,
+            312
+          ],
+          "toe": [
+            128,
+            312
+          ],
+          "elb": [
+            166,
+            136
+          ],
+          "hand": [
+            195,
+            110
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Set",
+        "dur": 1400,
+        "from": "stand",
+        "to": "hold"
+      },
+      {
+        "name": "Hold",
+        "dur": 30000,
+        "from": "hold",
+        "to": "hold",
+        "isHold": true
+      },
+      {
+        "name": "Release",
+        "dur": 1200,
+        "from": "hold",
+        "to": "stand"
+      }
+    ],
+    "cues": {
+      "Set": "Lean in and set the hands at shoulder height",
+      "Hold": "Press steadily into the wall and <b>hold</b>",
+      "Release": "Step back to standing"
+    },
+    "staticCues": [
+      "Stand close to a wall with hands at shoulder height and a slight forward lean.",
+      "Press into the wall and hold a steady, sub-maximal effort.",
+      "Breathe normally throughout; never hold your breath.",
+      "Shorten the hold or reduce the lean if it feels too intense."
+    ]
+  },
+  {
+    "id": "towel-iso-row",
+    "name": "Towel Isometric Row",
+    "pattern": "pull",
+    "tier": "seated",
+    "isometric": true,
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "holdMs": 20000,
+    "staticLabels": [
+      "Set",
+      "Hold",
+      "Release"
+    ],
+    "views": {
+      "side": {
+        "stand": {
+          "head": [
+            127,
+            71
+          ],
+          "sh": [
+            124,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            161,
+            113
+          ],
+          "hand": [
+            175,
+            150
+          ]
+        },
+        "hold": {
+          "head": [
+            127,
+            71
+          ],
+          "sh": [
+            124,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            144,
+            133
+          ],
+          "hand": [
+            112,
+            155
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Set",
+        "dur": 1600,
+        "from": "stand",
+        "to": "hold"
+      },
+      {
+        "name": "Hold",
+        "dur": 20000,
+        "from": "hold",
+        "to": "hold",
+        "isHold": true
+      },
+      {
+        "name": "Release",
+        "dur": 1400,
+        "from": "hold",
+        "to": "stand"
+      }
+    ],
+    "cues": {
+      "Set": "Loop the towel and take up the slack",
+      "Hold": "Pull the elbow back and <b>hold</b> the squeeze",
+      "Release": "Ease the tension and reset"
+    },
+    "staticCues": [
+      "Loop a towel around a fixed, secure anchor and hold an end in each hand.",
+      "Pull your elbows back and squeeze the shoulder blades, holding the position.",
+      "Keep your chest tall and breathe steadily during the hold.",
+      "Reduce the effort if you feel any neck or shoulder strain."
+    ]
+  },
+  {
+    "id": "water-bottle-bent-row",
+    "name": "Water-Bottle Bent-Over Row",
+    "pattern": "pull",
+    "tier": "loaded",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 12,
+    "staticLabels": [
+      "Start",
+      "Top",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            196,
+            135
+          ],
+          "sh": [
+            171,
+            147
+          ],
+          "hip": [
+            98,
+            181
+          ],
+          "knee": [
+            116,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            159,
+            185
+          ],
+          "hand": [
+            155,
+            224
+          ]
+        },
+        "b": {
+          "head": [
+            196,
+            135
+          ],
+          "sh": [
+            171,
+            147
+          ],
+          "hip": [
+            98,
+            181
+          ],
+          "knee": [
+            116,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            155,
+            183
+          ],
+          "hand": [
+            118,
+            196
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2200,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2000,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Let the weight hang, lengthening the arm",
+      "Up": "Row to the ribs, elbow <b>back</b>"
+    },
+    "staticCues": [
+      "Hinge forward with a flat back, a bottle or can in each hand hanging below you.",
+      "Row the weights toward your lower ribs, leading with the elbows.",
+      "Squeeze your shoulder blades, then lower under control.",
+      "Choose a load with 2-3 reps in reserve and keep the neck relaxed."
+    ]
+  },
+  {
+    "id": "backpack-row",
+    "name": "Backpack Bent-Over Row",
+    "pattern": "pull",
+    "tier": "loaded",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 10,
+    "staticLabels": [
+      "Start",
+      "Top",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            196,
+            135
+          ],
+          "sh": [
+            171,
+            147
+          ],
+          "hip": [
+            98,
+            181
+          ],
+          "knee": [
+            116,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            159,
+            185
+          ],
+          "hand": [
+            156,
+            224
+          ]
+        },
+        "b": {
+          "head": [
+            196,
+            135
+          ],
+          "sh": [
+            171,
+            147
+          ],
+          "hip": [
+            98,
+            181
+          ],
+          "knee": [
+            116,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            151,
+            182
+          ],
+          "hand": [
+            116,
+            198
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2200,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2000,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Lower the pack until the arms straighten",
+      "Up": "Row the pack to your waist"
+    },
+    "staticCues": [
+      "Hinge forward with a flat back, holding a loaded backpack by its handle.",
+      "Row the pack toward your waist, driving the elbow up and back.",
+      "Pause briefly at the top, then lower with control.",
+      "Pick a load that keeps 2-3 reps in reserve at a moderate effort."
+    ]
+  },
+  {
+    "id": "inverted-row-table",
+    "name": "Inverted Row (Sturdy Table)",
+    "pattern": "pull",
+    "tier": "loaded",
+    "object": {
+      "side": "counter",
+      "front": null
+    },
+    "targetReps": 8,
+    "staticLabels": [
+      "Start",
+      "Top",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            194,
+            135
+          ],
+          "sh": [
+            169,
+            147
+          ],
+          "hip": [
+            96,
+            181
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            110,
+            312
+          ],
+          "toe": [
+            138,
+            312
+          ],
+          "elb": [
+            160,
+            186
+          ],
+          "hand": [
+            159,
+            225
+          ]
+        },
+        "b": {
+          "head": [
+            194,
+            135
+          ],
+          "sh": [
+            169,
+            147
+          ],
+          "hip": [
+            96,
+            181
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            110,
+            312
+          ],
+          "toe": [
+            138,
+            312
+          ],
+          "elb": [
+            157,
+            185
+          ],
+          "hand": [
+            120,
+            196
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2200,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2200,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Lower until the arms are straight",
+      "Up": "Pull the chest toward the edge"
+    },
+    "staticCues": [
+      "Lie beneath a very sturdy table and grip the edge with both hands (horizontal pull shown).",
+      "Keep your body in a straight line and pull your chest toward the edge.",
+      "Lower yourself with control until the arms are straight.",
+      "Only use furniture rated to hold well above your bodyweight; bend the knees to make it easier."
+    ]
+  },
+  {
+    "id": "prone-ytw",
+    "name": "Prone Y-T-W Raise",
+    "pattern": "pull",
+    "tier": "loaded",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 10,
+    "staticLabels": [
+      "Down",
+      "Raise",
+      "Return"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            44,
+            277
+          ],
+          "sh": [
+            71,
+            283
+          ],
+          "hip": [
+            150,
+            298
+          ],
+          "knee": [
+            213,
+            268
+          ],
+          "ankle": [
+            153,
+            247
+          ],
+          "toe": [
+            181,
+            247
+          ],
+          "elb": [
+            111,
+            290
+          ],
+          "hand": [
+            149,
+            296
+          ]
+        },
+        "b": {
+          "head": [
+            44,
+            277
+          ],
+          "sh": [
+            71,
+            283
+          ],
+          "hip": [
+            150,
+            298
+          ],
+          "knee": [
+            213,
+            268
+          ],
+          "ankle": [
+            153,
+            247
+          ],
+          "toe": [
+            181,
+            247
+          ],
+          "elb": [
+            34,
+            269
+          ],
+          "hand": [
+            27,
+            231
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2200,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2200,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Relax the arms toward the floor",
+      "Up": "Lift the arms overhead into a <b>Y</b>"
+    },
+    "staticCues": [
+      "Lie face-down with your forehead resting and arms by your sides.",
+      "Lift your arms off the floor, sweeping them overhead into a Y shape.",
+      "Squeeze the mid-back; progress through T (arms out) and W (elbows bent) shapes over your sets.",
+      "Keep the movements small and controlled; light cans add resistance."
+    ]
+  },
+  {
+    "id": "water-bottle-carry",
+    "name": "Water-Bottle Farmer Carry",
+    "pattern": "carry",
+    "tier": "conditioning",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 30,
+    "staticLabels": [
+      "Step",
+      "March",
+      "Step"
+    ],
+    "views": {
+      "front": {
+        "L": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            172,
+            227
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            172,
+            291
+          ],
+          "lelb": [
+            100,
+            140
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            100,
+            182
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        },
+        "R": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            68,
+            227
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            68,
+            291
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            100,
+            140
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            100,
+            182
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "StepL",
+        "dur": 650,
+        "from": "L",
+        "to": "R"
+      },
+      {
+        "name": "StepR",
+        "dur": 650,
+        "from": "R",
+        "to": "L"
+      }
+    ],
+    "cues": {
+      "StepL": "March tall, weights pulling the shoulders <b>down</b>",
+      "StepR": "Keep ribs stacked over hips"
+    },
+    "staticCues": [
+      "Hold a heavy bottle or can in each hand with arms straight at your sides.",
+      "Walk with tall posture and steady, even steps.",
+      "Let the load pull your shoulders down while you keep your ribs stacked.",
+      "Pick a weight you can carry for the time without your form breaking."
+    ]
+  },
+  {
+    "id": "backpack-carry",
+    "name": "Backpack March",
+    "pattern": "carry",
+    "tier": "conditioning",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 40,
+    "staticLabels": [
+      "Step",
+      "March",
+      "Step"
+    ],
+    "views": {
+      "front": {
+        "L": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            172,
+            227
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            172,
+            291
+          ],
+          "lelb": [
+            100,
+            140
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            100,
+            182
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        },
+        "R": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            68,
+            227
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            68,
+            291
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            100,
+            140
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            100,
+            182
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "StepL",
+        "dur": 650,
+        "from": "L",
+        "to": "R"
+      },
+      {
+        "name": "StepR",
+        "dur": 650,
+        "from": "R",
+        "to": "L"
+      }
+    ],
+    "cues": {
+      "StepL": "March with a tall spine under the pack",
+      "StepR": "Drive the knees, breathe steadily"
+    },
+    "staticCues": [
+      "Wear a loaded backpack snug on both shoulders.",
+      "March in place or around the room with tall posture and active arms.",
+      "Keep your core braced and breathe in rhythm with your steps.",
+      "Adjust the pack weight so you can keep good posture the whole time."
+    ]
+  },
+  {
+    "id": "suitcase-carry",
+    "name": "Suitcase (Single-Side) Carry",
+    "pattern": "carry",
+    "tier": "conditioning",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 24,
+    "staticLabels": [
+      "Step",
+      "March",
+      "Step"
+    ],
+    "views": {
+      "front": {
+        "L": {
+          "head": [
+            110,
+            70
+          ],
+          "sh": [
+            113,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            172,
+            227
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            172,
+            291
+          ],
+          "lelb": [
+            93,
+            140
+          ],
+          "relb": [
+            133,
+            140
+          ],
+          "lhand": [
+            93,
+            182
+          ],
+          "rhand": [
+            133,
+            182
+          ]
+        },
+        "R": {
+          "head": [
+            110,
+            70
+          ],
+          "sh": [
+            113,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            68,
+            227
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            68,
+            291
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            93,
+            140
+          ],
+          "relb": [
+            133,
+            140
+          ],
+          "lhand": [
+            93,
+            182
+          ],
+          "rhand": [
+            133,
+            182
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "StepL",
+        "dur": 650,
+        "from": "L",
+        "to": "R"
+      },
+      {
+        "name": "StepR",
+        "dur": 650,
+        "from": "R",
+        "to": "L"
+      }
+    ],
+    "cues": {
+      "StepL": "Resist the lean; keep <b>level</b> shoulders",
+      "StepR": "Stand tall, do not tip toward the load"
+    },
+    "staticCues": [
+      "Hold one heavy bottle, can, or bag in a single hand at your side.",
+      "Walk tall while resisting the urge to lean toward the weight.",
+      "Keep your shoulders and hips level throughout.",
+      "Do the time on one side, then switch hands; choose a manageable load."
+    ]
+  },
+  {
+    "id": "bottle-wood-chop",
+    "name": "Bottle Wood-Chop",
+    "pattern": "rotation",
+    "tier": "loaded",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 12,
+    "staticLabels": [
+      "High",
+      "Low",
+      "High"
+    ],
+    "views": {
+      "front": {
+        "a": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            138,
+            141
+          ],
+          "relb": [
+            155,
+            72
+          ],
+          "lhand": [
+            168,
+            112
+          ],
+          "rhand": [
+            168,
+            112
+          ]
+        },
+        "b": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            103,
+            141
+          ],
+          "relb": [
+            111,
+            144
+          ],
+          "lhand": [
+            95,
+            183
+          ],
+          "rhand": [
+            95,
+            183
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 1600,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 1600,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Chop diagonally from high to <b>low</b> across the body",
+      "Up": "Lift back up under control"
+    },
+    "staticCues": [
+      "Hold a bottle or can in both hands up beside one shoulder.",
+      "Chop diagonally down and across toward the opposite hip, pivoting through the trunk.",
+      "Control the return back up to the start.",
+      "Do all reps on one diagonal, then switch sides; keep the load light to moderate."
+    ]
+  },
+  {
+    "id": "anti-rotation-press",
+    "name": "Anti-Rotation Press (Pallof)",
+    "pattern": "rotation",
+    "tier": "standing",
+    "isometric": true,
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "holdMs": 20000,
+    "staticLabels": [
+      "Set",
+      "Hold",
+      "Release"
+    ],
+    "views": {
+      "front": {
+        "stand": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            80,
+            120
+          ],
+          "relb": [
+            160,
+            120
+          ],
+          "lhand": [
+            110,
+            150
+          ],
+          "rhand": [
+            130,
+            150
+          ]
+        },
+        "hold": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            85,
+            127
+          ],
+          "relb": [
+            155,
+            127
+          ],
+          "lhand": [
+            120,
+            150
+          ],
+          "rhand": [
+            120,
+            150
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Set",
+        "dur": 1400,
+        "from": "stand",
+        "to": "hold"
+      },
+      {
+        "name": "Hold",
+        "dur": 20000,
+        "from": "hold",
+        "to": "hold",
+        "isHold": true
+      },
+      {
+        "name": "Release",
+        "dur": 1400,
+        "from": "hold",
+        "to": "stand"
+      }
+    ],
+    "cues": {
+      "Set": "Hold the towel at your chest, side anchor to one side",
+      "Hold": "Press straight out and <b>resist</b> the twist",
+      "Release": "Bring the hands back in"
+    },
+    "staticCues": [
+      "Loop a towel on a secure side anchor and hold both ends at your chest.",
+      "Press your hands straight out in front while resisting the sideways pull.",
+      "Keep your hips and shoulders square; breathe steadily.",
+      "Do the hold facing each direction; step closer to reduce the pull."
+    ]
+  },
+  {
+    "id": "supported-single-leg-stand",
+    "name": "Supported Single-Leg Stand",
+    "pattern": "balance",
+    "tier": "standing",
+    "isometric": true,
+    "object": {
+      "side": null,
+      "front": "chair"
+    },
+    "holdMs": 20000,
+    "staticLabels": [
+      "Set",
+      "Hold",
+      "Release"
+    ],
+    "views": {
+      "front": {
+        "stand": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            68,
+            227
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            68,
+            291
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            96,
+            138
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            80,
+            177
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        },
+        "hold": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            68,
+            227
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            68,
+            291
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            96,
+            138
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            80,
+            177
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Set",
+        "dur": 1400,
+        "from": "stand",
+        "to": "hold"
+      },
+      {
+        "name": "Hold",
+        "dur": 20000,
+        "from": "hold",
+        "to": "hold",
+        "isHold": true
+      },
+      {
+        "name": "Release",
+        "dur": 1400,
+        "from": "hold",
+        "to": "stand"
+      }
+    ],
+    "cues": {
+      "Set": "Rest one hand on a chair and lift the far foot",
+      "Hold": "Balance on one leg and <b>hold</b> steady",
+      "Release": "Lower the foot and switch"
+    },
+    "staticCues": [
+      "Stand next to a sturdy chair and rest one hand lightly on its back.",
+      "Lift the far foot off the floor and balance on the standing leg.",
+      "Keep your eyes forward and your standing knee soft.",
+      "Use less hand support over time; hold each side for equal time."
+    ]
+  },
+  {
+    "id": "tandem-stand",
+    "name": "Tandem (Heel-to-Toe) Stand",
+    "pattern": "balance",
+    "tier": "standing",
+    "isometric": true,
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "holdMs": 20000,
+    "staticLabels": [
+      "Set",
+      "Hold",
+      "Release"
+    ],
+    "views": {
+      "front": {
+        "stand": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            110,
+            249
+          ],
+          "rknee": [
+            130,
+            249
+          ],
+          "lankle": [
+            108,
+            313
+          ],
+          "rankle": [
+            132,
+            313
+          ],
+          "lelb": [
+            86,
+            129
+          ],
+          "relb": [
+            154,
+            129
+          ],
+          "lhand": [
+            71,
+            168
+          ],
+          "rhand": [
+            169,
+            168
+          ]
+        },
+        "hold": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            110,
+            249
+          ],
+          "rknee": [
+            130,
+            249
+          ],
+          "lankle": [
+            108,
+            313
+          ],
+          "rankle": [
+            132,
+            313
+          ],
+          "lelb": [
+            86,
+            129
+          ],
+          "relb": [
+            154,
+            129
+          ],
+          "lhand": [
+            71,
+            168
+          ],
+          "rhand": [
+            169,
+            168
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Set",
+        "dur": 1400,
+        "from": "stand",
+        "to": "hold"
+      },
+      {
+        "name": "Hold",
+        "dur": 20000,
+        "from": "hold",
+        "to": "hold",
+        "isHold": true
+      },
+      {
+        "name": "Release",
+        "dur": 1400,
+        "from": "hold",
+        "to": "stand"
+      }
+    ],
+    "cues": {
+      "Set": "Place one foot directly in front of the other",
+      "Hold": "Hold the narrow stance, arms out for <b>balance</b>",
+      "Release": "Step back to a normal stance"
+    },
+    "staticCues": [
+      "Stand with one foot directly in front of the other, heel to toe.",
+      "Hold the narrow stance with arms slightly out for balance.",
+      "Keep your gaze forward and weight even between both feet.",
+      "Stand beside a counter for safety and switch which foot leads."
+    ]
+  },
+  {
+    "id": "heel-to-toe-walk",
+    "name": "Heel-to-Toe Walk",
+    "pattern": "balance",
+    "tier": "conditioning",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 20,
+    "staticLabels": [
+      "Step",
+      "Walk",
+      "Step"
+    ],
+    "views": {
+      "front": {
+        "L": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            172,
+            227
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            172,
+            291
+          ],
+          "lelb": [
+            100,
+            140
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            100,
+            182
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        },
+        "R": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            68,
+            227
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            68,
+            291
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            100,
+            140
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            100,
+            182
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "StepL",
+        "dur": 800,
+        "from": "L",
+        "to": "R"
+      },
+      {
+        "name": "StepR",
+        "dur": 800,
+        "from": "R",
+        "to": "L"
+      }
+    ],
+    "cues": {
+      "StepL": "Place the heel just in front of the opposite toe",
+      "StepR": "Eyes forward, slow and <b>controlled</b>"
+    },
+    "staticCues": [
+      "Walk in a straight line placing each heel just in front of the other toe.",
+      "Keep your eyes forward and arms ready for balance.",
+      "Move slowly and deliberately, one careful step at a time.",
+      "Walk alongside a counter you can touch if you wobble."
+    ]
+  },
+  {
+    "id": "step-up-chair",
+    "name": "Step-Up (Step or Sturdy Chair)",
+    "pattern": "balance",
+    "tier": "loaded",
+    "object": {
+      "side": "step",
+      "front": null
+    },
+    "targetReps": 10,
+    "staticLabels": [
+      "Plant",
+      "Up",
+      "Down"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            161,
+            29
+          ],
+          "sh": [
+            159,
+            57
+          ],
+          "hip": [
+            153,
+            137
+          ],
+          "knee": [
+            139,
+            205
+          ],
+          "ankle": [
+            150,
+            268
+          ],
+          "toe": [
+            178,
+            268
+          ],
+          "elb": [
+            177,
+            92
+          ],
+          "hand": [
+            191,
+            129
+          ]
+        },
+        "b": {
+          "head": [
+            154,
+            26
+          ],
+          "sh": [
+            153,
+            54
+          ],
+          "hip": [
+            150,
+            134
+          ],
+          "knee": [
+            150,
+            204
+          ],
+          "ankle": [
+            150,
+            268
+          ],
+          "toe": [
+            178,
+            268
+          ],
+          "elb": [
+            171,
+            90
+          ],
+          "hand": [
+            185,
+            126
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 2000,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 2000,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Step down with control, soft knee",
+      "Up": "Drive through the <b>top</b> foot to stand up"
+    },
+    "staticCues": [
+      "Place one foot fully on a low, stable step or sturdy chair.",
+      "Drive through the top foot to stand up onto the step.",
+      "Step down slowly under control and repeat, then switch the lead leg.",
+      "Use a lower step and a handrail or wall for balance as needed."
+    ]
+  },
+  {
+    "id": "marching-in-place",
+    "name": "Marching in Place",
+    "pattern": "aerobic",
+    "tier": "conditioning",
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "targetReps": 60,
+    "staticLabels": [
+      "Step",
+      "March",
+      "Step"
+    ],
+    "views": {
+      "front": {
+        "L": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            172,
+            227
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            172,
+            291
+          ],
+          "lelb": [
+            100,
+            140
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            100,
+            182
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        },
+        "R": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            68,
+            227
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            68,
+            291
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            100,
+            140
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            100,
+            182
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "StepL",
+        "dur": 500,
+        "from": "L",
+        "to": "R"
+      },
+      {
+        "name": "StepR",
+        "dur": 500,
+        "from": "R",
+        "to": "L"
+      }
+    ],
+    "cues": {
+      "StepL": "Lift the knees and pump the arms",
+      "StepR": "Find an easy, <b>rhythmic</b> pace"
+    },
+    "staticCues": [
+      "March in place, lifting the knees and pumping the arms.",
+      "Find a rhythmic pace you can sustain while breathing comfortably.",
+      "Lift the knees higher or move faster to raise the intensity.",
+      "A great warm-up or short cardio snack between other movements."
+    ]
+  },
+  {
+    "id": "sit-to-stand-intervals",
+    "name": "Sit-to-Stand Intervals",
+    "pattern": "aerobic",
+    "tier": "conditioning",
+    "object": {
+      "side": "chair",
+      "front": null
+    },
+    "targetReps": 20,
+    "staticLabels": [
+      "Stand",
+      "Seated",
+      "Stand"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            136,
+            134
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        },
+        "b": {
+          "head": [
+            147,
+            106
+          ],
+          "sh": [
+            131,
+            129
+          ],
+          "hip": [
+            87,
+            195
+          ],
+          "knee": [
+            130,
+            250
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            170,
+            121
+          ],
+          "hand": [
+            209,
+            119
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 1300,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 1200,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Sit back to lightly touch the seat",
+      "Up": "Stand briskly, then repeat for <b>time</b>"
+    },
+    "staticCues": [
+      "Sit tall on a sturdy chair with feet flat and hands forward.",
+      "Stand up briskly, then sit back down with control.",
+      "Repeat at a steady pace for a set time as a cardio snack.",
+      "Use a higher seat or slow the pace to make it easier."
+    ]
+  },
+  {
+    "id": "stair-snack",
+    "name": "Stair-Climbing Snack",
+    "pattern": "aerobic",
+    "tier": "conditioning",
+    "object": {
+      "side": "step",
+      "front": null
+    },
+    "targetReps": 30,
+    "staticLabels": [
+      "Plant",
+      "Up",
+      "Down"
+    ],
+    "views": {
+      "side": {
+        "a": {
+          "head": [
+            161,
+            29
+          ],
+          "sh": [
+            159,
+            57
+          ],
+          "hip": [
+            153,
+            137
+          ],
+          "knee": [
+            139,
+            205
+          ],
+          "ankle": [
+            150,
+            268
+          ],
+          "toe": [
+            178,
+            268
+          ],
+          "elb": [
+            177,
+            92
+          ],
+          "hand": [
+            191,
+            129
+          ]
+        },
+        "b": {
+          "head": [
+            154,
+            26
+          ],
+          "sh": [
+            153,
+            54
+          ],
+          "hip": [
+            150,
+            134
+          ],
+          "knee": [
+            150,
+            204
+          ],
+          "ankle": [
+            150,
+            268
+          ],
+          "toe": [
+            178,
+            268
+          ],
+          "elb": [
+            171,
+            90
+          ],
+          "hand": [
+            185,
+            126
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Down",
+        "dur": 1500,
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "name": "Up",
+        "dur": 1500,
+        "from": "b",
+        "to": "a"
+      }
+    ],
+    "cues": {
+      "Down": "Step back down with control",
+      "Up": "Climb the step at a <b>brisk</b>, steady pace"
+    },
+    "staticCues": [
+      "Use a single stair or a low, stable step.",
+      "Step up and down at a brisk, steady pace for a short burst.",
+      "Hold the handrail for balance and let your breathing rise.",
+      "Slow the pace or shorten the burst to keep it comfortable."
+    ]
+  },
+  {
+    "id": "knee-plank",
+    "name": "Knee Plank",
+    "pattern": "isometric",
+    "tier": "standing",
+    "isometric": true,
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "holdMs": 25000,
+    "staticLabels": [
+      "Set",
+      "Hold",
+      "Release"
+    ],
+    "views": {
+      "side": {
+        "stand": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            136,
+            134
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        },
+        "hold": {
+          "head": [
+            199,
+            219
+          ],
+          "sh": [
+            175,
+            233
+          ],
+          "hip": [
+            106,
+            273
+          ],
+          "knee": [
+            45,
+            308
+          ],
+          "ankle": [
+            23,
+            248
+          ],
+          "toe": [
+            37,
+            224
+          ],
+          "elb": [
+            154,
+            267
+          ],
+          "hand": [
+            175,
+            300
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Set",
+        "dur": 1600,
+        "from": "stand",
+        "to": "hold"
+      },
+      {
+        "name": "Hold",
+        "dur": 25000,
+        "from": "hold",
+        "to": "hold",
+        "isHold": true
+      },
+      {
+        "name": "Release",
+        "dur": 1400,
+        "from": "hold",
+        "to": "stand"
+      }
+    ],
+    "cues": {
+      "Set": "Set up on the knees and forearms/hands",
+      "Hold": "Hold a straight line head to knees, brace and <b>breathe</b>",
+      "Release": "Lower to rest"
+    },
+    "staticCues": [
+      "Set up on your knees with hands or forearms under the shoulders.",
+      "Hold a straight line from head to knees, bracing your core.",
+      "Breathe steadily and keep the hips from sagging or piking.",
+      "Shorten the hold or rest as needed to keep good form."
+    ]
+  },
+  {
+    "id": "full-plank",
+    "name": "Full Plank",
+    "pattern": "isometric",
+    "tier": "loaded",
+    "isometric": true,
+    "object": {
+      "side": null,
+      "front": null
+    },
+    "holdMs": 20000,
+    "staticLabels": [
+      "Set",
+      "Hold",
+      "Release"
+    ],
+    "views": {
+      "side": {
+        "stand": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            136,
+            134
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        },
+        "hold": {
+          "head": [
+            209,
+            144
+          ],
+          "sh": [
+            188,
+            162
+          ],
+          "hip": [
+            127,
+            214
+          ],
+          "knee": [
+            73,
+            259
+          ],
+          "ankle": [
+            24,
+            300
+          ],
+          "toe": [
+            48,
+            314
+          ],
+          "elb": [
+            184,
+            202
+          ],
+          "hand": [
+            200,
+            238
+          ]
+        }
+      }
+    },
+    "phases": [
+      {
+        "name": "Set",
+        "dur": 1600,
+        "from": "stand",
+        "to": "hold"
+      },
+      {
+        "name": "Hold",
+        "dur": 20000,
+        "from": "hold",
+        "to": "hold",
+        "isHold": true
+      },
+      {
+        "name": "Release",
+        "dur": 1400,
+        "from": "hold",
+        "to": "stand"
+      }
+    ],
+    "cues": {
+      "Set": "Set up in a straight-arm or forearm plank",
+      "Hold": "Hold one rigid line head to heels and <b>breathe</b>",
+      "Release": "Lower to rest"
+    },
+    "staticCues": [
+      "Set up in a plank with hands (or forearms) under the shoulders and legs straight.",
+      "Hold one rigid line from head to heels, squeezing glutes and core.",
+      "Breathe steadily; never hold your breath during the hold.",
+      "Drop to a knee plank if your hips start to sag."
+    ]
+  }
+]

@@ -1,0 +1,544 @@
+[
+  {
+    "id": "supported-squat",
+    "pattern": "squat",
+    "tier": "seated",
+    "default_object": "sturdy chair",
+    "regression_object": "shallower range / higher seat behind you",
+    "progression_lever": "reduce hand support, then deepen range, then slow the lowering to 3-4s",
+    "primary_benefit": "lower-body strength and confident sit-to-stand mechanics",
+    "refs": [
+      "R02",
+      "R03",
+      "R07"
+    ],
+    "red_flags": true,
+    "notes": "Joint-sparing entry squat; keep knees tracking over toes and breathe out as you stand. Stop for sharp knee or hip pain."
+  },
+  {
+    "id": "bodyweight-squat",
+    "pattern": "squat",
+    "tier": "standing",
+    "default_object": "bodyweight only",
+    "regression_object": "supported squat to a chair",
+    "progression_lever": "slow 3-4s eccentric, then deepen range, then add a loaded backpack",
+    "primary_benefit": "foundational lower-body strength and mobility",
+    "refs": [
+      "R02",
+      "R03",
+      "R07"
+    ],
+    "red_flags": true,
+    "notes": "Keep weight mid-foot and knees in line with toes; exhale on the way up. Ease range if knees complain."
+  },
+  {
+    "id": "backpack-goblet-squat",
+    "pattern": "squat",
+    "tier": "loaded",
+    "default_object": "loaded backpack",
+    "regression_object": "bodyweight squat",
+    "progression_lever": "add reps, then a heavier pack, then a slow lowering tempo",
+    "primary_benefit": "leg and trunk strength with an upright, knee-friendly squat",
+    "refs": [
+      "R02",
+      "R03",
+      "R15"
+    ],
+    "red_flags": true,
+    "notes": "Intensity by feel (RPE), not assumed kilograms; brace and exhale on the rise. Stop for sharp joint pain."
+  },
+  {
+    "id": "split-squat",
+    "pattern": "squat",
+    "tier": "loaded",
+    "default_object": "bodyweight only",
+    "regression_object": "hold a chair or wall for balance",
+    "progression_lever": "add range, then a backpack, then a slow eccentric",
+    "primary_benefit": "single-leg strength and balance with low joint load",
+    "refs": [
+      "R02",
+      "R03",
+      "R07",
+      "R08"
+    ],
+    "red_flags": true,
+    "notes": "Per-leg work that also trains balance; keep the front shin fairly vertical. Reduce depth for knee discomfort."
+  },
+  {
+    "id": "single-leg-sit-to-stand",
+    "pattern": "squat",
+    "tier": "loaded",
+    "default_object": "sturdy chair",
+    "regression_object": "higher seat / two-leg sit-to-stand",
+    "progression_lever": "lower the seat, then remove hand support, then slow the descent",
+    "primary_benefit": "advanced single-leg strength and fall-resilient mechanics",
+    "refs": [
+      "R02",
+      "R03",
+      "R07",
+      "R08"
+    ],
+    "red_flags": true,
+    "notes": "Demanding; keep a chair or wall within reach. Stop for sharp knee pain and regress the seat height."
+  },
+  {
+    "id": "hip-hinge-groove",
+    "pattern": "hinge",
+    "tier": "standing",
+    "default_object": "broomstick or mop handle",
+    "regression_object": "hinge to a chair or wall behind you",
+    "progression_lever": "increase range, then progress to a loaded RDL",
+    "primary_benefit": "teaches a safe, neutral-spine hip hinge",
+    "refs": [
+      "R02",
+      "R03"
+    ],
+    "red_flags": true,
+    "notes": "Movement-quality drill that protects the low back; keep the spine long, not rounded. Stop for back pain."
+  },
+  {
+    "id": "bodyweight-hinge",
+    "pattern": "hinge",
+    "tier": "standing",
+    "default_object": "bodyweight only",
+    "regression_object": "broomstick hinge groove for feedback",
+    "progression_lever": "add range, then load with a backpack RDL",
+    "primary_benefit": "hamstring and glute strength with hinge skill",
+    "refs": [
+      "R02",
+      "R03"
+    ],
+    "red_flags": true,
+    "notes": "Hinge from the hips, not the waist; keep a long spine and breathe steadily. Stop for back pain."
+  },
+  {
+    "id": "backpack-rdl",
+    "pattern": "hinge",
+    "tier": "loaded",
+    "default_object": "loaded backpack",
+    "regression_object": "bodyweight hinge",
+    "progression_lever": "add reps, then a heavier pack, then a 3-4s lowering",
+    "primary_benefit": "posterior-chain (hamstring and glute) strength",
+    "refs": [
+      "R02",
+      "R03",
+      "R15"
+    ],
+    "red_flags": true,
+    "notes": "Gauge effort by RPE, not kilograms; keep the load close and the back flat. Stop for low-back pain."
+  },
+  {
+    "id": "single-leg-hinge",
+    "pattern": "hinge",
+    "tier": "loaded",
+    "default_object": "bodyweight only",
+    "regression_object": "light fingertip support on a chair",
+    "progression_lever": "remove support, then add range, then hold a light load",
+    "primary_benefit": "single-leg hinge strength plus balance",
+    "refs": [
+      "R02",
+      "R03",
+      "R07",
+      "R08"
+    ],
+    "red_flags": true,
+    "notes": "Combines posterior-chain strength with balance; keep hips square. Use support and stop for any back pain."
+  },
+  {
+    "id": "towel-hamstring-slider",
+    "pattern": "hinge",
+    "tier": "loaded",
+    "default_object": "bath towel on a smooth floor",
+    "regression_object": "shorten the slide / bent-knee bridge",
+    "progression_lever": "increase slide range, then slow the eccentric, then add single-leg",
+    "primary_benefit": "eccentric hamstring strength and bridge control",
+    "refs": [
+      "R02",
+      "R03"
+    ],
+    "red_flags": true,
+    "notes": "Strong eccentric load on the hamstrings; ease range to avoid cramping. Stop for sharp hamstring or back pain."
+  },
+  {
+    "id": "wall-pushup",
+    "pattern": "push",
+    "tier": "seated",
+    "default_object": "wall",
+    "regression_object": "stand closer to the wall",
+    "progression_lever": "step the feet back, then progress to a countertop",
+    "primary_benefit": "entry-level pressing strength for chest, shoulders, triceps",
+    "refs": [
+      "R02",
+      "R03"
+    ],
+    "red_flags": true,
+    "notes": "Easiest push-up regression; keep a straight line from head to heels and breathe out on the press. Stop for shoulder pain."
+  },
+  {
+    "id": "countertop-pushup",
+    "pattern": "push",
+    "tier": "standing",
+    "default_object": "kitchen counter",
+    "regression_object": "use a higher, stable surface (e.g., wall)",
+    "progression_lever": "lower the surface height, then move to an incline chair",
+    "primary_benefit": "mid-range pressing strength on the path to floor push-ups",
+    "refs": [
+      "R02",
+      "R03"
+    ],
+    "red_flags": true,
+    "notes": "Use a counter that will not slide or tip; keep the core braced and the body in one line. Stop for shoulder pain."
+  },
+  {
+    "id": "incline-pushup-chair",
+    "pattern": "push",
+    "tier": "loaded",
+    "default_object": "sturdy chair",
+    "regression_object": "use a taller, stable surface",
+    "progression_lever": "lower the surface, then progress to knee push-ups",
+    "primary_benefit": "near-floor pressing strength with manageable load",
+    "refs": [
+      "R02",
+      "R03"
+    ],
+    "red_flags": true,
+    "notes": "Brace the chair so it cannot slip; keep a straight body line and steady breathing. Stop for shoulder pain."
+  },
+  {
+    "id": "knee-pushup",
+    "pattern": "push",
+    "tier": "loaded",
+    "default_object": "bodyweight only (padded knees)",
+    "regression_object": "incline push-up on a chair",
+    "progression_lever": "increase range, then progress to a full push-up",
+    "primary_benefit": "floor pressing strength with reduced load",
+    "refs": [
+      "R02",
+      "R03"
+    ],
+    "red_flags": true,
+    "notes": "Keep hips from sagging by bracing the core; cushion the knees. Stop for shoulder or wrist pain."
+  },
+  {
+    "id": "full-pushup",
+    "pattern": "push",
+    "tier": "loaded",
+    "default_object": "bodyweight only",
+    "regression_object": "knee push-up",
+    "progression_lever": "add reps, then slow the lowering, then elevate the feet",
+    "primary_benefit": "full-body pressing strength and trunk stability",
+    "refs": [
+      "R02",
+      "R03"
+    ],
+    "red_flags": true,
+    "notes": "Keep a rigid line from head to heels and avoid flaring the elbows wide. Stop for shoulder pain and regress to knees."
+  },
+  {
+    "id": "wall-press-hold",
+    "pattern": "push",
+    "tier": "standing",
+    "default_object": "wall",
+    "regression_object": "stand more upright (less lean)",
+    "progression_lever": "increase hold time, then lean in farther",
+    "primary_benefit": "isometric pressing endurance for shoulders and chest",
+    "refs": [
+      "R02",
+      "R06"
+    ],
+    "red_flags": true,
+    "notes": "Keep breathing during the hold; isometrics can raise blood pressure, so avoid breath-holding. Stop for shoulder pain or dizziness."
+  },
+  {
+    "id": "towel-iso-row",
+    "pattern": "pull",
+    "tier": "seated",
+    "default_object": "bath towel + a secure anchor",
+    "regression_object": "shorter hold / lighter pull",
+    "progression_lever": "increase hold time, then add bent-row reps with a load",
+    "primary_benefit": "isometric back and grip strength",
+    "refs": [
+      "R02",
+      "R06"
+    ],
+    "red_flags": true,
+    "notes": "Anchor must be secure; keep breathing and the neck relaxed. Stop for shoulder or neck pain."
+  },
+  {
+    "id": "water-bottle-bent-row",
+    "pattern": "pull",
+    "tier": "loaded",
+    "default_object": "two water bottles or cans",
+    "regression_object": "lighter bottles / partial range",
+    "progression_lever": "heavier bottles, then a slow lowering, then more reps",
+    "primary_benefit": "upper-back and biceps strength to balance pushing",
+    "refs": [
+      "R02",
+      "R03",
+      "R15"
+    ],
+    "red_flags": true,
+    "notes": "Hinge from the hips and keep the spine long; effort by RPE not kilograms. Stop for low-back pain."
+  },
+  {
+    "id": "backpack-row",
+    "pattern": "pull",
+    "tier": "loaded",
+    "default_object": "loaded backpack",
+    "regression_object": "lighter pack / water-bottle row",
+    "progression_lever": "heavier pack, then more reps, then a slow eccentric",
+    "primary_benefit": "back and arm pulling strength with a heavier load",
+    "refs": [
+      "R02",
+      "R03",
+      "R15"
+    ],
+    "red_flags": true,
+    "notes": "Keep a flat back and neutral neck; gauge load by feel. Stop for low-back or shoulder pain."
+  },
+  {
+    "id": "inverted-row-table",
+    "pattern": "pull",
+    "tier": "loaded",
+    "default_object": "very sturdy table",
+    "regression_object": "bend the knees / more upright body",
+    "progression_lever": "straighten the body, then elevate the feet, then add reps",
+    "primary_benefit": "advanced horizontal pulling strength for the whole back",
+    "refs": [
+      "R02",
+      "R03"
+    ],
+    "red_flags": true,
+    "notes": "Test furniture stability and weight rating first; keep a rigid body and neutral neck. Stop for any joint pain."
+  },
+  {
+    "id": "prone-ytw",
+    "pattern": "pull",
+    "tier": "loaded",
+    "default_object": "bodyweight only (light cans optional)",
+    "regression_object": "fewer reps / smaller range",
+    "progression_lever": "add light cans, then more reps, then longer holds at the top",
+    "primary_benefit": "mid-back, rear-shoulder and posture strength",
+    "refs": [
+      "R02",
+      "R03"
+    ],
+    "red_flags": true,
+    "notes": "Lift with the back muscles, not the neck; keep the movements small. Stop for shoulder or neck pain."
+  },
+  {
+    "id": "water-bottle-carry",
+    "pattern": "carry",
+    "tier": "conditioning",
+    "default_object": "two water bottles or cans",
+    "regression_object": "lighter load / shorter distance",
+    "progression_lever": "heavier load, then longer carries, then a single-side carry",
+    "primary_benefit": "grip, core and postural endurance plus light conditioning",
+    "refs": [
+      "R01",
+      "R02",
+      "R15"
+    ],
+    "red_flags": true,
+    "notes": "Keep the trunk tall and braced; effort by feel. Set the load down if posture fails. Stop for back pain."
+  },
+  {
+    "id": "backpack-carry",
+    "pattern": "carry",
+    "tier": "conditioning",
+    "default_object": "loaded backpack",
+    "regression_object": "lighter pack / shorter time",
+    "progression_lever": "heavier pack, then longer marches, then add a low step",
+    "primary_benefit": "loaded postural endurance and light aerobic work",
+    "refs": [
+      "R01",
+      "R02",
+      "R12"
+    ],
+    "red_flags": true,
+    "notes": "Distribute the load on both shoulders and keep the spine tall. Stop for back pain or breathlessness."
+  },
+  {
+    "id": "suitcase-carry",
+    "pattern": "carry",
+    "tier": "conditioning",
+    "default_object": "one water bottle, can, or bag",
+    "regression_object": "lighter load / shorter time",
+    "progression_lever": "heavier load, then longer carries, then a longer reach overhead",
+    "primary_benefit": "anti-lean core strength and grip endurance",
+    "refs": [
+      "R02",
+      "R15"
+    ],
+    "red_flags": true,
+    "notes": "The goal is to stay upright against the side load; keep shoulders level. Stop for back or shoulder pain."
+  },
+  {
+    "id": "bottle-wood-chop",
+    "pattern": "rotation",
+    "tier": "loaded",
+    "default_object": "one water bottle or can",
+    "regression_object": "lighter load / smaller range",
+    "progression_lever": "heavier load, then faster controlled reps, then more range",
+    "primary_benefit": "rotational core power and coordination",
+    "refs": [
+      "R02",
+      "R15"
+    ],
+    "red_flags": true,
+    "notes": "Rotate through the trunk and hips, not the low back alone; keep it light. Stop for back pain."
+  },
+  {
+    "id": "anti-rotation-press",
+    "pattern": "rotation",
+    "tier": "standing",
+    "default_object": "bath towel + a secure side anchor",
+    "regression_object": "stand closer / shorter hold",
+    "progression_lever": "step farther from the anchor, then longer holds",
+    "primary_benefit": "anti-rotation core stability that protects the spine",
+    "refs": [
+      "R02",
+      "R06"
+    ],
+    "red_flags": true,
+    "notes": "The point is to NOT rotate; keep breathing and the spine neutral. Stop for back pain."
+  },
+  {
+    "id": "supported-single-leg-stand",
+    "pattern": "balance",
+    "tier": "standing",
+    "default_object": "sturdy chair",
+    "regression_object": "two-hand support / lower the foot sooner",
+    "progression_lever": "reduce hand support, then close the eyes briefly, then add a head turn",
+    "primary_benefit": "single-leg balance to reduce fall risk",
+    "refs": [
+      "R08"
+    ],
+    "red_flags": true,
+    "notes": "Keep a chair within reach at all times; progress support gradually. Stop if you feel unsteady or dizzy."
+  },
+  {
+    "id": "tandem-stand",
+    "pattern": "balance",
+    "tier": "standing",
+    "default_object": "bodyweight only (counter nearby)",
+    "regression_object": "wider stance / fingertip support",
+    "progression_lever": "narrow the base, then close the eyes briefly, then add arm movements",
+    "primary_benefit": "static balance and ankle stability for fall prevention",
+    "refs": [
+      "R08"
+    ],
+    "red_flags": true,
+    "notes": "Practice near a counter you can grab; keep it safe. Stop if you feel unsteady or dizzy."
+  },
+  {
+    "id": "heel-to-toe-walk",
+    "pattern": "balance",
+    "tier": "conditioning",
+    "default_object": "bodyweight only (counter alongside)",
+    "regression_object": "normal-width steps / touch support",
+    "progression_lever": "narrow the line, then add head turns, then carry a light load",
+    "primary_benefit": "dynamic gait balance to reduce falls",
+    "refs": [
+      "R08"
+    ],
+    "red_flags": true,
+    "notes": "Keep a wall or counter within reach; go slowly. Stop if you feel unsteady or dizzy."
+  },
+  {
+    "id": "step-up-chair",
+    "pattern": "balance",
+    "tier": "loaded",
+    "default_object": "stair, step, or sturdy chair",
+    "regression_object": "lower step / use a handrail",
+    "progression_lever": "raise the step height, then add a backpack, then slow the lowering",
+    "primary_benefit": "single-leg strength, balance and confident stair mechanics",
+    "refs": [
+      "R02",
+      "R07",
+      "R08"
+    ],
+    "red_flags": true,
+    "notes": "Use a stable step that will not move and hold a rail if needed; lead with the working leg. Stop for knee pain."
+  },
+  {
+    "id": "marching-in-place",
+    "pattern": "aerobic",
+    "tier": "conditioning",
+    "default_object": "bodyweight only",
+    "regression_object": "smaller, slower steps / hold a counter",
+    "progression_lever": "lift the knees higher, then quicken the pace, then add arm reaches",
+    "primary_benefit": "low-impact aerobic conditioning and warm-up",
+    "refs": [
+      "R01",
+      "R16",
+      "R17"
+    ],
+    "red_flags": true,
+    "notes": "Keep it comfortable and rhythmic; hold a counter if balance is an issue. Stop for chest pain or dizziness."
+  },
+  {
+    "id": "sit-to-stand-intervals",
+    "pattern": "aerobic",
+    "tier": "conditioning",
+    "default_object": "sturdy chair",
+    "regression_object": "higher seat / slower pace",
+    "progression_lever": "quicken the pace, then add reps, then add a backpack",
+    "primary_benefit": "aerobic conditioning plus repeated sit-to-stand power",
+    "refs": [
+      "R01",
+      "R16",
+      "R17",
+      "R12"
+    ],
+    "red_flags": true,
+    "notes": "Keep knees tracking over toes and breathe through the reps. Stop for knee pain, chest pain, or dizziness."
+  },
+  {
+    "id": "stair-snack",
+    "pattern": "aerobic",
+    "tier": "conditioning",
+    "default_object": "stair or low step",
+    "regression_object": "slower pace / use the handrail",
+    "progression_lever": "quicken the pace, then lengthen the burst, then add a pack",
+    "primary_benefit": "vigorous, time-efficient aerobic conditioning",
+    "refs": [
+      "R01",
+      "R12",
+      "R16",
+      "R17"
+    ],
+    "red_flags": true,
+    "notes": "Use the handrail and a stable step; build pace gradually. Stop for chest pain, dizziness, or knee pain."
+  },
+  {
+    "id": "knee-plank",
+    "pattern": "isometric",
+    "tier": "standing",
+    "default_object": "bodyweight only (padded knees)",
+    "regression_object": "shorter holds / hands elevated",
+    "progression_lever": "increase hold time, then progress to a full plank",
+    "primary_benefit": "core and trunk stability with reduced load",
+    "refs": [
+      "R02",
+      "R06"
+    ],
+    "red_flags": true,
+    "notes": "Keep breathing during the hold; do not let the low back sag. Stop for low-back or shoulder pain."
+  },
+  {
+    "id": "full-plank",
+    "pattern": "isometric",
+    "tier": "loaded",
+    "default_object": "bodyweight only",
+    "regression_object": "knee plank",
+    "progression_lever": "increase hold time, then elevate the feet, then add a reach",
+    "primary_benefit": "whole-body trunk stability and endurance",
+    "refs": [
+      "R02",
+      "R06"
+    ],
+    "red_flags": true,
+    "notes": "Keep breathing and a neutral spine; isometrics can raise blood pressure, so avoid breath-holding. Stop for back or shoulder pain."
+  }
+]

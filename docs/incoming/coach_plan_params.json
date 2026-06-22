@@ -1,0 +1,115 @@
+{
+  "_meta": {
+    "units": {"distance": "m_or_km", "time": "min_or_s", "speed": "m_per_min_or_m_per_s", "hr": "bpm", "load": "AU"},
+    "evidence_grades": {"E1": "strong (meta/RCT)", "E2": "moderate", "E3": "practice-based", "E4": "contested/refuted"},
+    "note": "E3/E4 values are tunable defaults, NOT physical constants. Do not present as proven."
+  },
+  "phases": {
+    "grade": "E3",
+    "order": ["base", "build", "peak", "taper", "race"],
+    "default_share_of_N": {"base": [0.45, 0.55], "build": [0.25, 0.30], "peak": [0.10, 0.15]},
+    "taper_is_fixed_absolute": true,
+    "tid_drift": "pyramidal_in_prep_to_polarized_in_competition (E2)"
+  },
+  "session_mix": {
+    "grade": "E3",
+    "tid_easy_fraction_of_volume": 0.80,
+    "tid_easy_fraction_grade": "E1",
+    "hard_days_per_week_cap": {"beginner": 1, "intermediate": 2, "advanced": 3},
+    "min_hours_between_quality": 48,
+    "long_run_share_of_weekly_volume": [0.20, 0.30],
+    "long_run_share_low_volume_max": 0.35,
+    "long_run_duration_ceiling_min": {"general": 180, "marathon_typical": [150, 180]},
+    "quality_volume_caps": {"I_pace_max_frac": 0.08, "T_pace_max_frac": 0.10, "grade": "E3_Daniels"},
+    "templates": {
+      "_note": "[easy, long, quality] counts per week",
+      "2": {"beginner": [1,1,0], "intermediate": [1,1,0], "advanced": [1,1,1]},
+      "3": {"beginner": [2,1,0], "intermediate": [1,1,1], "advanced": [1,1,1]},
+      "4": {"beginner": [3,1,0], "intermediate": [2,1,1], "advanced": [2,1,1]},
+      "5": {"beginner": [4,1,0], "intermediate": [3,1,1], "advanced": [2,1,2]}
+    }
+  },
+  "pace_models": {
+    "vdot": {
+      "grade": "E2_E3_book",
+      "vo2_of_v": "VO2 = -4.60 + 0.182258*v + 0.000104*v^2  (v in m/min)",
+      "pct_vo2max_of_t": "pct = 0.8 + 0.1894393*exp(-0.012778*t) + 0.2989558*exp(-0.1932605*t)  (t in min)",
+      "vdot": "VO2(v_race) / pct(t_race)",
+      "zone_pct_vo2max": {"E": [0.59,0.74], "M": [0.75,0.84], "T": [0.83,0.88], "I": [0.95,1.00], "R": "supra"}
+    },
+    "critical_speed": {
+      "grade": "E2",
+      "model_distance_form": "d = Dprime + CS*t  (d m, t s, CS m/s, Dprime m)",
+      "fit_inputs": "2-3 maximal efforts each ~2-20 min, same training phase",
+      "cs_pct_vo2max_typical": [0.70, 0.90],
+      "marathon_pct_cs_elite": 0.96,
+      "do_not_extrapolate_to_marathon": true
+    },
+    "heart_rate": {
+      "hrmax_eq": "208 - 0.7*age", "hrmax_grade": "E1", "hrmax_pred_sd_bpm": [7,11],
+      "hrr_eq": "HRrest + pct*(HRmax - HRrest)  (Karvonen)",
+      "zones_pct_hrr": {"easy": [0.55,0.74], "steady": [0.74,0.84], "threshold": [0.84,0.88], "vo2max": [0.92,1.00]},
+      "zones_pct_hrmax": {"easy": [0.65,0.79], "steady": [0.80,0.89], "threshold": [0.88,0.92], "vo2max": [0.95,1.00]},
+      "hr_unreliable_for_short_intervals": true
+    },
+    "rpe": {
+      "borg_6_20": {"easy": [11,13], "steady": [13,14], "threshold": [15,16], "vo2max": [17,19], "max": [19,20]},
+      "foster_0_10": {"easy": [3,4], "steady": [4,5], "threshold": [6,7], "vo2max": [8,9], "max": 10}
+    },
+    "riegel": {
+      "grade": "E2",
+      "eq": "T2 = T1 * (D2/D1)^k",
+      "k_default": 1.06, "k_ultra": [1.08,1.10], "k_individual_range": [1.03,1.10],
+      "low_mileage_bias": "optimistic; widen range or add penalty when volume/long-run training is low",
+      "half_to_marathon_empirical_multiplier": [2.10, 2.18]
+    }
+  },
+  "progression": {
+    "ten_percent_rule": {"grade": "E4", "claim": "NOT validated as injury-protective; do not assert"},
+    "single_run_spike_rule": {
+      "grade": "E2",
+      "reference": "longest run in prior ~30 days",
+      "novice_ceiling_frac_over_recent_longest": 0.10,
+      "flag_threshold_frac": 0.30,
+      "reported_risk_increase": {"10_30pct": 0.64, "30_100pct": 0.52, "over_100pct": 1.28, "status": "preliminary_verify"}
+    },
+    "weekly_volume_increase_default": [0.05, 0.10], "weekly_increase_grade": "E3",
+    "acwr": {"grade": "E2_E4", "sweet_spot": [0.8,1.3], "danger_above": 1.5, "use": "signal_only_never_gate"},
+    "stepback": {"grade": "E3", "cadence_default": "3:1", "cadence_conservative": "2:1", "recovery_week_volume_frac": [0.60,0.75]}
+  },
+  "tune_up_race": {
+    "grade": "E3",
+    "phase": ["build","peak"],
+    "shorter_than_goal": true,
+    "min_weeks_before_goal": [2,3],
+    "pre_unload_days": [2,4],
+    "use_result_in": ["riegel","vdot"],
+    "widen_range_if_low_mileage": true
+  },
+  "taper": {
+    "core_grade": "E1",
+    "duration_weeks_general": 2,
+    "volume_reduction_frac": [0.41, 0.60],
+    "maintain_intensity": true,
+    "maintain_frequency": true,
+    "performance_effect_size": 0.59,
+    "per_distance_days": {"5k": [7,10], "10k": [10,14], "half": [10,14], "marathon": [14,21], "scaling_grade": "E3"},
+    "low_volume_runner_taper": "minimal (little fatigue to shed)"
+  },
+  "feedback": {
+    "session_load_eq": "RPE_0_10 * duration_min", "grade": "E2",
+    "monotony": "weekly_mean_daily_load / SD_daily_load",
+    "strain": "weekly_load * monotony",
+    "completed_vs_planned_low_frac": 0.80,
+    "completed_vs_planned_high_frac": 1.10,
+    "no_makeup_of_missed_volume": true,
+    "reanchor_every_weeks": [4,8]
+  },
+  "safety": {
+    "screening_model": "ACSM_Riebe_2015 (activity x disease/symptoms x intensity) + PAR-Q+",
+    "recommend_clearance_if": ["known_cv_metabolic_renal_disease","cv_symptoms","sedentary_plus_vigorous_intent","pregnancy","new_undiagnosed_symptom"],
+    "stop_and_seek_care_red_flags": ["chest_pain","syncope","severe_breathlessness","palpitations","thunderclap_headache","focal_neuro_deficit","gait_altering_pain","heat_illness"],
+    "no_training_until_resolved": ["fever","systemic_illness"],
+    "app_is_not_clinician": true
+  }
+}
