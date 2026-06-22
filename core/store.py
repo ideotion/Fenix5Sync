@@ -13,10 +13,13 @@ import datetime as _dt
 import json
 import sqlite3
 from pathlib import Path
-from typing import Any, Iterable
+from typing import TYPE_CHECKING, Any, Iterable
 
 from .models import Activity, Lap, Trackpoint
 from .search import ActivityFilter, build_where
+
+if TYPE_CHECKING:
+    from .segments import Segment
 
 SCHEMA_VERSION = 1
 
@@ -107,6 +110,17 @@ CREATE TABLE IF NOT EXISTS wellness_days (
     avg_stress     INTEGER,
     stress_samples INTEGER,
     updated_at     TEXT
+);
+
+CREATE TABLE IF NOT EXISTS segments (
+    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    name               TEXT NOT NULL,
+    sport              TEXT,
+    radius_m           REAL,
+    distance_m         REAL,
+    waypoints          TEXT NOT NULL,
+    source_activity_id INTEGER,
+    created_at         TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_activities_start_time ON activities(start_time);
@@ -389,6 +403,54 @@ class Store:
             "FROM wellness_days ORDER BY date"
         ).fetchall()
         return [dict(r) for r in rows]
+
+    # ---- personal segments -------------------------------------------------
+    def add_segment(self, segment: "Segment") -> int:
+        """Persist a user-defined segment; returns its new id (also set on it)."""
+        cur = self.conn.execute(
+            """INSERT INTO segments
+                   (name, sport, radius_m, distance_m, waypoints, source_activity_id, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            (
+                segment.name, segment.sport, segment.radius_m, segment.distance_m,
+                json.dumps([[la, lo] for la, lo in segment.waypoints]),
+                segment.source_activity_id,
+                _dt.datetime.now(_dt.timezone.utc).isoformat(),
+            ),
+        )
+        self.conn.commit()
+        segment.id = int(cur.lastrowid)
+        return segment.id
+
+    @staticmethod
+    def _row_to_segment(row) -> "Segment":
+        from .segments import Segment
+        return Segment(
+            id=int(row["id"]),
+            name=row["name"],
+            sport=row["sport"],
+            radius_m=row["radius_m"],
+            distance_m=row["distance_m"],
+            waypoints=[(float(la), float(lo)) for la, lo in json.loads(row["waypoints"])],
+            source_activity_id=row["source_activity_id"],
+        )
+
+    def list_segments(self) -> list["Segment"]:
+        rows = self.conn.execute(
+            "SELECT * FROM segments ORDER BY created_at DESC, id DESC"
+        ).fetchall()
+        return [self._row_to_segment(r) for r in rows]
+
+    def get_segment(self, segment_id: int) -> "Segment | None":
+        row = self.conn.execute(
+            "SELECT * FROM segments WHERE id = ?", (segment_id,)
+        ).fetchone()
+        return self._row_to_segment(row) if row else None
+
+    def delete_segment(self, segment_id: int) -> bool:
+        with self.conn:
+            cur = self.conn.execute("DELETE FROM segments WHERE id = ?", (segment_id,))
+        return cur.rowcount > 0
 
     def summary_stats(self) -> dict[str, Any]:
         """Aggregate totals for the dashboard header."""

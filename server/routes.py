@@ -41,6 +41,7 @@ from core.race import compute_race_predictions
 from core.privacy_audit import compute_privacy_audit
 from core.recap import compute_recap
 from core.search import ActivityFilter
+from core.segments import compute_segment_efforts, segment_from_activity
 from core.splits import MILE_M, compute_splits
 from core.store import Store
 from core.training_load import compute_training_load
@@ -52,6 +53,7 @@ from .schemas import (
     ConfigModel,
     Health,
     LogsResponse,
+    SegmentCreate,
     Stats,
     SyncStatus,
 )
@@ -189,6 +191,55 @@ def insights_recap(
     GUI renders a self-contained, shareable card; nothing leaves the machine.
     """
     return compute_recap(store.all_activities(with_series=False), year=year)
+
+
+# ---- personal segments -----------------------------------------------------
+@router.get("/segments")
+def list_segments(store: Store = Depends(get_store)) -> dict:
+    """All saved personal segments (private; no leaderboards, no cloud)."""
+    return {"segments": [s.as_dict() for s in store.list_segments()]}
+
+
+@router.post("/segments", status_code=201)
+def create_segment(body: SegmentCreate, store: Store = Depends(get_store)) -> dict:
+    """Create a segment from a reference activity's GPS track."""
+    activity = store.get_activity(body.activity_id, with_series=True)
+    if activity is None:
+        raise HTTPException(status_code=404, detail="activity not found")
+    try:
+        segment = segment_from_activity(
+            activity, body.name, num_waypoints=body.num_waypoints, radius_m=body.radius_m
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    store.add_segment(segment)
+    return segment.as_dict()
+
+
+@router.delete("/segments/{segment_id}", status_code=204)
+def delete_segment(segment_id: int, store: Store = Depends(get_store)) -> Response:
+    if not store.delete_segment(segment_id):
+        raise HTTPException(status_code=404, detail="segment not found")
+    return Response(status_code=204)
+
+
+@router.get("/segments/{segment_id}/efforts")
+def segment_efforts(segment_id: int, store: Store = Depends(get_store)) -> dict:
+    """Every matching effort on a segment: a private leaderboard plus a trend.
+
+    Loads trackpoint series for activities of the segment's sport (an N+1, pruned
+    to that sport with a GPS signal) to match the route; computed locally.
+    """
+    segment = store.get_segment(segment_id)
+    if segment is None:
+        raise HTTPException(status_code=404, detail="segment not found")
+    candidates = [
+        a for a in store.all_activities(with_series=False)
+        if a.id is not None and (segment.sport is None or a.sport == segment.sport)
+        and a.start_latitude is not None
+    ]
+    full = [store.get_activity(a.id, with_series=True) for a in candidates]
+    return compute_segment_efforts([a for a in full if a is not None], segment)
 
 
 @router.get("/insights/privacy-audit")

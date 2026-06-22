@@ -26,6 +26,7 @@
         case "insights": return await Insights.render();
         case "recap": return await RecapView.render();
         case "privacy": return await PrivacyView.render();
+        case "segments": return await SegmentsView.render();
         case "taichi": return await TaiChiView.render();
         case "coach": return await CoachView.render();
         case "activity": return await ActivityView.render(arg);

@@ -59,6 +59,13 @@ from .race import RacePrediction, compute_race_predictions
 from .recap import available_years, compute_recap
 from .records import compute_personal_records
 from .search import ActivityFilter, build_where
+from .segments import (
+    Segment,
+    SegmentEffort,
+    compute_segment_efforts,
+    match_effort,
+    segment_from_activity,
+)
 from .splits import Split, compute_splits
 from .store import Store
 from .training_load import DayLoad, TrainingLoad, compute_training_load
@@ -165,6 +172,12 @@ __all__ = [
     "available_years",
     # privacy audit
     "compute_privacy_audit",
+    # personal segments
+    "Segment",
+    "SegmentEffort",
+    "segment_from_activity",
+    "match_effort",
+    "compute_segment_efforts",
     # athlete suggestions
     "suggest_athlete",
     # logging
