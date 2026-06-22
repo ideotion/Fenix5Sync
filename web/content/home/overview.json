@@ -1,0 +1,161 @@
+{
+  "title": "Sports at Home",
+  "subtitle": "Guided, evidence-based training with the furniture and objects you already own — built for fragile and deconditioned users, and scalable for the fit.",
+  "evidence_date": "2026-06-22",
+  "source_doc": "docs/home/curation-report.md",
+  "disclaimer": "Not medical advice. Home training with household objects is a way to be active, not a treatment or cure for any condition. If you are older, pregnant, deconditioned, or have a medical condition, get clinician clearance (PAR-Q+ screening) before starting. Objects are not calibrated weights — work to comfortable effort, not to failure. Stop and seek care for chest pain or pressure, severe or unusual breathlessness, dizziness or faintness, palpitations, or new or worsening joint pain.",
+  "premise": {
+    "summary": "Three independent lines of evidence make furniture-and-objects training defensible: equipment type is not a primary driver of resistance-training outcomes; home delivery is non-inferior to centre delivery for the outcomes studied; and even very small movement doses carry benefit.",
+    "points": [
+      {"claim": "The training is the active ingredient, not the equipment — moving from no resistance training to any is the biggest gain, and equipment type and program complexity do not consistently change outcomes.", "refs": ["R02", "R03"]},
+      {"claim": "Home delivery holds up even in cardiac rehabilitation, where home- and centre-based programs gave similar benefits for the outcomes studied.", "refs": ["R10", "R11"]},
+      {"claim": "Short accumulated bouts count: ~4.4 min/day of vigorous lifestyle activity tracked with 26-34% lower mortality in non-exercisers, and structured exercise snacks improve fitness.", "refs": ["R01", "R12", "R16", "R17"]}
+    ]
+  },
+  "levels": [
+    {"id": "seated", "name": "Seated / supported", "intensity_met": [1.5, 2.8], "desc": "All work seated or holding a chair, counter, or wall. Safest start for the most deconditioned, for symptom days, and for anyone's first session."},
+    {"id": "standing", "name": "Standing, supported to free", "intensity_met": [2.5, 4.0], "desc": "Bodyweight patterns with a hand on support, progressing to unassisted, plus light external load (water bottles). Builds standing tolerance, balance, and the squat/hinge/push/pull foundations."},
+    {"id": "loaded", "name": "Loaded home strength", "intensity_met": [3.5, 6.0], "desc": "Backpack- and bottle-loaded compound patterns with managed progression; balance and functional work retained."},
+    {"id": "conditioning", "name": "Conditioning / advanced", "intensity_met": [5.0, 8.0], "desc": "Higher volume, circuits, stair and tempo work, unilateral and power-biased variations for fit users wanting a real challenge."}
+  ],
+  "programs": [
+    {"tier": "entry", "name": "Fragile / deconditioned track", "desc": "Leads with seated and supported tiers and ALWAYS pairs strength with balance and functional tasks. Balance/functional exercise is the active ingredient for falls reduction; resistance training alone is uncertain for falls. A chair is present every session.", "refs": ["R07", "R08"]},
+    {"tier": "function", "name": "Overweight track (function-framed)", "desc": "Same ladder with joint-sparing variations (chair/wall support, incline push-ups, supported squats early). Framed around strength, stamina, and how you feel — not weight. No calorie or weight targets.", "refs": ["R04", "R16"]},
+    {"tier": "adjunct", "name": "Chronic-condition adjunct packs (cleared)", "desc": "Cleared, adjunct-framed presets for type 2 diabetes (plus break-up-sitting prompts), hypertension (with isometric/breathing guards), knee osteoarthritis, and cancer survivorship. Adjunct to medical care, never a replacement.", "refs": ["R05", "R06", "R09", "R13"]},
+    {"tier": "advanced", "name": "Experienced / fit track", "desc": "Loaded and conditioning tiers, progressing by tempo, range, unilateral loading, and density. Honest about the absolute-load ceiling of household objects.", "refs": ["R02", "R03"]}
+  ],
+  "objects": [
+    {"id": "chair", "name": "Sturdy chair (no wheels, against a wall)", "role": "Support, target height, step platform", "load_logic": "Bodyweight", "movements": ["Sit-to-stand", "Supported squat", "Incline push-up", "Step-up", "Balance hold"], "safety": "Confirm it cannot slide or tip; back it to a wall."},
+    {"id": "wall", "name": "Wall", "role": "Isometric brace, push surface, balance aid", "load_logic": "Bodyweight", "movements": ["Wall sit", "Wall push-up", "Standing balance"], "safety": "Clear the floor; non-slip footing."},
+    {"id": "bottles", "name": "Water bottles / jugs (sealed)", "role": "Adjustable external load", "load_logic": "Volume to mass: 1 L is about 1 kg; fill to titrate.", "movements": ["Carries", "Rows", "Presses", "Curls", "Lateral raises"], "safety": "Check the seal; start light; keep a neutral wrist."},
+    {"id": "backpack", "name": "Backpack (loaded with books/bottles)", "role": "Trunk-proximal load for squats, hinges, carries", "load_logic": "Weigh on a scale if possible; otherwise count contents.", "movements": ["Goblet-style squat", "Hip hinge", "Loaded carry", "Step-up"], "safety": "Pack the load high and tight; do not round the back."},
+    {"id": "towel", "name": "Bath / beach towel", "role": "Sliders, isometric self-resistance, mobility strap", "load_logic": "Friction / your own force", "movements": ["Hamstring sliders", "Towel rows (self-isometric)", "Shoulder mobility"], "safety": "Use sliders on hard floor only."},
+    {"id": "stairs", "name": "Stairs / a single step", "role": "Aerobic snack, power, calf and quad loading", "load_logic": "Bodyweight times incline", "movements": ["Stair snacks", "Step-ups", "Calf raises"], "safety": "Keep a rail within reach; one stair for beginners."},
+    {"id": "counter", "name": "Countertop / heavy table edge", "role": "High brace for supported standing work", "load_logic": "Bodyweight", "movements": ["Supported squat", "Standing balance", "Incline push-up"], "safety": "Must be immovable and weight-bearing."},
+    {"id": "dowel", "name": "Broom / mop handle", "role": "Movement-pattern dowel, mobility, balance", "load_logic": "Bodyweight", "movements": ["Hinge grooving", "Overhead mobility", "Balance reach"], "safety": "Keep it light; this is pattern practice, not load."}
+  ],
+  "movement_patterns": [
+    {"id": "squat", "name": "Sit-to-stand / squat", "progression": "chair entry, then supported bodyweight, then backpack-loaded, then unilateral", "note": "The single most functional pattern; 30-second sit-to-stand also works as a home capacity check."},
+    {"id": "hinge", "name": "Hip hinge", "progression": "broom-handle groove, then bodyweight, then backpack hinge, then single-leg", "note": "Teach the pattern before loading it to protect the back."},
+    {"id": "push", "name": "Push (horizontal / incline)", "progression": "wall, then counter, then chair-incline, then floor", "note": "Joint-friendly entry for overweight and deconditioned users."},
+    {"id": "pull", "name": "Pull", "progression": "towel self-isometric and bottle rows, then backpack rows, then table rows", "note": "The hardest pattern to load at home; named honestly."},
+    {"id": "carry", "name": "Carry / loaded gait", "progression": "bottle carries, then backpack carries", "note": "High transfer to daily life; gentle on joints; scales by fill level."},
+    {"id": "rotation", "name": "Rotation / anti-rotation", "progression": "light-load trunk work", "note": "Trunk stability for everyday tasks."},
+    {"id": "balance", "name": "Balance / gait", "progression": "supported single-leg stance, then tandem stand, then reaching and stepping tasks", "note": "The falls-prevention core for fragile users."},
+    {"id": "aerobic", "name": "Aerobic snacks", "progression": "marching, then sit-to-stand intervals, then stairs", "note": "Delivers the accumulated aerobic dose."}
+  ],
+  "screening": {
+    "model": "PAR-Q+ (international standard for self-administered pre-participation screening)",
+    "logic": "Seven general questions; if all answers are no, self-clear for unrestricted activity; if any is yes, ask targeted follow-up; if follow-up flags remain, route to a qualified professional or ePARmed-X+.",
+    "rules": [
+      "The app never overrides a 'see a professional' outcome.",
+      "Re-screen on any new condition, symptom, pregnancy, injury, or long lay-off.",
+      "Cardiac disease, recent cardiac events, or uncontrolled symptoms route to clinical care, not to a tier."
+    ],
+    "refs": ["R14"]
+  },
+  "intensity": {
+    "summary": "Because objects are uncalibrated, dose is controlled by perception and reserve, not by assumed kilograms.",
+    "signals": [
+      {"name": "Rate of perceived exertion (RPE)", "use": "Primary intensity signal on a simple 0-10 scale with plain talk-anchors.", "refs": ["R15"]},
+      {"name": "Repetitions in reserve (RIR)", "use": "Fragile/beginners ~3-4 RIR; general ~2-3 RIR. Training to failure is not required for benefit.", "refs": ["R02"]},
+      {"name": "Talk test", "use": "Gates aerobic snacks: full sentences = light; short phrases = vigorous band.", "refs": ["R12"]},
+      {"name": "Progression", "use": "Change one variable at a time (reps, then range, then tempo, then unilateral, then heavier object); technique quality is the gate; deload by dropping a tier on symptom days.", "refs": ["R02"]}
+    ]
+  },
+  "benefits": [
+    {"outcome": "Muscle strength, mass & physical performance", "grade": "Strong", "detail": "Progressive resistance training improves strength, hypertrophy, power, and function; the dominant determinant is doing it at all, not the equipment. In older adults it improves walking, stair climbing, and chair rises.", "refs": ["R02", "R03", "R07"]},
+    {"outcome": "Falls & balance (older adults)", "grade": "Strong", "detail": "Balance and functional exercise cuts the rate of falls ~24% (high-certainty); multi-component programs ~34%. Resistance training ALONE is uncertain for falls — so balance content is mandatory in the fragile track.", "refs": ["R08"]},
+    {"outcome": "Resting blood pressure", "grade": "Strong", "detail": "All exercise modes lower resting BP; isometric training is most effective (~8.2/4 mmHg), and the wall squat ranked the single most effective sub-mode for systolic BP. Caveat: high-intensity static holds with breath-holding can transiently raise BP during the effort.", "refs": ["R06"]},
+    {"outcome": "Type 2 diabetes (glycaemic control)", "grade": "Strong", "detail": "Regular activity improves blood-glucose control and cardiovascular risk; breaking up sitting every 30 minutes with brief light activity (e.g. leg extensions, overhead arm stretches) helps glucose handling. Adjunct to care.", "refs": ["R05"]},
+    {"outcome": "Knee osteoarthritis", "grade": "Moderate", "detail": "Land-based exercise gives moderate immediate reduction in pain (~12/100) and improved function (~10/100), sustained 2-6 months; favour supported, controlled-range variations.", "refs": ["R13"]},
+    {"outcome": "Cancer survivorship (QoL, fatigue, function)", "grade": "Strong", "detail": "Exercise is generally safe (clearance advised in specific situations) and improves anxiety, depressive symptoms, fatigue, physical function, and quality of life; avoid inactivity. Adjunct to oncology care.", "refs": ["R09"]},
+    {"outcome": "Cardiovascular outcomes context", "grade": "Strong", "detail": "Exercise-based cardiac rehabilitation reduces MI risk and hospitalisation and likely slightly reduces mortality, with home delivery non-inferior to centre delivery for studied outcomes. Cited to justify home delivery and set the boundary — the app is NOT cardiac rehab.", "refs": ["R10", "R11"]},
+    {"outcome": "All-cause / CVD / cancer mortality (accumulated movement)", "grade": "Strong", "detail": "In non-exercisers, ~4.4 min/day of vigorous lifestyle activity tracked with 26-30% lower all-cause/cancer and 32-34% lower CVD mortality, near-linearly. Observational, but robust.", "refs": ["R12"]},
+    {"outcome": "Cardiorespiratory fitness from short home bouts", "grade": "Moderate", "detail": "Structured exercise snacks improve cardiorespiratory fitness (moderate certainty), feasible across mixed populations. Effects on muscular endurance and broader outcomes are less certain.", "refs": ["R16", "R17"]}
+  ],
+  "not_supported": [
+    "This is not a weight-loss program and must not be framed as one — exercise alone produces modest weight change; benefits accrue largely independent of the scale. The app measures strength, stamina, balance, and adherence, not weight, and prescribes no calorie or weight targets.",
+    "This is not cardiac rehabilitation, disease treatment, or physiotherapy — higher-risk cardiac disease needs supervised, risk-stratified care; flagged users are routed out.",
+    "Objects are not calibrated weights — the app cannot tell you an exact load from a 'full backpack'; intensity is governed by perceived effort and reps-in-reserve.",
+    "Isometrics are not universally benign — high-intensity static holds with breath-holding can transiently spike blood pressure; the wall sit is gated behind clearance for uncontrolled hypertension or cardiac disease.",
+    "Resistance training alone is not a falls program — falls reduction requires balance and functional content.",
+    "Household-object training has thin object-specific trial evidence — it is justified by transfer from equipment-agnostic, home-delivery, and minimal-dose findings, not by trials of named objects."
+  ],
+  "safety": {
+    "setup": ["A stable, weight-bearing, immovable support (chair, counter, or wall)", "Clear space and non-slip footing", "Sealed or secured objects (check bottle caps; pack backpacks high and tight)", "Water to hand", "A chair within reach for every standing session"],
+    "red_flags": ["Chest pain or pressure", "Severe or unusual breathlessness", "Dizziness, light-headedness, or faintness", "Palpitations", "New or worsening joint pain", "Sudden weakness or numbness"],
+    "population_guards": [
+      "Fragile track: balance/functional content is mandatory, not optional.",
+      "Hypertension / cardiac context: breathing cues and post-clearance gating for isometric holds.",
+      "Cardiac / high-risk: routed to clinical care, not enrolled in a tier.",
+      "All clinical conditions: adjunct-to-care language, never treatment claims.",
+      "Overweight track: function-not-weight framing; no diet or calorie prescriptions.",
+      "Wellbeing guard: users signalling disordered eating or compulsive exercise are routed away from intensity/volume escalation toward gentler, health-framed content and professional resources."
+    ],
+    "note": "Serious adverse events were rare across the cited resistance, falls, osteoarthritis, and cancer-survivor trials when programs are scaled appropriately; most reported events were transient muscle or joint soreness."
+  },
+  "ui": {
+    "signature": "An offline, dependency-free SVG form-model engine: tempo-synced anatomical figures with the object drawn in place, front/side/mirror views, and a reduced-motion fallback.",
+    "principles": [
+      "A figure is a small set of named joints; a movement is a short list of keyframe poses the engine interpolates between. Clean silhouette, not anatomical realism, so it reads instantly.",
+      "Tempo drives the animation clock, so the figure doubles as the pacer/metronome and the user moves with it; a down/hold/up phase indicator and optional audio ticks reinforce rhythm.",
+      "The object is part of the figure and tracks the relevant joint (bottles in hands, backpack on trunk, chair under hips) — users copy the setup, not just the pose.",
+      "Front/side/mirror toggles (side default for hinge and squat), synced cue lines, set-end RPE/RIR prompt, and a persistent red-flag affordance.",
+      "Accessibility is non-negotiable for this audience: respect prefers-reduced-motion with a static start/mid/end key-pose diagram and numbered cues; high-contrast strokes, large tap targets, larger-figure option, audio captions, keyboard operation."
+    ],
+    "build_notes": "Implement as a small vanilla-JS module beside the existing web/js views (e.g. formModel.js), consuming the same content JSON, rendering inline SVG, theming from existing tokens (--accent, --surface, --text, --ease, --sp-*). No framework, no animation library, no network. Reference engine: web/prototype/form-model.html.",
+    "reference_prototype": "web/prototype/form-model.html"
+  },
+  "features": {
+    "tier_a": [
+      "Screening onboarding tree (PAR-Q+-modelled triage, tier assignment, non-overridable professional routing)",
+      "Object library (the taxonomy as data; user marks owned objects to filter sessions)",
+      "Movement-pattern exercise library (pattern-tagged; default/regression/progression objects; cues; figure spec)",
+      "Guided session player (balanced cross-pattern sessions; per-exercise animation, tempo pacing, cueing, RPE/RIR check-ins)",
+      "Animated form-model engine (the signature UI feature; reduced-motion fallback)"
+    ],
+    "tier_b": [
+      "Autoregulation engine (RPE/RIR/talk-test intensity; one-variable-at-a-time progression; symptom-day deloads)",
+      "Balance-and-falls module (mandatory in the fragile track)",
+      "Exercise-snack mode (3-5 min sessions; break-up-your-sitting prompts for diabetes/sedentary users)",
+      "Home capacity checks (opt-in 30-second sit-to-stand and timed standing-balance; progress without a scale)",
+      "Progress surfacing (strength/stamina/balance/adherence trends, explicitly not weight)"
+    ],
+    "tier_c": [
+      "Condition adjunct packs (diabetes, hypertension with isometric guards, knee OA, cancer survivorship)",
+      "Object substitution suggester (no backpack? two filled bottles in a tote)",
+      "Source transparency panel (every benefit links to its bibliography entry)",
+      "Offline media packaging (figures/animations as bundled SVG)"
+    ]
+  },
+  "sessions": {
+    "status": "pending",
+    "note": "Guided sessions (object library, movement-pattern exercise library, balanced session templates, and the animated form-model engine) are the next research deliverables. This page ships the evidence and taxonomy foundation that those build on. A working animation engine prototype ships at web/prototype/form-model.html.",
+    "planned": [
+      "Balanced 12-15 min daily sessions drawing across squat/hinge/push/pull/carry/balance patterns",
+      "3-5 min exercise-snack micro-sessions and break-up-sitting prompts",
+      "Longer conditioning sessions for fitter users",
+      "Per-exercise animated figures with front/side/mirror views, the object in place, and tempo pacing"
+    ]
+  },
+  "bibliography": [
+    {"ref_id": "R01", "authors": "Bull FC, Al-Ansari SS, Biddle S, et al.", "year": 2020, "title": "WHO 2020 guidelines on physical activity and sedentary behaviour", "source": "British Journal of Sports Medicine", "url": "https://pubmed.ncbi.nlm.nih.gov/33239350/", "type": "guideline", "grade": "Strong"},
+    {"ref_id": "R02", "authors": "American College of Sports Medicine", "year": 2026, "title": "Resistance Training Prescription for Muscle Function, Hypertrophy, and Physical Performance in Healthy Adults: An Overview of Reviews (Position Stand; 137 reviews, >30,000 participants)", "source": "Medicine & Science in Sports & Exercise", "url": "https://pubmed.ncbi.nlm.nih.gov/41843416/", "type": "position stand / overview of reviews", "grade": "Strong"},
+    {"ref_id": "R03", "authors": "American College of Sports Medicine", "year": 2009, "title": "Progression Models in Resistance Training for Healthy Adults (Position Stand)", "source": "Medicine & Science in Sports & Exercise", "url": "https://doi.org/10.1249/MSS.0b013e3181915670", "type": "position stand", "grade": "Strong"},
+    {"ref_id": "R04", "authors": "Donnelly JE, Blair SN, Jakicic JM, et al.", "year": 2009, "title": "ACSM Position Stand: Appropriate Physical Activity Intervention Strategies for Weight Loss and Prevention of Weight Regain for Adults", "source": "Medicine & Science in Sports & Exercise", "url": "https://doi.org/10.1249/MSS.0b013e3181949333", "type": "position stand", "grade": "Strong"},
+    {"ref_id": "R05", "authors": "Colberg SR, Sigal RJ, Yardley JE, et al.", "year": 2016, "title": "Physical Activity/Exercise and Diabetes: A Position Statement of the American Diabetes Association", "source": "Diabetes Care", "url": "https://doi.org/10.2337/dc16-1728", "type": "position statement", "grade": "Strong"},
+    {"ref_id": "R06", "authors": "Edwards JJ, Deenmamode AHP, Griffiths M, et al.", "year": 2023, "title": "Exercise training and resting blood pressure: a large-scale pairwise and network meta-analysis of RCTs (270 RCTs, 15,827 participants)", "source": "British Journal of Sports Medicine", "url": "https://doi.org/10.1136/bjsports-2022-106503", "type": "network meta-analysis", "grade": "Strong"},
+    {"ref_id": "R07", "authors": "Liu CJ, Latham NK", "year": 2009, "title": "Progressive resistance strength training for improving physical function in older adults (121 RCTs, >6,700 participants)", "source": "Cochrane Database of Systematic Reviews", "url": "https://doi.org/10.1002/14651858.CD002759.pub2", "type": "Cochrane review", "grade": "Strong"},
+    {"ref_id": "R08", "authors": "Sherrington C, Fairhall NJ, Wallbank GK, et al.", "year": 2019, "title": "Exercise for preventing falls in older people living in the community (59 studies, 12,981 participants)", "source": "Cochrane Database of Systematic Reviews", "url": "https://doi.org/10.1002/14651858.CD012424.pub2", "type": "Cochrane review", "grade": "Strong"},
+    {"ref_id": "R09", "authors": "Campbell KL, Winters-Stone KM, Wiskemann J, et al.", "year": 2019, "title": "Exercise Guidelines for Cancer Survivors: Consensus Statement from International Multidisciplinary Roundtable", "source": "Medicine & Science in Sports & Exercise", "url": "https://doi.org/10.1249/MSS.0000000000002116", "type": "consensus statement", "grade": "Strong"},
+    {"ref_id": "R10", "authors": "Dibben G, Faulkner J, Oldridge N, et al.", "year": 2021, "title": "Exercise-based cardiac rehabilitation for coronary heart disease (85 trials, 23,430 participants)", "source": "Cochrane Database of Systematic Reviews", "url": "https://doi.org/10.1002/14651858.CD001800.pub4", "type": "Cochrane review", "grade": "Strong"},
+    {"ref_id": "R11", "authors": "Anderson L, Sharp GA, Norton RJ, et al.", "year": 2017, "title": "Home-based versus centre-based cardiac rehabilitation", "source": "Cochrane Database of Systematic Reviews", "url": "https://doi.org/10.1002/14651858.CD007130.pub4", "type": "Cochrane review", "grade": "Moderate"},
+    {"ref_id": "R12", "authors": "Stamatakis E, Ahmadi MN, Gill JMR, et al.", "year": 2022, "title": "Association of wearable device-measured vigorous intermittent lifestyle physical activity with mortality (UK Biobank, n=25,241 non-exercisers)", "source": "Nature Medicine", "url": "https://doi.org/10.1038/s41591-022-02100-x", "type": "prospective cohort", "grade": "Strong (observational)"},
+    {"ref_id": "R13", "authors": "Fransen M, McConnell S, Harmer AR, et al.", "year": 2015, "title": "Exercise for osteoarthritis of the knee: a Cochrane systematic review (54 trials, ~5,300 participants)", "source": "Cochrane Database of Systematic Reviews / British Journal of Sports Medicine", "url": "https://doi.org/10.1002/14651858.CD004376.pub3", "type": "Cochrane review", "grade": "Moderate"},
+    {"ref_id": "R14", "authors": "Warburton DER, Jamnik VK, Bredin SSD, Gledhill N (PAR-Q+ Collaboration)", "year": 2011, "title": "The Physical Activity Readiness Questionnaire for Everyone (PAR-Q+) and ePARmed-X+", "source": "Health & Fitness Journal of Canada", "url": "https://hfjc.library.ubc.ca/index.php/HFJC/article/view/103", "type": "validated screening instrument", "grade": "standard of practice"},
+    {"ref_id": "R15", "authors": "Borg GA", "year": 1982, "title": "Psychophysical bases of perceived exertion", "source": "Medicine & Science in Sports & Exercise", "url": "https://pubmed.ncbi.nlm.nih.gov/7154893/", "type": "foundational methods", "grade": "established"},
+    {"ref_id": "R16", "authors": "Singh B, Bennett H, Miatke A, et al.", "year": 2025, "title": "Exercise Snacks as a Strategy to Interrupt Sedentary Behavior: A Systematic Review of Health Outcomes and Feasibility (26 studies)", "source": "Healthcare (Basel)", "url": "https://www.mdpi.com/2227-9032/13/24/3216", "type": "systematic review", "grade": "Moderate"},
+    {"ref_id": "R17", "authors": "[complete from source]", "year": 2025, "title": "Effects of Exercise Snacks on Cardiometabolic Health and Body Composition in Adults: A Systematic Review and Meta-Analysis", "source": "systematic review & meta-analysis (PMC-indexed)", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12354995/", "type": "systematic review & meta-analysis", "grade": "Moderate"}
+  ]
+}

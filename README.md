@@ -113,6 +113,10 @@ After install the GUI is at **<http://127.0.0.1:8765/>**. Views:
   over your whole history: a private leaderboard and progress trend, no cloud.
 - **Privacy** — a defensive self-audit of what your own tracks reveal (likely
   home, routine), with a recommended privacy radius that feeds anonymization.
+- **Sports at Home** — guided, evidence-based training with the furniture and
+  objects you already own (built for fragile/deconditioned users, scalable for
+  the fit): a PAR-Q+-style readiness check, a tempo-paced offline form-model
+  animation engine, a sit-to-stand capacity check, and a sourced evidence base.
 - **Activity detail** — summary stats, heart-rate / speed / elevation charts, an
   offline GPS track plot, **HR & power training zones**, laps, and per-activity
   CSV/JSON/GPX/TCX/raw export.

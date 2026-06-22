@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Form-model engine — Sports at Home (reference prototype)</title>
+<!--
+  Reference engine for the Fenix5Sync "Sports at Home" category.
+  Offline, no dependencies, no network. Themed from the app's CSS tokens.
+  A figure = named joints (2-D coords). A movement = a list of keyframe poses
+  the engine interpolates between, clocked by the exercise's prescribed tempo
+  so the figure doubles as the pacer. The object is drawn in place and tracks
+  the body. prefers-reduced-motion is respected with a static key-pose fallback.
+  Two exemplar exercises ship here: chair sit-to-stand and wall sit. Build the
+  full library by adding entries to the EXERCISES map.
+-->
+<style>
+  :root{
+    /* tokens mirrored from web/css/styles.css */
+    --bg:#0e1116; --bg-grad:radial-gradient(1200px 600px at 80% -10%, #18222f 0%, #0e1116 55%);
+    --elev:#151b24; --surface:#1a212c; --surface-2:#212a37; --border:#2a3442;
+    --text:#e8eef5; --text-dim:#9babbd; --text-faint:#677483;
+    --accent:#ff7a45; --accent-strong:#ff5a1f; --accent-soft:rgba(255,122,69,.14);
+    --accent-2:#34d3c0; --good:#3fb950; --warn:#d6a432; --bad:#f0564b;
+    --radius:14px; --radius-sm:10px; --radius-lg:20px;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.28);
+    --ease:cubic-bezier(.4,.1,.2,1);
+    --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);background-image:var(--bg-grad);color:var(--text);
+       font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.5;padding:var(--sp-5)}
+  .wrap{max-width:560px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 2px}
+  .sub{color:var(--text-dim);font-size:13px;margin-bottom:var(--sp-5)}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+        box-shadow:var(--shadow);padding:var(--sp-4);margin-bottom:var(--sp-4)}
+  .seg{display:flex;gap:var(--sp-2);margin-bottom:var(--sp-4);flex-wrap:wrap}
+  button{font-family:inherit;font-size:14px;color:var(--text);background:var(--surface-2);
+         border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;
+         cursor:pointer;transition:background .15s var(--ease),border-color .15s var(--ease);
+         min-height:44px}
+  button:hover{border-color:var(--accent)}
+  button:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft);border-color:var(--accent)}
+  button.active{background:var(--accent-soft);border-color:var(--accent);color:var(--text)}
+  button.primary{background:var(--accent);border-color:var(--accent-strong);color:#1a0d06;font-weight:600}
+  button.primary:hover{background:var(--accent-strong)}
+  .stage{position:relative;display:flex;justify-content:center;align-items:center;
+         background:var(--elev);border:1px solid var(--border);border-radius:var(--radius);
+         padding:var(--sp-3);min-height:340px}
+  svg{width:100%;max-width:300px;height:auto;display:block}
+  .bone{stroke:var(--text);stroke-width:13;stroke-linecap:round;stroke-linejoin:round;fill:none}
+  .joint{fill:var(--surface)}
+  .head{fill:none;stroke:var(--text);stroke-width:7}
+  .obj{stroke:var(--accent);stroke-width:6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .obj-fill{fill:var(--accent-soft);stroke:var(--accent);stroke-width:4}
+  .ground{stroke:var(--border);stroke-width:4;stroke-linecap:round}
+  .meta{display:flex;justify-content:space-between;align-items:center;margin:var(--sp-4) 0 var(--sp-2)}
+  .phase{font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-size:13px;color:var(--accent)}
+  .count{font-variant-numeric:tabular-nums;font-size:13px;color:var(--text-dim)}
+  .bar{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+  .bar > i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px}
+  .cue{margin-top:var(--sp-3);font-size:14px;color:var(--text);min-height:42px}
+  .cue b{color:var(--accent-2)}
+  .controls{display:flex;gap:var(--sp-2);margin-top:var(--sp-4);flex-wrap:wrap}
+  .row{display:flex;gap:var(--sp-2);align-items:center;flex-wrap:wrap}
+  .note{color:var(--text-faint);font-size:12px;margin-top:var(--sp-3)}
+  .rpe{display:none;text-align:center}
+  .rpe.show{display:block}
+  .rpe .scale{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:var(--sp-3)}
+  .rpe .scale button{min-width:40px;padding:8px 0}
+  .redflag{margin-top:var(--sp-4);font-size:12px;color:var(--text-dim);border-top:1px solid var(--border);padding-top:var(--sp-3)}
+  .redflag b{color:var(--bad)}
+  /* static fallback triptych */
+  .triptych{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-2)}
+  .triptych figure{margin:0;background:var(--elev);border:1px solid var(--border);border-radius:var(--radius-sm);padding:var(--sp-2);text-align:center}
+  .triptych figcaption{font-size:11px;color:var(--text-dim);margin-top:4px}
+  .triptych svg{max-width:120px;margin:0 auto}
+  ol.cues{margin:var(--sp-3) 0 0;padding-left:20px;font-size:13px;color:var(--text)}
+  ol.cues li{margin-bottom:4px}
+  .hidden{display:none !important}
+  .rm-banner{font-size:12px;color:var(--text-dim);background:var(--accent-soft);
+             border:1px solid var(--accent);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:var(--sp-4)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Form-model engine</h1>
+  <div class="sub">Reference prototype · Sports at Home · tempo-paced figures with the object in place</div>
+
+  <div class="seg" role="tablist" aria-label="Exercise">
+    <button id="ex-sts" class="active" role="tab" aria-selected="true">Chair sit-to-stand</button>
+    <button id="ex-wall" role="tab" aria-selected="false">Wall sit</button>
+  </div>
+
+  <div class="card">
+    <div id="rmBanner" class="rm-banner hidden">Reduced motion is on — showing static key poses. Toggle animation below to preview either mode.</div>
+
+    <!-- ANIMATED MODE -->
+    <div id="animMode">
+      <div class="stage" aria-live="off">
+        <svg id="fig" viewBox="0 0 240 340" role="img" aria-label="Animated movement figure"></svg>
+      </div>
+      <div class="meta">
+        <span class="phase" id="phase">Ready</span>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="bar"><i id="prog"></i></div>
+      <div class="cue" id="cue"></div>
+
+      <div class="controls">
+        <button class="primary" id="play">Start</button>
+        <button id="reset">Reset</button>
+        <div class="row" style="margin-left:auto">
+          <button id="view-side" class="active" aria-pressed="true">Side</button>
+          <button id="view-front" aria-pressed="false">Front</button>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="tempo-norm" class="active" aria-pressed="true">Normal tempo</button>
+        <button id="tempo-slow" aria-pressed="false">Slow tempo</button>
+        <button id="rm-toggle" style="margin-left:auto">Show static version</button>
+      </div>
+
+      <div class="rpe card" id="rpe">
+        <div style="font-weight:600">Set done. How hard was that?</div>
+        <div class="note" style="margin-top:2px">0 = could talk easily · 10 = could not say a word</div>
+        <div class="scale" id="rpeScale"></div>
+      </div>
+    </div>
+
+    <!-- STATIC FALLBACK MODE -->
+    <div id="staticMode" class="hidden">
+      <div class="triptych" id="triptych"></div>
+      <ol class="cues" id="staticCues"></ol>
+      <div class="controls"><button id="rm-toggle2">Show animated version</button></div>
+    </div>
+
+    <div class="redflag">
+      <b>Stop and seek care</b> for chest pain or pressure, severe or unusual breathlessness, dizziness or faintness, palpitations, or new or worsening joint pain.
+    </div>
+  </div>
+
+  <div class="note">
+    Evidence anchors: sit-to-stand trains the most functional pattern and doubles as a capacity check; the wall sit is an isometric hold and ranked the most effective sub-mode for lowering systolic blood pressure (Edwards et al., 2023, BJSM). High-intensity static holds with breath-holding can transiently raise blood pressure — breathe through the hold; the wall sit is gated behind clearance for uncontrolled hypertension or cardiac disease. This is a reference engine, not the full library.
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ---------- joint model ----------
+   Each pose is a map of joints to [x,y] in the 240x340 viewBox.
+   SIDE view joints: head, sh(shoulder), hip, knee, ankle, toe, elb, hand.
+   FRONT view adds left/right limbs (l/r prefixes) and is symmetric about cx=120. */
+
+const GROUND_Y = 318;
+
+/* ---- SIDE poses (person facing right, +x forward) ---- */
+const STS_SIDE = {
+  stand: { head:[120,70], sh:[118,98], hip:[116,178], knee:[114,248], ankle:[112,312], toe:[140,312], elb:[136,134], hand:[150,170] },
+  sit:   { head:[140,150], sh:[138,170], hip:[150,236], knee:[112,242], ankle:[112,312], toe:[140,312], elb:[170,196], hand:[150,224] }
+};
+const WALL_SIDE = {
+  stand: { head:[120,70], sh:[118,98], hip:[116,178], knee:[114,248], ankle:[112,312], toe:[140,312], elb:[136,134], hand:[150,170] },
+  sit:   { head:[98,128], sh:[98,150], hip:[98,216], knee:[170,216], ankle:[170,300], toe:[196,300], elb:[126,182], hand:[152,208] }
+};
+
+/* ---- FRONT poses (symmetric about cx=120) ---- */
+const STS_FRONT = {
+  stand: { head:[120,70], sh:[120,100], hip:[120,180],
+           lknee:[104,248], rknee:[136,248], lankle:[102,312], rankle:[138,312],
+           lelb:[96,140], relb:[144,140], lhand:[92,180], rhand:[148,180] },
+  sit:   { head:[120,118], sh:[120,148], hip:[120,228],
+           lknee:[100,232], rknee:[140,232], lankle:[100,312], rankle:[140,312],
+           lelb:[150,180], relb:[150,180], lhand:[112,210], rhand:[128,210] }
+};
+
+/* ---------- objects ---------- */
+function chairSVG(){ // static chair under the seated hip (side view)
+  return `<g class="obj-fill"><rect x="140" y="232" width="60" height="10" rx="2"/></g>
+          <g class="obj"><line x1="144" y1="242" x2="144" y2="312"/><line x1="196" y1="242" x2="196" y2="312"/>
+          <line x1="196" y1="232" x2="196" y2="168"/><line x1="196" y1="180" x2="178" y2="180"/></g>`;
+}
+function wallSVG(){ // vertical wall the figure leans on (side view)
+  return `<g class="obj"><line x1="82" y1="40" x2="82" y2="${GROUND_Y}"/></g>
+          <g class="obj-fill"><rect x="74" y="40" width="8" height="${GROUND_Y-40}" rx="2" fill="var(--accent-soft)" stroke="none"/></g>`;
+}
+
+/* ---------- exercise definitions ---------- */
+const EXERCISES = {
+  sts: {
+    name:"Chair sit-to-stand",
+    views:{ side:STS_SIDE, front:STS_FRONT },
+    object:{ side:chairSVG, front:null },
+    targetReps:8,
+    // a rep = down (to sit) -> brief settle -> up (to stand) -> brief pause
+    phases:[
+      { name:"Down", dur:2200, from:"stand", to:"sit" },
+      { name:"Sit",  dur:500,  from:"sit",  to:"sit" },
+      { name:"Up",   dur:1400, from:"sit",  to:"stand" },
+      { name:"Stand",dur:600,  from:"stand",to:"stand" }
+    ],
+    cues:{
+      Down:"Push hips <b>back</b>, sit slowly to the chair — control the lower.",
+      Sit:"Light touch — don't crash down.",
+      Up:"Drive through the <b>heels</b>, stand tall.",
+      Stand:"Breathe. Reset for the next rep."
+    },
+    staticCues:[
+      "Sit tall on the front of a stable chair, feet flat, hands reaching forward.",
+      "Push hips back and stand by driving through your heels.",
+      "Stand fully upright, then lower slowly back to the chair under control.",
+      "Breathe out as you rise; never hold your breath."
+    ]
+  },
+  wall: {
+    name:"Wall sit",
+    views:{ side:WALL_SIDE, front:null },
+    object:{ side:wallSVG, front:null },
+    holdMs:20000,
+    phases:[
+      { name:"Settle", dur:1800, from:"stand", to:"sit" },
+      { name:"Hold",   dur:20000, from:"sit", to:"sit", isHold:true },
+      { name:"Up",     dur:1400, from:"sit", to:"stand" }
+    ],
+    cues:{
+      Settle:"Slide down the wall until thighs are about parallel.",
+      Hold:"Hold steady — <b>keep breathing</b>, don't hold your breath.",
+      Up:"Slide back up the wall to stand."
+    },
+    staticCues:[
+      "Stand with your back flat against a wall, feet a step forward.",
+      "Slide down until your knees are bent about 90 degrees (thighs parallel).",
+      "Hold the position and breathe normally throughout — do not hold your breath.",
+      "Slide back up to standing to finish."
+    ]
+  }
+};
+
+/* ---------- engine ---------- */
+const $ = id => document.getElementById(id);
+const svg = $("fig");
+const SVGNS = "http://www.w3.org/2000/svg";
+let cur = "sts", view = "side", tempoScale = 1;
+let raf = null, phaseIdx = 0, phaseStart = 0, reps = 0, playing = false;
+
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let staticForced = reduceMotion;
+
+const ease = t => t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; // easeInOutQuad
+
+function poses(){ return EXERCISES[cur].views[view] || EXERCISES[cur].views.side; }
+function objFn(){ const o = EXERCISES[cur].object; return (o && o[view]) || null; }
+
+function lerpPose(a,b,t){
+  const out={};
+  for(const k in a){ if(b[k]){ out[k]=[a[k][0]+(b[k][0]-a[k][0])*t, a[k][1]+(b[k][1]-a[k][1])*t]; } }
+  return out;
+}
+
+function bone(x1,y1,x2,y2){ const l=document.createElementNS(SVGNS,"line");
+  l.setAttribute("x1",x1);l.setAttribute("y1",y1);l.setAttribute("x2",x2);l.setAttribute("y2",y2);
+  l.setAttribute("class","bone");return l; }
+
+function drawFigure(p){
+  let inner = `<line class="ground" x1="40" y1="${GROUND_Y}" x2="200" y2="${GROUND_Y}"/>`;
+  const o = objFn(); if(o) inner += o();
+  svg.innerHTML = inner;
+  if(view==="front"){
+    // legs
+    svg.appendChild(bone(p.hip[0],p.hip[1],p.lknee[0],p.lknee[1]));
+    svg.appendChild(bone(p.lknee[0],p.lknee[1],p.lankle[0],p.lankle[1]));
+    svg.appendChild(bone(p.hip[0],p.hip[1],p.rknee[0],p.rknee[1]));
+    svg.appendChild(bone(p.rknee[0],p.rknee[1],p.rankle[0],p.rankle[1]));
+    // spine
+    svg.appendChild(bone(p.hip[0],p.hip[1],p.sh[0],p.sh[1]));
+    // arms
+    svg.appendChild(bone(p.sh[0],p.sh[1],p.lelb[0],p.lelb[1]));
+    svg.appendChild(bone(p.lelb[0],p.lelb[1],p.lhand[0],p.lhand[1]));
+    svg.appendChild(bone(p.sh[0],p.sh[1],p.relb[0],p.relb[1]));
+    svg.appendChild(bone(p.relb[0],p.relb[1],p.rhand[0],p.rhand[1]));
+  } else {
+    svg.appendChild(bone(p.ankle[0],p.ankle[1],p.toe[0],p.toe[1])); // foot
+    svg.appendChild(bone(p.ankle[0],p.ankle[1],p.knee[0],p.knee[1]));
+    svg.appendChild(bone(p.knee[0],p.knee[1],p.hip[0],p.hip[1]));
+    svg.appendChild(bone(p.hip[0],p.hip[1],p.sh[0],p.sh[1]));
+    svg.appendChild(bone(p.sh[0],p.sh[1],p.elb[0],p.elb[1]));
+    svg.appendChild(bone(p.elb[0],p.elb[1],p.hand[0],p.hand[1]));
+  }
+  // head
+  const head=document.createElementNS(SVGNS,"circle");
+  head.setAttribute("cx",p.head[0]);head.setAttribute("cy",p.head[1]);head.setAttribute("r",16);
+  head.setAttribute("class","head");svg.appendChild(head);
+}
+
+function setStaticPose(which){ // for non-playing display
+  const P = poses();
+  drawFigure(which==="sit"?P.sit:P.stand);
+}
+
+function showPhase(name){ $("phase").textContent = name; const c=EXERCISES[cur].cues[name]; if(c) $("cue").innerHTML=c; }
+
+function frame(ts){
+  if(!playing) return;
+  const ex = EXERCISES[cur];
+  const ph = ex.phases[phaseIdx];
+  const dur = ph.dur * (ph.isHold?1:tempoScale); // holds keep their real duration
+  if(!phaseStart) phaseStart = ts;
+  let t = (ts - phaseStart)/dur; if(t>1) t=1;
+  const P = poses();
+  const fromP = P[ph.from] || P.stand, toP = P[ph.to] || P.stand;
+  drawFigure(lerpPose(fromP, toP, ease(t)));
+  // progress + hold countdown
+  $("prog").style.width = (t*100).toFixed(1)+"%";
+  if(ph.isHold){ const left=Math.ceil((dur-(ts-phaseStart))/1000); $("count").textContent = left>0?(left+"s hold"):"" ; }
+  if(t>=1){
+    phaseStart = 0;
+    phaseIdx++;
+    if(phaseIdx>=ex.phases.length){
+      phaseIdx = 0;
+      if(ex.targetReps){ reps++; $("count").textContent = reps+" / "+ex.targetReps;
+        if(reps>=ex.targetReps){ finishSet(); return; } }
+      else { finishSet(); return; } // single-hold exercises end after one cycle
+    }
+    showPhase(ex.phases[phaseIdx].name);
+  }
+  raf = requestAnimationFrame(frame);
+}
+
+function start(){
+  if(staticForced){ return; }
+  playing = true; $("play").textContent = "Pause";
+  $("rpe").classList.remove("show");
+  if(!EXERCISES[cur].targetReps) $("count").textContent = "";
+  showPhase(EXERCISES[cur].phases[phaseIdx].name);
+  raf = requestAnimationFrame(frame);
+}
+function pause(){ playing=false; $("play").textContent="Resume"; if(raf) cancelAnimationFrame(raf); }
+function finishSet(){
+  playing=false; if(raf) cancelAnimationFrame(raf);
+  $("play").textContent="Start"; $("phase").textContent="Done"; $("cue").innerHTML="Nice work.";
+  $("prog").style.width="100%";
+  $("rpe").classList.add("show");
+}
+function resetAll(){
+  playing=false; if(raf) cancelAnimationFrame(raf);
+  phaseIdx=0; phaseStart=0; reps=0;
+  $("play").textContent="Start"; $("phase").textContent="Ready"; $("cue").innerHTML="";
+  $("prog").style.width="0%"; $("rpe").classList.remove("show");
+  const ex=EXERCISES[cur]; $("count").textContent = ex.targetReps? ("0 / "+ex.targetReps):"";
+  setStaticPose("stand");
+}
+
+/* ---------- static fallback ---------- */
+function renderStatic(){
+  const ex = EXERCISES[cur];
+  const P = ex.views.side; // fallback always uses the clearer side view
+  const labels = ex.targetReps ? ["Start","Bottom","Return"] : ["Stand","Hold","Stand"];
+  const keyPoses = ex.targetReps ? [P.stand, P.sit, P.stand] : [P.stand, P.sit, P.stand];
+  let html="";
+  keyPoses.forEach((pose,i)=>{
+    html += `<figure>${miniFig(pose, ex)}<figcaption>${labels[i]}</figcaption></figure>`;
+  });
+  $("triptych").innerHTML = html;
+  $("staticCues").innerHTML = ex.staticCues.map(c=>`<li>${c}</li>`).join("");
+}
+function miniFig(p, ex){
+  let s = `<svg viewBox="0 0 240 340" role="img" aria-label="Key pose">`;
+  s += `<line class="ground" x1="40" y1="${GROUND_Y}" x2="200" y2="${GROUND_Y}"/>`;
+  const o = ex.object && ex.object.side; if(o) s += o();
+  const L=(a,b)=>`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" class="bone"/>`;
+  s += L(p.ankle,p.toe)+L(p.ankle,p.knee)+L(p.knee,p.hip)+L(p.hip,p.sh)+L(p.sh,p.elb)+L(p.elb,p.hand);
+  s += `<circle cx="${p.head[0]}" cy="${p.head[1]}" r="16" class="head"/></svg>`;
+  return s;
+}
+
+/* ---------- mode + exercise switching ---------- */
+function applyStaticMode(on){
+  staticForced = on;
+  $("animMode").classList.toggle("hidden", on);
+  $("staticMode").classList.toggle("hidden", !on);
+  $("rmBanner").classList.toggle("hidden", !reduceMotion);
+  if(on){ renderStatic(); } else { resetAll(); }
+}
+function selectExercise(key){
+  cur=key;
+  $("ex-sts").classList.toggle("active", key==="sts"); $("ex-sts").setAttribute("aria-selected", key==="sts");
+  $("ex-wall").classList.toggle("active", key==="wall"); $("ex-wall").setAttribute("aria-selected", key==="wall");
+  // wall sit has no front view -> disable front toggle gracefully
+  const hasFront = !!EXERCISES[key].views.front;
+  $("view-front").disabled = !hasFront;
+  if(!hasFront && view==="front"){ setView("side"); }
+  if(staticForced){ renderStatic(); } else { resetAll(); }
+}
+function setView(v){
+  if(v==="front" && !EXERCISES[cur].views.front) return;
+  view=v;
+  $("view-side").classList.toggle("active", v==="side"); $("view-side").setAttribute("aria-pressed", v==="side");
+  $("view-front").classList.toggle("active", v==="front"); $("view-front").setAttribute("aria-pressed", v==="front");
+  if(!playing) setStaticPose("stand");
+}
+function setTempo(slow){
+  tempoScale = slow?1.6:1;
+  $("tempo-norm").classList.toggle("active", !slow); $("tempo-norm").setAttribute("aria-pressed", !slow);
+  $("tempo-slow").classList.toggle("active", slow); $("tempo-slow").setAttribute("aria-pressed", slow);
+}
+
+/* ---------- RPE scale ---------- */
+(function buildRpe(){
+  let h=""; for(let i=0;i<=10;i++) h+=`<button data-v="${i}">${i}</button>`;
+  $("rpeScale").innerHTML=h;
+  $("rpeScale").addEventListener("click",e=>{
+    const b=e.target.closest("button"); if(!b) return;
+    $("rpe").innerHTML=`<div style="font-weight:600">Logged effort: ${b.dataset.v}/10</div>
+      <div class="note" style="margin-top:2px">In the app this feeds autoregulation: it nudges reps, tempo, or object load for next time.</div>`;
+  });
+})();
+
+/* ---------- wire up ---------- */
+$("ex-sts").onclick=()=>selectExercise("sts");
+$("ex-wall").onclick=()=>selectExercise("wall");
+$("play").onclick=()=>{ playing?pause():start(); };
+$("reset").onclick=resetAll;
+$("view-side").onclick=()=>setView("side");
+$("view-front").onclick=()=>setView("front");
+$("tempo-norm").onclick=()=>setTempo(false);
+$("tempo-slow").onclick=()=>setTempo(true);
+$("rm-toggle").onclick=()=>applyStaticMode(true);
+$("rm-toggle2").onclick=()=>applyStaticMode(false);
+
+/* init */
+selectExercise("sts");
+applyStaticMode(reduceMotion); // honor the OS setting on load
+if(!reduceMotion){ setStaticPose("stand"); }
+</script>
+</body>
+</html>
