@@ -11,6 +11,19 @@ GitHub Releases page for the auto-generated notes per tag.
 ## [Unreleased]
 
 ### Added
+- **GUI session builder (Home + Tai Chi).** A pure, unit-tested selection function
+  (`web/js/sessionBuilder.js`) turns the libraries + your inputs (length, sets/
+  reps, equipment, tier, focus) into a balanced, time-budgeted session: Home
+  sessions cover lower body, upper body and core (plus balance for fragile
+  starters), warm up first and cool down last, never repeat an exercise or two
+  regions in a row, gate isometrics behind PAR-Q+ clearance, and swap in a
+  dumbbell/kettlebell variant for "Free weights"; Tai Chi flows cover balance/
+  mobility/lower-limb/breathing and bookend on the breath. A session-mode player
+  (`web/js/sessionPlayer.js`) chains the selection through the form-model engine
+  with rest screens, a progress counter and a completion summary, fully offline
+  and keyboard-operable. Coach easy/rest days can pull a body-part-varied strength
+  session from the same builder. `region`/`equipment`/`weighted_variant` are
+  derived from `pattern` (the incoming metadata lacks them).
 - **Coach: objective → personalized plan → calendar.** A new objective form in
   the Coach tab (and `POST /api/coach/plan`, `fenix5sync plan …`) turns a goal
   (5K/10K/half/marathon/general, dates or weeks, optional goal time, days, level)

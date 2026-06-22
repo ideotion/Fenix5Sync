@@ -5,6 +5,7 @@
    is generated. Every claim links to its source. */
 const CoachView = (() => {
   let data = null;
+  let homeLib = null;  // lazily loaded so cross-training days can draw from the builder
   const DIM = "color:var(--text-dim);font-size:13.5px;line-height:1.5";
   const FAINT = "color:var(--text-faint);font-size:12px";
   const H = "font-size:14px;color:var(--text-dim);margin-bottom:var(--sp-3)";
@@ -308,6 +309,39 @@ const CoachView = (() => {
       U.el("a", { class: "btn", href: API.coachPlanIcsUrl(icsParams), download: "coach-plan.ics", text: "Export .ics" }),
       U.el("span", { style: FAINT, text: "Adds each session to your calendar." }),
     ]));
+    // Cross-training / strength day — drawn from the Sports-at-Home session builder
+    // so it is body-part varied (WS5 integration).
+    if (typeof SessionBuilder !== "undefined" && typeof SessionPlayer !== "undefined") {
+      const out = U.el("div", { style: "margin-top:6px" });
+      const btn = U.el("button", { class: "btn", text: "Add a strength cross-training day" });
+      btn.onclick = async () => {
+        btn.disabled = true;
+        try {
+          if (!homeLib) homeLib = await (await fetch("/content/home/exercises.json")).json();
+          const session = SessionBuilder.buildHome(homeLib.exercises || [], {
+            lengthMin: 20, sets: 2, reps: 10, equipment: "bodyweight",
+            focus: "full_body", tier: "standing", cleared: true, seed: (Date.now() & 0xffff) || 1,
+          });
+          out.innerHTML = "";
+          out.appendChild(U.el("div", { style: DIM + ";margin:6px 0", text: `${session.items.length} exercises · ~${session.minutes} min · body-part varied` }));
+          out.appendChild(U.el("ol", { class: "sp-plan-list" }, session.items.map((i) =>
+            U.el("li", {}, [
+              U.el("span", { class: "sp-plan-role", text: i.role === "warmup" ? "warm-up" : i.role === "cooldown" ? "cool-down" : i.region.replace("_", " ") }),
+              U.el("span", { class: "sp-plan-name", text: i.name }),
+            ]))));
+          out.appendChild(U.el("button", {
+            class: "btn primary", style: "margin-top:var(--sp-2)", text: "Start session",
+            onclick: () => { const host = U.el("div"); U.setView(host); SessionPlayer.create(host, session, { title: "Cross-training", onExit: render }); },
+          }));
+        } catch (e) { U.toast("Could not build a session: " + e.message, "bad"); }
+        btn.disabled = false;
+      };
+      wrap.appendChild(U.el("div", { style: "margin-top:var(--sp-4)" }, [
+        U.el("div", { style: FAINT + ";margin-bottom:6px", text: "Easy or rest days can include a balanced strength session, drawn from the Sports at Home builder so it is body-part varied." }),
+        btn, out,
+      ]));
+    }
+
     if (plan.notes && plan.notes.length) {
       wrap.appendChild(U.el("ul", { style: FAINT + ";margin-top:var(--sp-3);padding-left:18px;line-height:1.6" },
         plan.notes.map((n) => U.el("li", { text: n }))));

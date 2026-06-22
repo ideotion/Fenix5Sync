@@ -570,6 +570,30 @@ td .muted { color: var(--text-faint); }
 .coach-sess-day { width: 34px; color: var(--text-dim); font-weight: 600; flex: none; }
 .coach-sess-title { flex: 1; }
 
+/* ---------- Session builder preview + session-mode player ---------- */
+.sp-plan-list { margin: var(--sp-2) 0 0; padding-left: 0; list-style: none; }
+.sp-plan-list li { display: flex; gap: var(--sp-3); align-items: baseline; padding: 5px 0; border-bottom: 1px solid var(--border-soft); font-size: 13.5px; }
+.sp-plan-role { flex: none; width: 90px; font-size: 11px; text-transform: uppercase; letter-spacing: .03em; color: var(--text-dim); }
+.sp-plan-name { flex: 1; }
+.sp-plan-dose { color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.sp { max-width: 640px; margin: 0 auto; }
+.sp-head { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-3); }
+.sp-title { font-weight: 600; }
+.sp-progress { margin-left: auto; color: var(--text-dim); font-variant-numeric: tabular-nums; font-size: 13px; }
+.sp-stage { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-4); }
+.sp-ex-label { text-align: center; margin-bottom: var(--sp-2); }
+.sp-ex-role { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--accent); }
+.sp-ex-name { display: block; font-weight: 600; font-size: 16px; margin-top: 2px; }
+.sp-ex-load { font-size: 12.5px; color: var(--text-dim); margin-top: 4px; }
+.sp-rest, .sp-done { text-align: center; padding: var(--sp-6) var(--sp-3); }
+.sp-rest-h, .sp-done-h { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-dim); }
+.sp-rest-time { font-size: 56px; font-weight: 700; font-variant-numeric: tabular-nums; margin: var(--sp-2) 0; }
+.sp-rest-next { color: var(--text-dim); margin-bottom: var(--sp-4); }
+.sp-done-h { font-size: 18px; color: var(--text); font-weight: 700; letter-spacing: 0; text-transform: none; }
+.sp-done-sub { color: var(--text-dim); margin: var(--sp-2) 0 var(--sp-4); }
+.sp-done-list { list-style: none; padding: 0; margin: 0 0 var(--sp-4); text-align: left; max-width: 360px; margin-inline: auto; }
+.sp-done-list li { padding: 4px 0; border-bottom: 1px solid var(--border-soft); font-size: 13.5px; }
+
 .home-ex-info { margin-top: var(--sp-4); }
 .home-ex-prog { margin: var(--sp-2) 0 0; padding-left: 18px; font-size: 13px; color: var(--text-dim); }
 .home-ex-prog li { margin-bottom: 3px; }

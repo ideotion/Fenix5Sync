@@ -115,8 +115,16 @@ After install the GUI is at **<http://127.0.0.1:8765/>**. Views:
   home, routine), with a recommended privacy radius that feeds anonymization.
 - **Sports at Home** — guided, evidence-based training with the furniture and
   objects you already own (built for fragile/deconditioned users, scalable for
-  the fit): a PAR-Q+-style readiness check, a tempo-paced offline form-model
-  animation engine, a sit-to-stand capacity check, and a sourced evidence base.
+  the fit): a PAR-Q+-style readiness check, a pseudo-3-D tempo-paced offline
+  form-model engine, a 35-exercise library, a balanced session builder + offline
+  player, and a sit-to-stand capacity check, all on a sourced evidence base.
+- **Coach** — turn an objective (5K/10K/half/marathon, dates or weeks, optional
+  goal time, days, level) into a dated base→build→peak→taper→race plan with
+  evidence-graded pace/heart-rate/effort target ranges, exportable as an `.ics`
+  calendar. Training information, not medical advice.
+- **Tai Chi** — 21 simplified movement/breathing pacers and a length-adjustable
+  flow builder, rendered by the shared form-model engine (a gentle pacer, not
+  instructed form).
 - **Activity detail** — summary stats, heart-rate / speed / elevation charts, an
   offline GPS track plot, **HR & power training zones**, laps, and per-activity
   CSV/JSON/GPX/TCX/raw export.
