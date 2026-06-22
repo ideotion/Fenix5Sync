@@ -11,6 +11,18 @@ GitHub Releases page for the auto-generated notes per tag.
 ## [Unreleased]
 
 ### Added
+- **Year in Sport recap** — a private, local annual/all-time recap with a
+  self-contained, shareable HTML export.
+- **Personal privacy audit** — a defensive, local self-audit of what your tracks
+  reveal (likely home, routine), recommending a privacy radius.
+- **Personal segments** — capture a route from an activity and race yourself over
+  your history (private leaderboard + trend).
+- **Liberate Your History** — import a Garmin/Strava account export (nested zips +
+  gzip) via an `export` source mode, the Import/Sync page and a
+  `fenix5sync import-export` CLI command.
+- **File/folder picker** — a "Browse…" button (backed by a read-only
+  `GET /api/fs/list`) on the export-import and Settings source fields, so paths
+  never have to be typed; plus an editable activity-source section in Settings.
 - `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, issue/PR templates, and
   a Dependabot config for community readiness.
 - CI now runs `ruff` (lint), `bandit` (security, medium+), and `pip-audit`

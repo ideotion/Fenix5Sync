@@ -481,6 +481,82 @@ def start_sync(
     return SyncStatus(**job.snapshot())
 
 
+# ---- local filesystem picker (loopback-only; powers the GUI "Browse" button) -
+def _fs_quick_locations() -> list[dict]:
+    home = Path.home()
+    out = [{"name": "Home", "path": str(home)}]
+    for sub in ("Downloads", "Documents", "Desktop"):
+        p = home / sub
+        if p.is_dir():
+            out.append({"name": sub, "path": str(p)})
+    out.append({"name": "Filesystem root", "path": str(Path(home.anchor or "/"))})
+    return out
+
+
+@router.get("/fs/list")
+def fs_list(
+    path: str | None = Query(None, description="Directory to list; defaults to home."),
+    dirs_only: bool = Query(False, description="List only directories (folder picker)."),
+    exts: str | None = Query(None, description="Comma-separated file extensions to include."),
+) -> dict:
+    """List a local directory for the GUI file/folder picker.
+
+    Read-only and loopback-only (same trust boundary as the rest of the local
+    app): it never writes, and lets the GUI offer a "Browse" button so users
+    never have to type a path. Defaults to the home directory; hidden entries are
+    omitted; unreadable entries are skipped rather than failing the listing.
+    """
+    home = Path.home()
+    base = Path(path).expanduser() if path else home
+    try:
+        base = base.resolve()
+    except OSError:
+        base = home
+    if not base.is_dir():
+        base = base.parent if base.parent.is_dir() else home
+
+    ext_set = {
+        (e if e.startswith(".") else "." + e).lower()
+        for e in (exts.split(",") if exts else []) if e.strip()
+    }
+
+    entries: list[dict] = []
+    error: str | None = None
+    try:
+        children = sorted(base.iterdir(), key=lambda p: (not _safe_is_dir(p), p.name.lower()))
+    except (PermissionError, OSError) as exc:
+        children, error = [], str(exc)
+    for child in children:
+        if child.name.startswith("."):
+            continue
+        is_dir = _safe_is_dir(child)
+        if not is_dir:
+            if dirs_only:
+                continue
+            if ext_set and child.suffix.lower() not in ext_set:
+                continue
+        entries.append({"name": child.name, "path": str(child), "is_dir": is_dir})
+        if len(entries) >= 2000:
+            break
+
+    parent = str(base.parent) if base.parent != base else None
+    return {
+        "path": str(base),
+        "parent": parent,
+        "name": base.name or str(base),
+        "entries": entries,
+        "quick": _fs_quick_locations(),
+        "error": error,
+    }
+
+
+def _safe_is_dir(p: Path) -> bool:
+    try:
+        return p.is_dir()
+    except OSError:
+        return False
+
+
 @router.post("/sync/import-export", response_model=SyncStatus)
 def start_export_import(
     body: ExportImportRequest,

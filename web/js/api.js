@@ -54,6 +54,7 @@ const API = (() => {
     getConfig: () => req("/config"),
     putConfig: (cfg) => req("/config", { method: "PUT", body: JSON.stringify(cfg) }),
     athleteSuggestions: () => req("/athlete/suggestions"),
+    fsList: (params) => req("/fs/list" + qs(params)),
 
     // Streaming + download URLs (used directly by EventSource / <a download>).
     syncStreamUrl: (jobId) => base + "/sync/" + jobId + "/stream",
