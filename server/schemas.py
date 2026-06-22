@@ -112,6 +112,15 @@ class ExportImportRequest(BaseModel):
     path: str = Field(min_length=1)
 
 
+class SalvageRequest(BaseModel):
+    """Attempt to recover a corrupt/truncated FIT file at a local path."""
+
+    model_config = {"populate_by_name": True}
+
+    path: str = Field(min_length=1)
+    do_import: bool = Field(False, alias="import")  # also store the recovered activity
+
+
 class SegmentCreate(BaseModel):
     """Create a personal segment from a reference activity's GPS track."""
 

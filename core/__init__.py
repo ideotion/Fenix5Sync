@@ -59,6 +59,7 @@ from .privacy_audit import compute_privacy_audit
 from .race import RacePrediction, compute_race_predictions
 from .recap import available_years, compute_recap
 from .records import compute_personal_records
+from .salvage import SalvageReport, salvage_fit, salvage_fit_file
 from .search import ActivityFilter, build_where
 from .segments import (
     Segment,
@@ -170,6 +171,10 @@ __all__ = [
     "find_duplicate_groups",
     # personal records
     "compute_personal_records",
+    # fit salvage
+    "salvage_fit",
+    "salvage_fit_file",
+    "SalvageReport",
     # year-in-sport recap
     "compute_recap",
     "available_years",

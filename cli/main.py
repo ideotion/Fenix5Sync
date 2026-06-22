@@ -128,6 +128,62 @@ def import_export(
         typer.secho(f"  ! {err}", fg=typer.colors.RED)
 
 
+@app.command()
+def salvage(
+    ctx: typer.Context,
+    path: str = typer.Argument(..., help="Corrupt/truncated .FIT file to recover."),
+    do_import: bool = typer.Option(False, "--import", help="Also store the recovered activity."),
+    out: Optional[str] = typer.Option(None, "--out", help="Write the repaired .FIT here."),
+) -> None:
+    """Recover a corrupt or truncated FIT file, locally and offline.
+
+    Repairs the header/CRC and keeps every complete record up to the truncation;
+    the original is only read, never modified.
+    """
+    import copy
+    from pathlib import Path
+
+    from core.salvage import salvage_fit_file
+
+    src = Path(path).expanduser()
+    if not src.is_file():
+        typer.secho(f"File not found: {src}", fg=typer.colors.RED)
+        raise typer.Exit(1)
+
+    report, activity = salvage_fit_file(src)
+    if not report.ok:
+        typer.secho(f"Could not salvage ({report.reason}).", fg=typer.colors.RED)
+        raise typer.Exit(1)
+    typer.secho(
+        f"Recovered {report.records_recovered} records "
+        f"({report.bytes_recovered}/{report.declared_data_size} bytes, "
+        f"{report.as_dict()['recovery_pct']}%) — stopped: {report.reason}.",
+        fg=typer.colors.GREEN,
+    )
+    if activity is not None:
+        typer.echo(f"  sport={activity.sport or 'unknown'} trackpoints={len(activity.trackpoints)} laps={len(activity.laps)}")
+
+    if out and report.repaired is not None:
+        Path(out).expanduser().write_bytes(report.repaired)
+        typer.echo(f"  wrote repaired file: {out}")
+
+    if do_import and report.repaired is not None and activity is not None:
+        cfg = copy.deepcopy(_cfg(ctx))
+        tmp = Path(out).expanduser() if out else None
+        if tmp is None:
+            import tempfile
+            fh = tempfile.NamedTemporaryFile(prefix="fenix5sync-salvaged-", suffix=".fit", delete=False)
+            fh.write(report.repaired)
+            fh.close()
+            tmp = Path(fh.name)
+        cfg.source.mode = "file"
+        cfg.source.path = str(tmp)
+        summary = import_activities(cfg)
+        typer.echo(f"  imported={summary.imported} skipped={summary.skipped} failed={summary.failed}")
+        if not out:
+            tmp.unlink(missing_ok=True)
+
+
 @app.command("list")
 def list_cmd(
     ctx: typer.Context,
