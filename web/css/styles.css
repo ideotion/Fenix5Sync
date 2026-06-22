@@ -576,3 +576,7 @@ td .muted { color: var(--text-faint); }
 .fm-cartoon-eye { fill: #2a1c12; }
 .fm-cartoon-mouth { fill: none; stroke: #2a1c12; stroke-width: 2.4; stroke-linecap: round; }
 .fm-prefs select { margin-left: 6px; }
+
+/* ---------- Form-model: character cues (hair / skirt) ---------- */
+.fm-hair { stroke: none; }
+.fm-skirt { fill: var(--accent); stroke: #2a1c12; stroke-width: 3; stroke-linejoin: round; }

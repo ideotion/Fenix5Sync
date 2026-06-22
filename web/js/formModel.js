@@ -23,8 +23,9 @@ const FormModel = (() => {
 
   // ---- shared, persisted preferences ----
   const PREF_KEY = "f5s-fm-prefs";
-  const DEFAULTS = { trails: true, ring: true, shading: true, sound: false, figure: "minimal" };
+  const DEFAULTS = { trails: true, ring: true, shading: true, sound: false, figure: "minimal", character: "neutral" };
   const FIGURES = [["minimal", "Minimal"], ["cartoon", "Cartoon"]];
+  const CHARACTERS = [["neutral", "Neutral"], ["female", "Female"], ["male", "Male"]];
   function loadPrefs() {
     try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(PREF_KEY)) || {}); }
     catch (_) { return Object.assign({}, DEFAULTS); }
@@ -180,6 +181,14 @@ const FormModel = (() => {
     figSel.addEventListener("change", () => { prefs.figure = figSel.value; savePrefs(prefs); applyPref("figure"); });
     figWrap.append(document.createTextNode("Figure "), figSel);
     figRow.appendChild(figWrap);
+
+    const charWrap = el("label", "fm-pref");
+    const charSel = el("select");
+    CHARACTERS.forEach(([v, label]) => { const o = el("option"); o.value = v; o.textContent = label; charSel.appendChild(o); });
+    charSel.value = prefs.character;
+    charSel.addEventListener("change", () => { prefs.character = charSel.value; savePrefs(prefs); applyPref("figure"); });
+    charWrap.append(document.createTextNode("Character "), charSel);
+    figRow.appendChild(charWrap);
     prefsPanel.appendChild(figRow);
 
     const prefRow = el("div", "fm-pref-row");
@@ -226,6 +235,7 @@ const FormModel = (() => {
     svg.append(glowEll, breathRing, groundLine, shadowEll, ghostsGroup, objGroup, figGroup);
 
     let segNodes = [], headOutline = null, headRing = null, ghostNodes = [], faceNodes = null;
+    let charNodes = null, headR = 16;
 
     function applyLines(lines, p) {
       SEG[view].forEach(([a, b], i) => {
@@ -254,6 +264,25 @@ const FormModel = (() => {
       }));
       segNodes.forEach((s) => figGroup.appendChild(s.outline));
       segNodes.forEach((s) => { applyShadingTo(s.core); figGroup.appendChild(s.core); });
+      headR = cartoon ? 21 : 16;
+      const hairFill = cartoon ? "#3a2a1a" : "var(--text)";
+
+      // Character cues (gender is read from silhouette): a skirt + long hair for
+      // female, a short hair cap for male, nothing for neutral. Hair behind the
+      // head; the male cap sits over the head; the skirt drapes over the hips.
+      charNodes = {};
+      const back = [], front = [];
+      if (prefs.character === "female") {
+        charNodes.hairBack = mk("circle", { r: headR + 3, class: "fm-hair", fill: hairFill });
+        charNodes.lockL = mk("ellipse", { rx: (headR * 0.5).toFixed(1), ry: (headR * 1.25).toFixed(1), class: "fm-hair", fill: hairFill });
+        charNodes.lockR = mk("ellipse", { rx: (headR * 0.5).toFixed(1), ry: (headR * 1.25).toFixed(1), class: "fm-hair", fill: hairFill });
+        back.push(charNodes.hairBack, charNodes.lockL, charNodes.lockR);
+        if (cartoon) { charNodes.skirt = mk("path", { class: "fm-skirt" }); back.unshift(charNodes.skirt); }
+      } else if (prefs.character === "male") {
+        charNodes.cap = mk("path", { class: "fm-hair", fill: hairFill });
+        front.push(charNodes.cap);
+      }
+
       if (cartoon) {
         headOutline = mk("circle", { r: 22, class: "fm-cartoon-headout" });  // collar/outline
         headRing = mk("circle", { r: 21, class: "fm-cartoon-head" });
@@ -262,13 +291,16 @@ const FormModel = (() => {
           eyeR: mk("circle", { r: 2.6, class: "fm-cartoon-eye" }),
           mouth: mk("path", { class: "fm-cartoon-mouth" }),
         };
-        figGroup.append(headOutline, headRing, faceNodes.mouth, faceNodes.eyeL, faceNodes.eyeR);
       } else {
         faceNodes = null;
         headOutline = mk("circle", { r: 18, class: "fm-head-outline" });
         headRing = mk("circle", { r: 16, class: "fm-head" });
-        figGroup.append(headOutline, headRing);
       }
+
+      back.forEach((n) => figGroup.appendChild(n));    // skirt + female hair (behind head)
+      figGroup.append(headOutline, headRing);
+      front.forEach((n) => figGroup.appendChild(n));   // male hair cap (over head)
+      if (faceNodes) figGroup.append(faceNodes.mouth, faceNodes.eyeL, faceNodes.eyeR);
     }
 
     function applyShadingTo(coreLine) {
@@ -305,6 +337,25 @@ const FormModel = (() => {
       const hx = p.hip ? p.hip[0] : 120, hy = p.hip ? p.hip[1] : 190;
       shadowEll.setAttribute("cx", hx.toFixed(1));
       shadowEll.setAttribute("rx", clamp(40 + (hy - 178) * 0.16, 36, 60).toFixed(1));
+      updateChar(p);
+    }
+
+    function updateChar(p) {
+      if (!charNodes) return;
+      const h = p.head;
+      const show = (n, on) => { if (n) n.style.display = on ? "" : "none"; };
+      if (charNodes.hairBack) { if (h) { charNodes.hairBack.setAttribute("cx", h[0]); charNodes.hairBack.setAttribute("cy", h[1]); } show(charNodes.hairBack, !!h); }
+      if (charNodes.lockL) { if (h) { charNodes.lockL.setAttribute("cx", (h[0] - headR * 0.78).toFixed(1)); charNodes.lockL.setAttribute("cy", (h[1] + headR * 0.6).toFixed(1)); } show(charNodes.lockL, !!h); }
+      if (charNodes.lockR) { if (h) { charNodes.lockR.setAttribute("cx", (h[0] + headR * 0.78).toFixed(1)); charNodes.lockR.setAttribute("cy", (h[1] + headR * 0.6).toFixed(1)); } show(charNodes.lockR, !!h); }
+      if (charNodes.cap) { if (h) charNodes.cap.setAttribute("d", `M ${h[0] - headR} ${h[1] - 1} A ${headR} ${headR} 0 0 1 ${h[0] + headR} ${h[1] - 1} Z`); show(charNodes.cap, !!h); }
+      if (charNodes.skirt) {
+        const kneeY = p.lknee ? p.lknee[1] : (p.knee ? p.knee[1] : (p.hip ? p.hip[1] + 60 : 0));
+        if (p.hip) {
+          const hipx = p.hip[0], hyy = p.hip[1], thighY = (hyy + kneeY) / 2;
+          charNodes.skirt.setAttribute("d", `M ${(hipx - 26).toFixed(1)} ${thighY.toFixed(1)} L ${hipx} ${(hyy - 16).toFixed(1)} L ${(hipx + 26).toFixed(1)} ${thighY.toFixed(1)} Z`);
+        }
+        show(charNodes.skirt, !!p.hip);
+      }
     }
 
     function updateGhosts() {
