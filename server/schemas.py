@@ -13,6 +13,19 @@ class Health(BaseModel):
     version: str
 
 
+class CoachPlanRequest(BaseModel):
+    """An objective for the coach plan builder (objective -> dated agenda)."""
+
+    goal_distance: str = Field(default="general", pattern="^(5k|10k|half|marathon|general)$")
+    start_date: str | None = None
+    target_date: str | None = None
+    weeks: int | None = Field(default=None, ge=1, le=52)
+    target_time: str | None = None
+    sessions_per_week: int | None = Field(default=None, ge=1, le=7)
+    available_days: list[int] = Field(default_factory=lambda: [0, 1, 2, 3, 4, 5, 6])
+    level: str = Field(default="intermediate", pattern="^(beginner|intermediate|advanced)$")
+
+
 class Stats(BaseModel):
     count: int
     total_distance_m: float

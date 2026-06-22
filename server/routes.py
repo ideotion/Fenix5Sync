@@ -50,9 +50,12 @@ from core.store import Store
 from core.training_load import compute_training_load
 from core.zones import compute_zones
 from .progress import JobManager
+from core.coach_state import compute_coach_state
+from core.plan_builder import Objective, agenda_to_ics, build_plan
 from .schemas import (
     ActivityDetail,
     ActivityList,
+    CoachPlanRequest,
     ConfigModel,
     ExportImportRequest,
     Health,
@@ -692,6 +695,73 @@ def put_config(new: ConfigModel, request: Request) -> ConfigModel:
     cfg.source_path = str(path)
     request.app.state.config = cfg
     return ConfigModel(**cfg.to_dict())
+
+
+# ---- coach: objective -> personalized plan ---------------------------------
+_RUN_SPORTS = {"running", "run", "trail_running", "treadmill_running", "track_running"}
+
+
+def _coach_state(store: Store, cfg: Config):
+    """A CoachState from the local running history, or None if there's none yet."""
+    runs = [a for a in store.all_activities(with_series=False)
+            if (a.sport or "").lower() in _RUN_SPORTS]
+    if not runs:
+        return None
+    return compute_coach_state(runs, cfg.athlete, sport="running")
+
+
+def _objective_from(body: CoachPlanRequest) -> Objective:
+    return Objective(
+        goal_distance=body.goal_distance, start_date=body.start_date,
+        target_date=body.target_date, weeks=body.weeks, target_time=body.target_time,
+        sessions_per_week=body.sessions_per_week,
+        available_days=body.available_days or [0, 1, 2, 3, 4, 5, 6], level=body.level,
+    )
+
+
+@router.post("/coach/plan")
+def coach_plan(
+    body: CoachPlanRequest,
+    store: Store = Depends(get_store),
+    cfg: Config = Depends(get_config),
+) -> dict:
+    """Build a dated, personalized training plan from an objective."""
+    try:
+        agenda = build_plan(_objective_from(body), state=_coach_state(store, cfg), athlete=cfg.athlete)
+    except (ValueError, KeyError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return agenda.as_dict()
+
+
+@router.get("/coach/plan.ics")
+def coach_plan_ics(
+    goal_distance: str = Query("general", pattern="^(5k|10k|half|marathon|general)$"),
+    start_date: str | None = Query(None),
+    target_date: str | None = Query(None),
+    weeks: int | None = Query(None, ge=1, le=52),
+    target_time: str | None = Query(None),
+    sessions_per_week: int | None = Query(None, ge=1, le=7),
+    available_days: str | None = Query(None, description="comma-separated weekday numbers, Mon=0"),
+    level: str = Query("intermediate", pattern="^(beginner|intermediate|advanced)$"),
+    store: Store = Depends(get_store),
+    cfg: Config = Depends(get_config),
+) -> Response:
+    """Download the plan as an .ics calendar (one all-day event per session)."""
+    days = ([int(x) for x in available_days.split(",") if x.strip().isdigit()]
+            if available_days else [0, 1, 2, 3, 4, 5, 6])
+    obj = Objective(
+        goal_distance=goal_distance, start_date=start_date, target_date=target_date,
+        weeks=weeks, target_time=target_time, sessions_per_week=sessions_per_week,
+        available_days=days or [0, 1, 2, 3, 4, 5, 6], level=level,
+    )
+    try:
+        agenda = build_plan(obj, state=_coach_state(store, cfg), athlete=cfg.athlete)
+    except (ValueError, KeyError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return Response(
+        content=agenda_to_ics(agenda), media_type="text/calendar",
+        headers={"Content-Disposition": 'attachment; filename="coach-plan.ics"'},
+    )
 
 
 # ---- helpers ---------------------------------------------------------------

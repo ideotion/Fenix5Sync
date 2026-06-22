@@ -23,6 +23,8 @@ from .athlete import suggest_athlete
 from .best_efforts import BestEffort, compute_best_efforts
 from .coach_plan import CoachGoal, Plan, PrescribedSession, compute_plan, plan_from_activities
 from .coach_state import CoachState, compute_coach_state
+from .ics import write_calendar as write_ics_calendar
+from .plan_builder import CoachAgenda, Objective, agenda_to_ics, build_plan
 from .config import (
     AnonymizeConfig,
     AthleteConfig,
@@ -147,6 +149,12 @@ __all__ = [
     "CoachGoal",
     "Plan",
     "PrescribedSession",
+    # objective -> personalized plan + ICS
+    "build_plan",
+    "Objective",
+    "CoachAgenda",
+    "agenda_to_ics",
+    "write_ics_calendar",
     # metrics
     "compute_activity_metrics",
     "ActivityMetrics",

@@ -555,6 +555,21 @@ td .muted { color: var(--text-faint); }
 .home-screen-refer a, .home-screen-ok a { color: var(--accent); }
 .home-ex-picker { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-bottom: var(--sp-4); }
 .home-ex-locked { opacity: .6; }
+/* ---------- Coach: objective form + plan preview ---------- */
+.coach-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--sp-3); margin-top: var(--sp-3); }
+.coach-field { display: flex; flex-direction: column; gap: 4px; }
+.coach-field-l { font-size: 12px; color: var(--text-dim); font-weight: 600; }
+.coach-plan-preview:empty { display: none; }
+.coach-pace-table { width: 100%; border-collapse: collapse; margin-top: var(--sp-3); font-size: 13px; }
+.coach-pace-table th { text-align: left; color: var(--text-dim); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em; padding: 4px 8px; border-bottom: 1px solid var(--border); }
+.coach-pace-table td { padding: 6px 8px; border-bottom: 1px solid var(--border-soft); font-variant-numeric: tabular-nums; }
+.coach-week { border: 1px solid var(--border-soft); border-radius: var(--radius-sm); margin-bottom: 6px; }
+.coach-week summary { cursor: pointer; padding: 8px 10px; }
+.coach-week-list { list-style: none; margin: 0; padding: 0 10px 8px; }
+.coach-week-list li { display: flex; gap: var(--sp-3); align-items: baseline; padding: 4px 0; font-size: 13px; border-top: 1px solid var(--border-soft); }
+.coach-sess-day { width: 34px; color: var(--text-dim); font-weight: 600; flex: none; }
+.coach-sess-title { flex: 1; }
+
 .home-ex-info { margin-top: var(--sp-4); }
 .home-ex-prog { margin: var(--sp-2) 0 0; padding-left: 18px; font-size: 13px; color: var(--text-dim); }
 .home-ex-prog li { margin-bottom: 3px; }

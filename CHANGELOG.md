@@ -11,6 +11,18 @@ GitHub Releases page for the auto-generated notes per tag.
 ## [Unreleased]
 
 ### Added
+- **Coach: objective → personalized plan → calendar.** A new objective form in
+  the Coach tab (and `POST /api/coach/plan`, `fenix5sync plan …`) turns a goal
+  (5K/10K/half/marathon/general, dates or weeks, optional goal time, days, level)
+  into a dated base→build→peak→taper→race plan with step-back weeks, a tune-up
+  effort and rest days. Each session carries a pace/heart-rate/effort target as a
+  RANGE with a confidence and the evidence grade behind it (VDOT/Riegel/Karvonen/
+  RPE), and the whole plan exports as an `.ics` calendar (`GET /api/coach/plan.ics`,
+  `--ics PATH`). Pure/stdlib core (`core/plan_builder.py`, `core/ics.py`), reusing
+  the adaptive controller for the periodized skeleton. Honest by construction: the
+  10% rule is never asserted as injury-protective, ACWR is a signal only, ranges
+  widen for low mileage, and it is framed as training information, not medical
+  advice.
 - **Home exercise library (35) + Tai Chi movement library (21).** The Sports at
   Home form-model now ships the full data-driven library — including the complete
   push-up progression (wall → counter → chair → knee → floor) — with each

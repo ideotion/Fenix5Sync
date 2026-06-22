@@ -56,9 +56,11 @@ const API = (() => {
     putConfig: (cfg) => req("/config", { method: "PUT", body: JSON.stringify(cfg) }),
     athleteSuggestions: () => req("/athlete/suggestions"),
     fsList: (params) => req("/fs/list" + qs(params)),
+    coachPlan: (body) => req("/coach/plan", { method: "POST", body: JSON.stringify(body) }),
 
     // Streaming + download URLs (used directly by EventSource / <a download>).
     syncStreamUrl: (jobId) => base + "/sync/" + jobId + "/stream",
+    coachPlanIcsUrl: (params) => base + "/coach/plan.ics" + qs(params),
     activityExportUrl: (id, format, anonymize) =>
       base + "/activities/" + id + "/export" +
       qs({ format, anonymize: anonymize ? "true" : null }),

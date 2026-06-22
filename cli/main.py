@@ -27,15 +27,21 @@ import typer
 from core import (
     ActivityFilter,
     Config,
+    Objective,
     Store,
+    agenda_to_ics,
     anonymize_activity,
+    build_plan,
     effective_options,
     import_activities,
     load_config,
     write_config,
 )
+from core.coach_state import compute_coach_state
 from core.config import _expand
 from core.export import write_activity_export, write_archive, write_bulk_export
+
+_RUN_SPORTS = {"running", "run", "trail_running", "treadmill_running", "track_running"}
 
 app = typer.Typer(
     add_completion=False,
@@ -289,6 +295,65 @@ def archive(
         activities = store.all_activities(with_series=True)
         path = write_archive(activities, out_dir)
     typer.secho(f"Archived {len(activities)} activit{'y' if len(activities)==1 else 'ies'} -> {path}", fg=typer.colors.GREEN)
+
+
+@app.command()
+def plan(
+    ctx: typer.Context,
+    goal: str = typer.Option("general", "--goal", "-g", help="5k | 10k | half | marathon | general"),
+    start: Optional[str] = typer.Option(None, help="Start date YYYY-MM-DD (default: today)."),
+    target_date: Optional[str] = typer.Option(None, "--target-date", help="Race day YYYY-MM-DD."),
+    weeks: Optional[int] = typer.Option(None, help="Plan length in weeks (if no target date)."),
+    target_time: Optional[str] = typer.Option(None, "--time", help="Goal finish time, e.g. 50:00."),
+    sessions: Optional[int] = typer.Option(None, "--sessions", help="Runs per week (1-7)."),
+    days: Optional[str] = typer.Option(None, "--days", help="Available weekdays, Mon=0, e.g. 1,3,5,6."),
+    level: str = typer.Option("intermediate", help="beginner | intermediate | advanced"),
+    ics: Optional[Path] = typer.Option(None, "--ics", help="Write the plan to this .ics file."),
+) -> None:
+    """Turn an objective into a dated, personalized running plan (and optional .ics).
+
+    Targets are evidence-graded estimates presented as ranges, NOT medical advice
+    or guarantees -- get clearance (PAR-Q+) before starting.
+    """
+    cfg = _cfg(ctx)
+    avail = [int(x) for x in days.split(",") if x.strip().isdigit()] if days else [0, 1, 2, 3, 4, 5, 6]
+    obj = Objective(goal_distance=goal, start_date=start, target_date=target_date, weeks=weeks,
+                    target_time=target_time, sessions_per_week=sessions,
+                    available_days=avail or [0, 1, 2, 3, 4, 5, 6], level=level)
+    with Store(cfg.storage.db_path) as store:
+        runs = [a for a in store.all_activities(with_series=False)
+                if (a.sport or "").lower() in _RUN_SPORTS]
+        state = compute_coach_state(runs, cfg.athlete, sport="running") if runs else None
+        agenda = build_plan(obj, state=state, athlete=cfg.athlete)
+
+    s = agenda.summary
+    typer.secho(f"{s['goal']} plan — {agenda.weeks} weeks ({agenda.start_date} → {agenda.end_date})",
+                fg=typer.colors.GREEN, bold=True)
+    typer.echo(f"  VDOT {s['vdot']} ({s['vdot_basis']}); confidence: {s['confidence']}")
+    if s.get("predicted_time"):
+        typer.echo(f"  Projected {s['goal']}: {s['predicted_time']} @ {s['race_pace']}")
+    typer.echo("  Training paces (per km / RPE" + (" / HR" if agenda.paces['E'].get('hr') else "") + "):")
+    for z, label in (("E", "Easy"), ("M", "Steady"), ("T", "Threshold"), ("I", "Intervals")):
+        p = agenda.paces[z]
+        line = f"    {label:9} {p['pace']:>18}  {p['rpe']}"
+        if p.get("hr"):
+            line += f"  {p['hr']}"
+        typer.echo(line)
+    cur_week = None
+    for sess in agenda.sessions:
+        if sess["kind"] == "rest":
+            continue
+        if sess["week"] != cur_week:
+            cur_week = sess["week"]
+            ph = sess["phase"]
+            typer.secho(f"  Week {cur_week} [{ph}]", fg=typer.colors.CYAN)
+        tgt = sess["target"]["pace"] if sess.get("target") else ""
+        typer.echo(f"    {sess['date']} {sess['weekday']:3} {sess['title']:24} {sess['duration_min']:>3} min  {tgt}")
+    for note in agenda.notes:
+        typer.secho(f"  • {note}", fg=typer.colors.YELLOW)
+    if ics:
+        Path(ics).write_text(agenda_to_ics(agenda), encoding="utf-8")
+        typer.secho(f"Wrote {ics}", fg=typer.colors.GREEN)
 
 
 @app.command()

@@ -66,6 +66,9 @@ const CoachView = (() => {
       U.el("span", { style: DIM, text: data.disclaimer }),
     ]));
 
+    // objective -> personalized plan (+ .ics export)
+    root.appendChild(plannerCard());
+
     // reference program
     const rp = data.reference_program;
     if (rp) {
@@ -168,6 +171,153 @@ const CoachView = (() => {
       U.el("div", { class: "k", text: k }),
       U.el("div", { class: "v", style: "font-size:13px;font-weight:600", text: v }),
     ]);
+  }
+
+  // ---------- objective -> dated plan ----------
+  const PLAN_KEY = "f5s-coach-objective";
+  const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+  function loadObjective() {
+    try { return JSON.parse(localStorage.getItem(PLAN_KEY)) || {}; } catch (_) { return {}; }
+  }
+  function saveObjective(o) { try { localStorage.setItem(PLAN_KEY, JSON.stringify(o)); } catch (_) {} }
+
+  function plannerCard() {
+    const o = loadObjective();
+    const sel = (opts, val) => {
+      const s = U.el("select", { class: "input sm" });
+      opts.forEach(([v, label]) => { const op = U.el("option", { value: v, text: label }); if (v === val) op.selected = true; s.appendChild(op); });
+      return s;
+    };
+    const goal = sel([["5k", "5K"], ["10k", "10K"], ["half", "Half marathon"], ["marathon", "Marathon"], ["general", "General fitness"]], o.goal_distance || "10k");
+    const level = sel([["beginner", "Beginner"], ["intermediate", "Intermediate"], ["advanced", "Advanced"]], o.level || "intermediate");
+    const start = U.el("input", { class: "input sm", type: "date", value: o.start_date || "" });
+    const target = U.el("input", { class: "input sm", type: "date", value: o.target_date || "" });
+    const weeks = U.el("input", { class: "input sm", type: "number", min: "1", max: "52", placeholder: "weeks", value: o.weeks || "" });
+    const time = U.el("input", { class: "input sm", type: "text", placeholder: "e.g. 50:00", value: o.target_time || "" });
+    const sessions = U.el("input", { class: "input sm", type: "number", min: "1", max: "7", placeholder: "auto", value: o.sessions_per_week || "" });
+
+    const dayState = new Set(Array.isArray(o.available_days) ? o.available_days : [0, 2, 4, 6]);
+    const dayBtns = DAY_NAMES.map((name, i) => U.el("button", {
+      class: "btn sm" + (dayState.has(i) ? " active" : ""), type: "button", text: name,
+      onclick: (e) => { dayState.has(i) ? dayState.delete(i) : dayState.add(i); e.target.classList.toggle("active"); },
+    }));
+
+    const preview = U.el("div", { class: "coach-plan-preview" });
+    const field = (label, node) => U.el("label", { class: "coach-field" }, [U.el("span", { class: "coach-field-l", text: label }), node]);
+
+    function currentObjective() {
+      return {
+        goal_distance: goal.value, level: level.value,
+        start_date: start.value || null, target_date: target.value || null,
+        weeks: weeks.value ? Number(weeks.value) : null,
+        target_time: time.value || null,
+        sessions_per_week: sessions.value ? Number(sessions.value) : null,
+        available_days: Array.from(dayState).sort((a, b) => a - b),
+      };
+    }
+
+    async function build() {
+      const obj = currentObjective();
+      saveObjective(obj);
+      preview.innerHTML = "";
+      preview.appendChild(U.spinner("Building your plan…"));
+      try {
+        const plan = await API.coachPlan(obj);
+        renderPlan(preview, plan, obj);
+      } catch (e) {
+        preview.innerHTML = "";
+        preview.appendChild(U.el("div", { class: "empty", text: "Could not build the plan: " + e.message }));
+      }
+    }
+
+    const buildBtn = U.el("button", { class: "btn primary", text: "Build plan", onclick: build });
+
+    return U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [
+      U.el("h3", { style: H, text: "Build your plan" }),
+      U.el("div", { style: DIM + ";margin-bottom:var(--sp-3)", text: "Turn an objective into a dated week-by-week plan with pace, heart-rate and effort targets. Targets are evidence-graded estimates shown as ranges — not medical advice or guarantees. Get clearance (PAR-Q+) before starting." }),
+      U.el("div", { class: "coach-form" }, [
+        field("Goal", goal), field("Level", level),
+        field("Start", start), field("Race day", target),
+        field("Or weeks", weeks), field("Goal time", time),
+        field("Runs/week", sessions),
+      ]),
+      U.el("div", { style: "margin-top:var(--sp-3)" }, [
+        U.el("div", { class: "coach-field-l", text: "Available days" }),
+        U.el("div", { class: "home-ex-picker", style: "margin:6px 0 0" }, dayBtns),
+      ]),
+      U.el("div", { style: "margin-top:var(--sp-3)" }, [buildBtn]),
+      preview,
+    ]);
+  }
+
+  function renderPlan(host, plan, obj) {
+    host.innerHTML = "";
+    const s = plan.summary;
+    const head = [U.el("strong", { text: `${U.cap(s.goal)} · ${plan.weeks} weeks · ${U.cap(s.level)}` })];
+    const wrap = U.el("div", { style: "margin-top:var(--sp-4)" });
+
+    // summary + confidence + projection
+    const bits = [`VDOT ${s.vdot} (${s.confidence} confidence)`];
+    if (s.predicted_time) bits.push(`projected ${s.goal} ≈ ${s.predicted_time} @ ${s.race_pace}`);
+    wrap.appendChild(U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-3)" }, [
+      U.el("div", {}, head),
+      U.el("div", { style: DIM + ";margin-top:4px", text: bits.join(" · ") }),
+      s.equivalents ? U.el("div", { style: FAINT + ";margin-top:4px", text: "Equivalent efforts: " + Object.entries(s.equivalents).map(([k, v]) => `${k} ${v}`).join(" · ") }) : null,
+    ]));
+
+    // pace table
+    const zoneLabel = { E: "Easy", M: "Steady", T: "Threshold", I: "Intervals" };
+    const rows = ["E", "M", "T", "I"].map((z) => {
+      const p = plan.paces[z];
+      return U.el("tr", {}, [
+        U.el("td", { style: "font-weight:600", text: zoneLabel[z] }),
+        U.el("td", { text: p.pace }),
+        U.el("td", { text: p.rpe }),
+        U.el("td", { text: p.hr || "—" }),
+      ]);
+    });
+    wrap.appendChild(U.el("table", { class: "coach-pace-table" }, [
+      U.el("thead", {}, [U.el("tr", {}, ["Zone", "Pace", "Effort", "Heart rate"].map((h) => U.el("th", { text: h })))]),
+      U.el("tbody", {}, rows),
+    ]));
+
+    // weekly agenda (grouped, rest days hidden)
+    const byWeek = {};
+    plan.sessions.forEach((sess) => { (byWeek[sess.week] = byWeek[sess.week] || []).push(sess); });
+    const agenda = U.el("div", { style: "margin-top:var(--sp-3)" });
+    Object.keys(byWeek).map(Number).sort((a, b) => a - b).forEach((w) => {
+      const list = byWeek[w].filter((x) => x.kind !== "rest");
+      if (!list.length) return;
+      const phase = byWeek[w][0].phase;
+      const sb = byWeek[w].some((x) => x.stepback) ? " · step-back" : "";
+      agenda.appendChild(U.el("details", { class: "coach-week" }, [
+        U.el("summary", {}, [U.el("strong", { text: `Week ${w}` }), U.el("span", { style: FAINT + ";margin-left:8px", text: phase + sb })]),
+        U.el("ul", { class: "coach-week-list" }, list.map((x) => U.el("li", {}, [
+          U.el("span", { class: "coach-sess-day", text: x.weekday }),
+          U.el("span", { class: "coach-sess-title", text: x.title + (x.duration_min ? ` · ${x.duration_min} min` : "") }),
+          x.target ? U.el("span", { style: FAINT, text: x.target.pace }) : null,
+        ]))),
+      ]));
+    });
+    wrap.appendChild(agenda);
+
+    // export + honesty notes + discreet sources
+    const icsParams = Object.assign({}, obj, { available_days: (obj.available_days || []).join(",") });
+    wrap.appendChild(U.el("div", { style: "margin-top:var(--sp-4);display:flex;gap:var(--sp-2);flex-wrap:wrap;align-items:center" }, [
+      U.el("a", { class: "btn", href: API.coachPlanIcsUrl(icsParams), download: "coach-plan.ics", text: "Export .ics" }),
+      U.el("span", { style: FAINT, text: "Adds each session to your calendar." }),
+    ]));
+    if (plan.notes && plan.notes.length) {
+      wrap.appendChild(U.el("ul", { style: FAINT + ";margin-top:var(--sp-3);padding-left:18px;line-height:1.6" },
+        plan.notes.map((n) => U.el("li", { text: n }))));
+    }
+    wrap.appendChild(U.el("details", { style: FAINT + ";margin-top:var(--sp-2)" }, [
+      U.el("summary", { text: "Method & evidence grades" }),
+      U.el("ul", { style: "padding-left:18px;margin-top:6px;line-height:1.6" },
+        (plan.evidence.caveats || []).map((c) => U.el("li", { text: c }))),
+    ]));
+    host.appendChild(wrap);
   }
 
   function safetyRow(title, body) {
