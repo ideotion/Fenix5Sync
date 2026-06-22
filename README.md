@@ -107,11 +107,20 @@ After install the GUI is at **<http://127.0.0.1:8765/>**. Views:
   sortable columns and summary tiles.
 - **Insights** — local-only accomplishments, monthly/cumulative trends, personal
   records and an activity calendar.
+- **Recap** — a private *Year in Sport* (per-year and all-time), exportable as a
+  self-contained, shareable HTML card that anyone can open with no account.
+- **Segments** — capture a route from one of your activities and race yourself
+  over your whole history: a private leaderboard and progress trend, no cloud.
+- **Privacy** — a defensive self-audit of what your own tracks reveal (likely
+  home, routine), with a recommended privacy radius that feeds anonymization.
 - **Activity detail** — summary stats, heart-rate / speed / elevation charts, an
   offline GPS track plot, **HR & power training zones**, laps, and per-activity
   CSV/JSON/GPX/TCX/raw export.
 - **Import / Sync** — one button to acquire & parse from the watch, with live
-  progress and a run summary (found / imported / skipped / failed).
+  progress and a run summary (found / imported / skipped / failed). Also imports
+  a full **Garmin/Strava account export** (the downloaded `.zip` or folder) so
+  your whole cloud history lands locally — nested zips and gzipped files are
+  handled and everything is content-deduplicated.
 - **Export** — bulk CSV/JSON and the full-fidelity NDJSON archive.
 - **Logs** — the latest run log.
 

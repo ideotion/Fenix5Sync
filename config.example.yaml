@@ -21,6 +21,10 @@ source:
   #   folder       -> a directory of activity files (see `recursive`)
   #   file         -> a single activity file (`path`)
   #   zip          -> a .zip archive of activity files (`path`); extracted safely
+  #   export       -> a Garmin/Strava account export (`path`): the downloaded .zip
+  #                   (incl. nested zip-of-zips) or an unzipped folder; nested zips
+  #                   and gzip-compressed activity files are expanded automatically
+  #                   (source untouched) and content-deduplicated against your store
   mode: auto
 
   # Explicit path to a directory, file, .zip, or the device root. Used by

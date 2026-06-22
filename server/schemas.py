@@ -106,6 +106,21 @@ class LogsResponse(BaseModel):
     lines: list[str]
 
 
+class ExportImportRequest(BaseModel):
+    """Import an account export (Garmin/Strava .zip or folder) from a local path."""
+
+    path: str = Field(min_length=1)
+
+
+class SegmentCreate(BaseModel):
+    """Create a personal segment from a reference activity's GPS track."""
+
+    activity_id: int
+    name: str = Field(min_length=1, max_length=120)
+    num_waypoints: int = Field(default=12, ge=2, le=64)
+    radius_m: float = Field(default=30.0, gt=0, le=500)
+
+
 # ---- config models (mirror core.config dataclasses) ------------------------
 class SourceModel(BaseModel):
     mode: str = "auto"

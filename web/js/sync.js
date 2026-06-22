@@ -30,6 +30,8 @@ const SyncView = (() => {
       U.el("div", { class: "sync-status", id: "sync-status", text: "Idle." }),
     ]));
 
+    root.appendChild(await exportPanel());
+
     const summary = U.el("div", { id: "sync-summary", style: "margin-top:var(--sp-5);display:none" });
     root.appendChild(summary);
 
@@ -40,6 +42,51 @@ const SyncView = (() => {
       const active = await API.activeSync();
       if (active && active.status === "running") attach(active.job_id);
     } catch (_) {}
+  }
+
+  async function exportPanel() {
+    let about = {};
+    try { about = await (await fetch("/content/history/about.json")).json(); } catch (_) {}
+
+    const input = U.el("input", { type: "text", id: "export-path",
+      placeholder: "Path to a Garmin/Strava export .zip or folder (e.g. ~/Downloads/garmin_export.zip)" });
+    const btn = U.el("button", { class: "btn", id: "export-btn", onclick: () => startExport(input.value) },
+      [U.el("span", { text: "Import history" })]);
+
+    const details = (about.rationale || (about.sources || []).length)
+      ? U.el("details", { class: "rc-about", style: "margin-top:var(--sp-3)" }, [
+          U.el("summary", { text: "Why this is here" }),
+          about.rationale ? U.el("p", { class: "sub", text: about.rationale }) : null,
+          (about.sources || []).length ? U.el("ul", { class: "rc-srcs" }, about.sources.map((s) =>
+            U.el("li", {}, [
+              U.el("a", { href: s.url, target: "_blank", rel: "noopener", text: s.title }),
+              document.createTextNode(` — ${s.publisher}${s.date ? " (" + s.date + ")" : ""}`),
+            ]))) : null,
+        ])
+      : null;
+
+    return U.el("div", { class: "card pad", style: "margin-top:var(--sp-5)" }, [
+      U.el("h3", { style: "margin:0 0 4px", text: about.title || "Liberate your history" }),
+      U.el("div", { class: "sub", text: "Import your full Garmin/Strava account export (the downloaded .zip or folder). Nested zips and gzipped files are handled; the source is never modified and everything is de-duplicated." }),
+      U.el("div", { class: "export-row", style: "display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap;margin-top:var(--sp-3)" }, [input, btn]),
+      details,
+    ]);
+  }
+
+  async function startExport(path) {
+    if (!path || !path.trim()) { U.toast("Enter the path to your export .zip or folder.", "bad"); return; }
+    const btn = document.getElementById("export-btn");
+    if (btn) btn.disabled = true;
+    setStatus("Expanding export…");
+    setBar(4);
+    try {
+      const job = await API.startExportImport(path.trim());
+      attach(job.job_id);
+    } catch (e) {
+      U.toast("Import failed to start: " + e.message, "bad");
+      if (btn) btn.disabled = false;
+      setStatus("Idle.");
+    }
   }
 
   async function start() {
@@ -92,6 +139,8 @@ const SyncView = (() => {
   function onEnd(snap) {
     const btn = document.getElementById("sync-btn");
     if (btn) btn.disabled = false;
+    const ebtn = document.getElementById("export-btn");
+    if (ebtn) ebtn.disabled = false;
     setBar(100);
     if (snap.status === "error") {
       setStatus("Error: " + (snap.error || "unknown"));

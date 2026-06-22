@@ -32,7 +32,7 @@ def _expand(p: str) -> str:
 
 @dataclass
 class SourceConfig:
-    mode: str = "auto"  # auto | mass_storage | mtp | path | folder | file | zip
+    mode: str = "auto"  # auto | mass_storage | mtp | path | folder | file | zip | export
     path: str = ""
     extra_mount_roots: list[str] = field(default_factory=list)
     activity_subdir: str = "GARMIN/Activity"
@@ -182,7 +182,7 @@ class Config:
 
     def validate(self) -> None:
         """Reject obviously-wrong values early (with a clear message)."""
-        valid_modes = {"auto", "mass_storage", "mtp", "path", "folder", "file", "zip"}
+        valid_modes = {"auto", "mass_storage", "mtp", "path", "folder", "file", "zip", "export"}
         if self.source.mode not in valid_modes:
             raise ValueError(
                 "source.mode must be one of "

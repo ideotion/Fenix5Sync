@@ -18,6 +18,7 @@ from __future__ import annotations
 from importlib.metadata import PackageNotFoundError, version as _pkg_version
 
 from .anonymize import anonymize_activity, effective_options
+from .archive import expand_into as expand_export_archive
 from .athlete import suggest_athlete
 from .best_efforts import BestEffort, compute_best_efforts
 from .coach_plan import CoachGoal, Plan, PrescribedSession, compute_plan, plan_from_activities
@@ -54,9 +55,18 @@ from .metrics import ActivityMetrics, compute_activity_metrics
 from .models import Activity, Lap, RunSummary, Trackpoint
 from .parse import ParseError, parse_fit_file
 from .pipeline import import_activities, open_store
+from .privacy_audit import compute_privacy_audit
 from .race import RacePrediction, compute_race_predictions
+from .recap import available_years, compute_recap
 from .records import compute_personal_records
 from .search import ActivityFilter, build_where
+from .segments import (
+    Segment,
+    SegmentEffort,
+    compute_segment_efforts,
+    match_effort,
+    segment_from_activity,
+)
 from .splits import Split, compute_splits
 from .store import Store
 from .training_load import DayLoad, TrainingLoad, compute_training_load
@@ -93,6 +103,8 @@ __all__ = [
     "parse_activity_file",
     "detect_format",
     "ParseError",
+    # account-export ingestion
+    "expand_export_archive",
     # store / search
     "Store",
     "ActivityFilter",
@@ -158,6 +170,17 @@ __all__ = [
     "find_duplicate_groups",
     # personal records
     "compute_personal_records",
+    # year-in-sport recap
+    "compute_recap",
+    "available_years",
+    # privacy audit
+    "compute_privacy_audit",
+    # personal segments
+    "Segment",
+    "SegmentEffort",
+    "segment_from_activity",
+    "match_effort",
+    "compute_segment_efforts",
     # athlete suggestions
     "suggest_athlete",
     # logging

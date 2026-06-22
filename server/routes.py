@@ -38,7 +38,10 @@ from core.hr_trends import compute_hr_trends
 from core.logging_setup import read_recent_logs
 from core.metrics import compute_activity_metrics
 from core.race import compute_race_predictions
+from core.privacy_audit import compute_privacy_audit
+from core.recap import compute_recap
 from core.search import ActivityFilter
+from core.segments import compute_segment_efforts, segment_from_activity
 from core.splits import MILE_M, compute_splits
 from core.store import Store
 from core.training_load import compute_training_load
@@ -48,8 +51,10 @@ from .schemas import (
     ActivityDetail,
     ActivityList,
     ConfigModel,
+    ExportImportRequest,
     Health,
     LogsResponse,
+    SegmentCreate,
     Stats,
     SyncStatus,
 )
@@ -172,6 +177,92 @@ def insights_records(
     ]
     full = [store.get_activity(i, with_series=True) for i in ids]
     return compute_personal_records([a for a in full if a is not None])
+
+
+@router.get("/insights/recap")
+def insights_recap(
+    year: int | None = Query(None, description="Calendar year; omit for an all-time recap."),
+    store: Store = Depends(get_store),
+) -> dict:
+    """Private Year-in-Sport recap, computed from activity summaries (no cloud).
+
+    Aggregates totals, per-sport and per-period breakdowns, headline highlights
+    and consistency metrics over the local archive -- a free, ownable equivalent
+    of the annual recaps the major platforms now put behind a subscription. The
+    GUI renders a self-contained, shareable card; nothing leaves the machine.
+    """
+    return compute_recap(store.all_activities(with_series=False), year=year)
+
+
+# ---- personal segments -----------------------------------------------------
+@router.get("/segments")
+def list_segments(store: Store = Depends(get_store)) -> dict:
+    """All saved personal segments (private; no leaderboards, no cloud)."""
+    return {"segments": [s.as_dict() for s in store.list_segments()]}
+
+
+@router.post("/segments", status_code=201)
+def create_segment(body: SegmentCreate, store: Store = Depends(get_store)) -> dict:
+    """Create a segment from a reference activity's GPS track."""
+    activity = store.get_activity(body.activity_id, with_series=True)
+    if activity is None:
+        raise HTTPException(status_code=404, detail="activity not found")
+    try:
+        segment = segment_from_activity(
+            activity, body.name, num_waypoints=body.num_waypoints, radius_m=body.radius_m
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    store.add_segment(segment)
+    return segment.as_dict()
+
+
+@router.delete("/segments/{segment_id}", status_code=204)
+def delete_segment(segment_id: int, store: Store = Depends(get_store)) -> Response:
+    if not store.delete_segment(segment_id):
+        raise HTTPException(status_code=404, detail="segment not found")
+    return Response(status_code=204)
+
+
+@router.get("/segments/{segment_id}/efforts")
+def segment_efforts(segment_id: int, store: Store = Depends(get_store)) -> dict:
+    """Every matching effort on a segment: a private leaderboard plus a trend.
+
+    Loads trackpoint series for activities of the segment's sport (an N+1, pruned
+    to that sport with a GPS signal) to match the route; computed locally.
+    """
+    segment = store.get_segment(segment_id)
+    if segment is None:
+        raise HTTPException(status_code=404, detail="segment not found")
+    candidates = [
+        a for a in store.all_activities(with_series=False)
+        if a.id is not None and (segment.sport is None or a.sport == segment.sport)
+        and a.start_latitude is not None
+    ]
+    full = [store.get_activity(a.id, with_series=True) for a in candidates]
+    return compute_segment_efforts([a for a in full if a is not None], segment)
+
+
+@router.get("/insights/privacy-audit")
+def insights_privacy_audit(
+    store: Store = Depends(get_store),
+    cfg: Config = Depends(get_config),
+) -> dict:
+    """Defensive self-audit: what your own activity start points reveal.
+
+    Clusters start locations (likely home first) and the weekday/time regularity
+    that exposes a routine, then recommends a privacy radius that feeds the
+    existing anonymization. Computed locally from summaries; inferences are
+    probabilistic and never persisted. Includes the currently configured radius
+    so the UI can show whether it already covers the most-exposed place.
+    """
+    audit = compute_privacy_audit(store.all_activities(with_series=False))
+    audit["current_radius_m"] = cfg.anonymize.privacy_radius_m
+    audit["radius_sufficient"] = (
+        cfg.anonymize.privacy_radius_m >= audit["recommended_radius_m"]
+        and audit["recommended_radius_m"] > 0
+    )
+    return audit
 
 
 @router.get("/insights/hr-trends")
@@ -387,6 +478,32 @@ def start_sync(
     cfg: Config = Depends(get_config), jobs: JobManager = Depends(get_jobs)
 ) -> SyncStatus:
     job = jobs.start(cfg)
+    return SyncStatus(**job.snapshot())
+
+
+@router.post("/sync/import-export", response_model=SyncStatus)
+def start_export_import(
+    body: ExportImportRequest,
+    cfg: Config = Depends(get_config),
+    jobs: JobManager = Depends(get_jobs),
+) -> SyncStatus:
+    """Liberate your history: import a Garmin/Strava account export from disk.
+
+    Runs the normal import pipeline with a one-off ``export``-mode config over the
+    given local path (the downloaded ``.zip`` or an unzipped folder). Nested zips
+    and gzip-compressed activity files are expanded into a temp dir; the source is
+    never modified, and everything is content-deduplicated against what you have.
+    """
+    import copy
+
+    path = Path(body.path).expanduser()
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"path not found: {path}")
+    one_off = copy.deepcopy(cfg)
+    one_off.source.mode = "export"
+    one_off.source.path = str(path)
+    one_off.source.recursive = True
+    job = jobs.start(one_off)
     return SyncStatus(**job.snapshot())
 
 

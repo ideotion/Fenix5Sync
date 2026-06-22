@@ -1,0 +1,12 @@
+{
+  "title": "Privacy audit",
+  "subtitle": "See what your own tracks reveal — home, routine, regularity — then mask it before you share.",
+  "decision_date": "2026-06-22",
+  "source_doc": "docs/privacy/decision-brief.md",
+  "rationale": "GPS tracks de-anonymize easily: clustered start points reveal where you live, and weekday/time regularity reveals your routine. This is a defensive self-audit of your own data, run locally — the inverse of a public heatmap. It recommends a privacy radius that feeds the anonymization the app already ships. Nothing is transmitted, and the inferred location is never stored.",
+  "sources": [
+    {"id": "S1", "title": "Fitness tracking app Strava gives away location of secret US army bases (2018 global heatmap)", "publisher": "The Guardian", "date": "2018-01-28", "url": "https://www.theguardian.com/world/2018/jan/28/fitness-tracking-app-gives-away-location-of-secret-us-army-bases"},
+    {"id": "S2", "title": "Updates to Strava's API Agreement (users 'unaware their data is surfaced in a public feed or heatmap')", "publisher": "Strava Press", "date": "2024-11-19", "url": "https://press.strava.com/articles/updates-to-stravas-api-agreement"},
+    {"id": "S3", "title": "Strava's new API agreement will destroy the app, users warn", "publisher": "Cybernews", "date": "2024-11-20", "url": "https://cybernews.com/security/strava-changes-api-agreement/"}
+  ]
+}
