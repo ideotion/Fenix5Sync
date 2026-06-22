@@ -512,10 +512,15 @@ td .muted { color: var(--text-faint); }
 .btn.active { background: var(--accent-soft); border-color: var(--accent); }
 
 .fm-stage { position: relative; display: flex; justify-content: center; align-items: center;
-  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-3); min-height: 320px; }
+  background: radial-gradient(120% 88% at 50% 6%, var(--surface-2) 0%, var(--bg) 72%);
+  border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-3); min-height: 320px; overflow: hidden; }
 .fm-stage svg { width: 100%; max-width: 280px; height: auto; display: block; }
+.fm-glow { transition: opacity .45s var(--ease); }
+.fm-shadow { fill: rgba(0, 0, 0, .30); }
+.fm-bone-outline { stroke: var(--bg); stroke-width: 20; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 .fm-bone { stroke: var(--text); stroke-width: 13; stroke-linecap: round; stroke-linejoin: round; fill: none; }
-.fm-head { fill: none; stroke: var(--text); stroke-width: 7; }
+.fm-head-outline { fill: var(--bg); }
+.fm-head { fill: var(--surface); stroke: var(--text); stroke-width: 7; }
 .fm-ground { stroke: var(--border); stroke-width: 4; stroke-linecap: round; }
 .fm-obj { stroke: var(--accent); stroke-width: 6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .fm-obj-fill { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 4; }
