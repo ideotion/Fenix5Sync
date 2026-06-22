@@ -1,0 +1,2423 @@
+[
+  {
+    "id": "tc_gather_part_clouds",
+    "name": "Gather & Part the Clouds",
+    "view": "front",
+    "object": null,
+    "targetReps": 6,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Lift",
+      "Part",
+      "Gather"
+    ],
+    "phases": [
+      {
+        "name": "Lift",
+        "durationMs": 4000,
+        "cue": "Breathe in - float both hands up to chest height, palms easing upward.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            76,
+            105
+          ],
+          "relb": [
+            164,
+            105
+          ],
+          "lhand": [
+            112,
+            126
+          ],
+          "rhand": [
+            128,
+            126
+          ]
+        }
+      },
+      {
+        "name": "Part",
+        "durationMs": 5000,
+        "cue": "Keep breathing in - open the arms wide and high, like parting soft clouds.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            80,
+            80
+          ],
+          "relb": [
+            160,
+            80
+          ],
+          "lhand": [
+            66,
+            120
+          ],
+          "rhand": [
+            174,
+            120
+          ]
+        }
+      },
+      {
+        "name": "Gather",
+        "durationMs": 5000,
+        "cue": "Breathe out - draw the hands down and together toward the belly.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            100,
+            140
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            112,
+            180
+          ],
+          "rhand": [
+            128,
+            180
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_ball_circles",
+    "name": "Ball-Holding Circles",
+    "view": "side",
+    "object": null,
+    "targetReps": 5,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Top",
+      "Front",
+      "Bottom",
+      "Back"
+    ],
+    "phases": [
+      {
+        "name": "Top",
+        "durationMs": 3500,
+        "cue": "Breathe in - cradle the ball at the top of a slow vertical circle.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            126,
+            138
+          ],
+          "hand": [
+            160,
+            120
+          ]
+        }
+      },
+      {
+        "name": "Front",
+        "durationMs": 3500,
+        "cue": "Roll the ball forward and down, soft and round.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            143,
+            130
+          ],
+          "hand": [
+            180,
+            140
+          ]
+        }
+      },
+      {
+        "name": "Bottom",
+        "durationMs": 3500,
+        "cue": "Breathe out - the ball reaches the low point of the circle.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            129,
+            137
+          ],
+          "hand": [
+            160,
+            160
+          ]
+        }
+      },
+      {
+        "name": "Back",
+        "durationMs": 3500,
+        "cue": "Draw the ball up and back to begin again.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            102,
+            135
+          ],
+          "hand": [
+            140,
+            140
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_spinal_twist",
+    "name": "Gentle Spinal Twist",
+    "view": "front",
+    "object": null,
+    "targetReps": 6,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Center",
+      "Twist Left",
+      "Twist Right"
+    ],
+    "phases": [
+      {
+        "name": "Center",
+        "durationMs": 3500,
+        "cue": "Stand tall and centered, arms resting loose.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            100,
+            140
+          ],
+          "relb": [
+            140,
+            140
+          ],
+          "lhand": [
+            100,
+            182
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        }
+      },
+      {
+        "name": "Twist Left",
+        "durationMs": 4500,
+        "cue": "Breathe out - let both arms swing gently to the left, eyes following.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            76,
+            108
+          ],
+          "relb": [
+            143,
+            139
+          ],
+          "lhand": [
+            72,
+            150
+          ],
+          "rhand": [
+            110,
+            165
+          ]
+        }
+      },
+      {
+        "name": "Twist Right",
+        "durationMs": 4500,
+        "cue": "Breathe out - swing the arms gently to the right; keep hips soft.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            97,
+            139
+          ],
+          "relb": [
+            164,
+            108
+          ],
+          "lhand": [
+            130,
+            165
+          ],
+          "rhand": [
+            168,
+            150
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_weight_shift_fwd_back",
+    "name": "Forward-Back Weight Shift",
+    "view": "side",
+    "object": null,
+    "targetReps": 8,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Shift Back",
+      "Shift Forward"
+    ],
+    "phases": [
+      {
+        "name": "Shift Back",
+        "durationMs": 4000,
+        "cue": "Breathe out - settle the weight back, feet planted, knee softly bent.",
+        "pose": {
+          "head": [
+            110,
+            74
+          ],
+          "sh": [
+            108,
+            102
+          ],
+          "hip": [
+            106,
+            182
+          ],
+          "knee": [
+            125,
+            249
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            116,
+            141
+          ],
+          "hand": [
+            150,
+            160
+          ]
+        }
+      },
+      {
+        "name": "Shift Forward",
+        "durationMs": 4000,
+        "cue": "Breathe in - glide the weight forward over the front foot, staying tall.",
+        "pose": {
+          "head": [
+            130,
+            72
+          ],
+          "sh": [
+            128,
+            100
+          ],
+          "hip": [
+            126,
+            180
+          ],
+          "knee": [
+            128,
+            250
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            133,
+            140
+          ],
+          "hand": [
+            170,
+            150
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_single_leg_supported",
+    "name": "Supported Single-Leg Stand",
+    "view": "front",
+    "object": "wall",
+    "targetReps": 2,
+    "isHold": true,
+    "holdMs": 8000,
+    "staticLabels": [
+      "Settle",
+      "Lift & Hold"
+    ],
+    "phases": [
+      {
+        "name": "Settle",
+        "durationMs": 4000,
+        "cue": "Stand tall, one hand resting lightly on the wall.",
+        "pose": {
+          "head": [
+            112,
+            70
+          ],
+          "sh": [
+            112,
+            100
+          ],
+          "hip": [
+            112,
+            180
+          ],
+          "lknee": [
+            97,
+            248
+          ],
+          "rknee": [
+            126,
+            249
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            68,
+            108
+          ],
+          "relb": [
+            128,
+            142
+          ],
+          "lhand": [
+            72,
+            150
+          ],
+          "rhand": [
+            140,
+            182
+          ]
+        }
+      },
+      {
+        "name": "Lift & Hold",
+        "durationMs": 4000,
+        "cue": "Breathe slow - shift onto the left leg, float the right foot up, and hold.",
+        "pose": {
+          "head": [
+            108,
+            70
+          ],
+          "sh": [
+            108,
+            100
+          ],
+          "hip": [
+            108,
+            180
+          ],
+          "lknee": [
+            94,
+            248
+          ],
+          "rknee": [
+            150,
+            236
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            122,
+            294
+          ],
+          "lelb": [
+            64,
+            109
+          ],
+          "relb": [
+            152,
+            108
+          ],
+          "lhand": [
+            72,
+            150
+          ],
+          "rhand": [
+            148,
+            150
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_tandem_heel_toe",
+    "name": "Tandem (Heel-to-Toe) Stand",
+    "view": "front",
+    "object": "wall",
+    "targetReps": 2,
+    "isHold": true,
+    "holdMs": 8000,
+    "staticLabels": [
+      "Settle",
+      "Tandem Hold"
+    ],
+    "phases": [
+      {
+        "name": "Settle",
+        "durationMs": 4000,
+        "cue": "Stand with feet hip-width, hand near the wall, arms easy.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            76,
+            108
+          ],
+          "relb": [
+            164,
+            108
+          ],
+          "lhand": [
+            78,
+            150
+          ],
+          "rhand": [
+            162,
+            150
+          ]
+        }
+      },
+      {
+        "name": "Tandem Hold",
+        "durationMs": 4000,
+        "cue": "Breathe slow - bring the feet into a narrow line, arms out, and hold steady.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            106,
+            248
+          ],
+          "rknee": [
+            134,
+            248
+          ],
+          "lankle": [
+            114,
+            312
+          ],
+          "rankle": [
+            126,
+            312
+          ],
+          "lelb": [
+            76,
+            108
+          ],
+          "relb": [
+            164,
+            108
+          ],
+          "lhand": [
+            76,
+            150
+          ],
+          "rhand": [
+            164,
+            150
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_knee_raise_supported",
+    "name": "Knee Raises with Support",
+    "view": "side",
+    "object": "wall",
+    "targetReps": 6,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Stand",
+      "Knee Up"
+    ],
+    "phases": [
+      {
+        "name": "Stand",
+        "durationMs": 3500,
+        "cue": "Breathe out - stand tall, one hand resting on the wall.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            122,
+            138
+          ],
+          "hand": [
+            160,
+            130
+          ]
+        }
+      },
+      {
+        "name": "Knee Up",
+        "durationMs": 4000,
+        "cue": "Breathe in - lift the near knee up and forward; alternate legs each cycle.",
+        "pose": {
+          "head": [
+            120,
+            68
+          ],
+          "sh": [
+            118,
+            96
+          ],
+          "hip": [
+            116,
+            176
+          ],
+          "knee": [
+            183,
+            195
+          ],
+          "ankle": [
+            150,
+            250
+          ],
+          "toe": [
+            178,
+            250
+          ],
+          "elb": [
+            122,
+            136
+          ],
+          "hand": [
+            160,
+            130
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_heel_toe_raises",
+    "name": "Heel & Toe Raises",
+    "view": "side",
+    "object": "wall",
+    "targetReps": 8,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Heels Up",
+      "Toes Up"
+    ],
+    "phases": [
+      {
+        "name": "Heels Up",
+        "durationMs": 3500,
+        "cue": "Breathe in - rise onto the balls of the feet, growing tall, hand on the wall.",
+        "pose": {
+          "head": [
+            120,
+            60
+          ],
+          "sh": [
+            118,
+            88
+          ],
+          "hip": [
+            116,
+            168
+          ],
+          "knee": [
+            135,
+            235
+          ],
+          "ankle": [
+            122,
+            298
+          ],
+          "toe": [
+            146,
+            312
+          ],
+          "elb": [
+            123,
+            128
+          ],
+          "hand": [
+            155,
+            150
+          ]
+        }
+      },
+      {
+        "name": "Toes Up",
+        "durationMs": 3500,
+        "cue": "Breathe out - rock back onto the heels, lifting the toes.",
+        "pose": {
+          "head": [
+            118,
+            72
+          ],
+          "sh": [
+            116,
+            100
+          ],
+          "hip": [
+            114,
+            180
+          ],
+          "knee": [
+            125,
+            249
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            136,
+            298
+          ],
+          "elb": [
+            113,
+            140
+          ],
+          "hand": [
+            150,
+            150
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_commencement",
+    "name": "Commencement",
+    "view": "front",
+    "object": null,
+    "targetReps": 6,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Rise",
+      "Press"
+    ],
+    "phases": [
+      {
+        "name": "Rise",
+        "durationMs": 4000,
+        "cue": "Breathe in - float both hands up to shoulder height, wrists soft.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            77,
+            89
+          ],
+          "relb": [
+            163,
+            89
+          ],
+          "lhand": [
+            100,
+            124
+          ],
+          "rhand": [
+            140,
+            124
+          ]
+        }
+      },
+      {
+        "name": "Press",
+        "durationMs": 4500,
+        "cue": "Breathe out - press the hands gently down to the hips, sinking just slightly.",
+        "pose": {
+          "head": [
+            120,
+            76
+          ],
+          "sh": [
+            120,
+            106
+          ],
+          "hip": [
+            120,
+            186
+          ],
+          "lknee": [
+            90,
+            249
+          ],
+          "rknee": [
+            150,
+            249
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            88,
+            137
+          ],
+          "relb": [
+            152,
+            137
+          ],
+          "lhand": [
+            104,
+            176
+          ],
+          "rhand": [
+            136,
+            176
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_part_wild_horse",
+    "name": "Parting the Wild Horse's Mane",
+    "view": "side",
+    "object": null,
+    "targetReps": 5,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Hold Ball",
+      "Part Bow"
+    ],
+    "phases": [
+      {
+        "name": "Hold Ball",
+        "durationMs": 4000,
+        "cue": "Breathe out - sit the weight back, the lead hand cradling a ball in front.",
+        "pose": {
+          "head": [
+            112,
+            74
+          ],
+          "sh": [
+            110,
+            102
+          ],
+          "hip": [
+            108,
+            182
+          ],
+          "knee": [
+            126,
+            250
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            120,
+            141
+          ],
+          "hand": [
+            158,
+            134
+          ]
+        }
+      },
+      {
+        "name": "Part Bow",
+        "durationMs": 4500,
+        "cue": "Breathe in - shift forward and sweep the lead hand up and out; alternate sides.",
+        "pose": {
+          "head": [
+            132,
+            78
+          ],
+          "sh": [
+            130,
+            106
+          ],
+          "hip": [
+            128,
+            186
+          ],
+          "knee": [
+            141,
+            255
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            159,
+            134
+          ],
+          "hand": [
+            190,
+            110
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_brush_knee_push",
+    "name": "Brush Knee & Push",
+    "view": "side",
+    "object": null,
+    "targetReps": 5,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Chamber",
+      "Brush & Push"
+    ],
+    "phases": [
+      {
+        "name": "Chamber",
+        "durationMs": 4000,
+        "cue": "Breathe in - sit back, drawing the pushing hand up beside the ear.",
+        "pose": {
+          "head": [
+            112,
+            74
+          ],
+          "sh": [
+            110,
+            102
+          ],
+          "hip": [
+            108,
+            182
+          ],
+          "knee": [
+            126,
+            250
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            125,
+            139
+          ],
+          "hand": [
+            150,
+            110
+          ]
+        }
+      },
+      {
+        "name": "Brush & Push",
+        "durationMs": 4500,
+        "cue": "Breathe out - shift forward and press the palm slowly ahead; alternate sides.",
+        "pose": {
+          "head": [
+            132,
+            78
+          ],
+          "sh": [
+            130,
+            106
+          ],
+          "hip": [
+            128,
+            186
+          ],
+          "knee": [
+            141,
+            255
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            157,
+            136
+          ],
+          "hand": [
+            192,
+            120
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_wave_hands_clouds",
+    "name": "Wave Hands Like Clouds",
+    "view": "front",
+    "object": null,
+    "targetReps": 6,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Cloud Left",
+      "Cloud Right"
+    ],
+    "phases": [
+      {
+        "name": "Cloud Left",
+        "durationMs": 4500,
+        "cue": "Breathe in - shift left as the hands circle, upper hand high on the left.",
+        "pose": {
+          "head": [
+            108,
+            70
+          ],
+          "sh": [
+            108,
+            100
+          ],
+          "hip": [
+            108,
+            180
+          ],
+          "lknee": [
+            94,
+            248
+          ],
+          "rknee": [
+            123,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            66,
+            116
+          ],
+          "relb": [
+            145,
+            125
+          ],
+          "lhand": [
+            108,
+            120
+          ],
+          "rhand": [
+            126,
+            162
+          ]
+        }
+      },
+      {
+        "name": "Cloud Right",
+        "durationMs": 4500,
+        "cue": "Breathe out - shift right, the hands trading places, upper hand high on the right.",
+        "pose": {
+          "head": [
+            132,
+            70
+          ],
+          "sh": [
+            132,
+            100
+          ],
+          "hip": [
+            132,
+            180
+          ],
+          "lknee": [
+            117,
+            248
+          ],
+          "rknee": [
+            146,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            97,
+            128
+          ],
+          "relb": [
+            177,
+            100
+          ],
+          "lhand": [
+            122,
+            162
+          ],
+          "rhand": [
+            140,
+            120
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_repulse_monkey",
+    "name": "Repulse the Monkey",
+    "view": "side",
+    "object": null,
+    "targetReps": 5,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Open Back",
+      "Push & Retreat"
+    ],
+    "phases": [
+      {
+        "name": "Open Back",
+        "durationMs": 4000,
+        "cue": "Breathe in - reach the forward hand out as the other opens back.",
+        "pose": {
+          "head": [
+            120,
+            72
+          ],
+          "sh": [
+            118,
+            100
+          ],
+          "hip": [
+            116,
+            180
+          ],
+          "knee": [
+            125,
+            249
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            148,
+            127
+          ],
+          "hand": [
+            186,
+            124
+          ]
+        }
+      },
+      {
+        "name": "Push & Retreat",
+        "durationMs": 4500,
+        "cue": "Breathe out - settle the weight back and press the palm forward; alternate sides.",
+        "pose": {
+          "head": [
+            108,
+            76
+          ],
+          "sh": [
+            106,
+            104
+          ],
+          "hip": [
+            104,
+            184
+          ],
+          "knee": [
+            128,
+            250
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            142,
+            123
+          ],
+          "hand": [
+            180,
+            118
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_grasp_sparrows_tail",
+    "name": "Grasp the Sparrow's Tail (Simplified)",
+    "view": "side",
+    "object": null,
+    "targetReps": 5,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Ward & Press",
+      "Rollback"
+    ],
+    "phases": [
+      {
+        "name": "Ward & Press",
+        "durationMs": 4500,
+        "cue": "Breathe in - shift forward and press both hands gently ahead.",
+        "pose": {
+          "head": [
+            132,
+            78
+          ],
+          "sh": [
+            130,
+            106
+          ],
+          "hip": [
+            128,
+            186
+          ],
+          "knee": [
+            141,
+            255
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            152,
+            140
+          ],
+          "hand": [
+            188,
+            126
+          ]
+        }
+      },
+      {
+        "name": "Rollback",
+        "durationMs": 4500,
+        "cue": "Breathe out - sit back, drawing the hands down and back in a soft arc.",
+        "pose": {
+          "head": [
+            112,
+            74
+          ],
+          "sh": [
+            110,
+            102
+          ],
+          "hip": [
+            108,
+            182
+          ],
+          "knee": [
+            126,
+            250
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            118,
+            141
+          ],
+          "hand": [
+            156,
+            150
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_golden_rooster_supported",
+    "name": "Golden Rooster Stands on One Leg (Supported)",
+    "view": "side",
+    "object": "wall",
+    "targetReps": 2,
+    "isHold": true,
+    "holdMs": 8000,
+    "staticLabels": [
+      "Settle",
+      "Rise & Hold"
+    ],
+    "phases": [
+      {
+        "name": "Settle",
+        "durationMs": 4000,
+        "cue": "Stand tall, one hand resting on the wall.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            118,
+            98
+          ],
+          "hip": [
+            116,
+            178
+          ],
+          "knee": [
+            114,
+            248
+          ],
+          "ankle": [
+            112,
+            312
+          ],
+          "toe": [
+            140,
+            312
+          ],
+          "elb": [
+            113,
+            138
+          ],
+          "hand": [
+            150,
+            150
+          ]
+        }
+      },
+      {
+        "name": "Rise & Hold",
+        "durationMs": 4000,
+        "cue": "Breathe slow - lift the near knee high and raise the same-side hand; hold and balance.",
+        "pose": {
+          "head": [
+            120,
+            68
+          ],
+          "sh": [
+            118,
+            96
+          ],
+          "hip": [
+            116,
+            176
+          ],
+          "knee": [
+            185,
+            185
+          ],
+          "ankle": [
+            150,
+            238
+          ],
+          "toe": [
+            178,
+            234
+          ],
+          "elb": [
+            113,
+            56
+          ],
+          "hand": [
+            150,
+            44
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_seated_cloud_hands",
+    "name": "Seated Cloud Hands",
+    "view": "side",
+    "object": "chair",
+    "targetReps": 5,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Up",
+      "Across",
+      "Down"
+    ],
+    "phases": [
+      {
+        "name": "Up",
+        "durationMs": 4000,
+        "cue": "Breathe in - sitting tall, float the hand up and across in a slow cloud.",
+        "pose": {
+          "head": [
+            114,
+            142
+          ],
+          "sh": [
+            112,
+            170
+          ],
+          "hip": [
+            110,
+            250
+          ],
+          "knee": [
+            180,
+            248
+          ],
+          "ankle": [
+            176,
+            312
+          ],
+          "toe": [
+            203,
+            312
+          ],
+          "elb": [
+            138,
+            201
+          ],
+          "hand": [
+            170,
+            180
+          ]
+        }
+      },
+      {
+        "name": "Across",
+        "durationMs": 4000,
+        "cue": "Carry the hand smoothly across the body.",
+        "pose": {
+          "head": [
+            114,
+            142
+          ],
+          "sh": [
+            112,
+            170
+          ],
+          "hip": [
+            110,
+            250
+          ],
+          "knee": [
+            180,
+            248
+          ],
+          "ankle": [
+            176,
+            312
+          ],
+          "toe": [
+            203,
+            312
+          ],
+          "elb": [
+            148,
+            187
+          ],
+          "hand": [
+            186,
+            196
+          ]
+        }
+      },
+      {
+        "name": "Down",
+        "durationMs": 4000,
+        "cue": "Breathe out - let the hand sink softly downward to begin again.",
+        "pose": {
+          "head": [
+            114,
+            142
+          ],
+          "sh": [
+            112,
+            170
+          ],
+          "hip": [
+            110,
+            250
+          ],
+          "knee": [
+            180,
+            248
+          ],
+          "ankle": [
+            176,
+            312
+          ],
+          "toe": [
+            203,
+            312
+          ],
+          "elb": [
+            130,
+            206
+          ],
+          "hand": [
+            168,
+            214
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_seated_openings",
+    "name": "Seated Arm Openings",
+    "view": "side",
+    "object": "chair",
+    "targetReps": 6,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Open",
+      "Gather"
+    ],
+    "phases": [
+      {
+        "name": "Open",
+        "durationMs": 4500,
+        "cue": "Breathe in - sitting tall, sweep the hand up and open to the side.",
+        "pose": {
+          "head": [
+            114,
+            142
+          ],
+          "sh": [
+            112,
+            170
+          ],
+          "hip": [
+            110,
+            250
+          ],
+          "knee": [
+            180,
+            248
+          ],
+          "ankle": [
+            176,
+            312
+          ],
+          "toe": [
+            203,
+            312
+          ],
+          "elb": [
+            152,
+            164
+          ],
+          "hand": [
+            178,
+            136
+          ]
+        }
+      },
+      {
+        "name": "Gather",
+        "durationMs": 4500,
+        "cue": "Breathe out - draw the hand in and down toward the lap.",
+        "pose": {
+          "head": [
+            114,
+            142
+          ],
+          "sh": [
+            112,
+            170
+          ],
+          "hip": [
+            110,
+            250
+          ],
+          "knee": [
+            180,
+            248
+          ],
+          "ankle": [
+            176,
+            312
+          ],
+          "toe": [
+            203,
+            312
+          ],
+          "elb": [
+            114,
+            210
+          ],
+          "hand": [
+            150,
+            196
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_seated_marching",
+    "name": "Seated Marching",
+    "view": "side",
+    "object": "chair",
+    "targetReps": 8,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Lift",
+      "Lower"
+    ],
+    "phases": [
+      {
+        "name": "Lift",
+        "durationMs": 3500,
+        "cue": "Breathe in - lift one foot, raising the knee; alternate legs each cycle.",
+        "pose": {
+          "head": [
+            114,
+            142
+          ],
+          "sh": [
+            112,
+            170
+          ],
+          "hip": [
+            110,
+            250
+          ],
+          "knee": [
+            174,
+            221
+          ],
+          "ankle": [
+            198,
+            280
+          ],
+          "toe": [
+            220,
+            264
+          ],
+          "elb": [
+            133,
+            205
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        }
+      },
+      {
+        "name": "Lower",
+        "durationMs": 3500,
+        "cue": "Breathe out - lower the foot softly back to the floor.",
+        "pose": {
+          "head": [
+            114,
+            142
+          ],
+          "sh": [
+            112,
+            170
+          ],
+          "hip": [
+            110,
+            250
+          ],
+          "knee": [
+            180,
+            248
+          ],
+          "ankle": [
+            176,
+            312
+          ],
+          "toe": [
+            203,
+            312
+          ],
+          "elb": [
+            133,
+            205
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_ankle_calf_pumps",
+    "name": "Seated Ankle & Calf Pumps",
+    "view": "side",
+    "object": "chair",
+    "targetReps": 10,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Flex",
+      "Point"
+    ],
+    "phases": [
+      {
+        "name": "Flex",
+        "durationMs": 3000,
+        "cue": "Breathe in - keeping the heel down, lift the toes up toward the shin.",
+        "pose": {
+          "head": [
+            114,
+            142
+          ],
+          "sh": [
+            112,
+            170
+          ],
+          "hip": [
+            110,
+            250
+          ],
+          "knee": [
+            180,
+            248
+          ],
+          "ankle": [
+            176,
+            312
+          ],
+          "toe": [
+            198,
+            295
+          ],
+          "elb": [
+            133,
+            205
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        }
+      },
+      {
+        "name": "Point",
+        "durationMs": 3000,
+        "cue": "Breathe out - lift the heel and point the toes gently forward.",
+        "pose": {
+          "head": [
+            114,
+            142
+          ],
+          "sh": [
+            112,
+            170
+          ],
+          "hip": [
+            110,
+            250
+          ],
+          "knee": [
+            179,
+            240
+          ],
+          "ankle": [
+            180,
+            304
+          ],
+          "toe": [
+            207,
+            313
+          ],
+          "elb": [
+            133,
+            205
+          ],
+          "hand": [
+            150,
+            170
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_gather_qi_close",
+    "name": "Gathering Qi to Close",
+    "view": "front",
+    "object": null,
+    "targetReps": 4,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Gather Wide",
+      "Draw In",
+      "Rest at Dantian"
+    ],
+    "phases": [
+      {
+        "name": "Gather Wide",
+        "durationMs": 5000,
+        "cue": "Breathe in - sweep both arms wide and up, gathering the air.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            89,
+            68
+          ],
+          "relb": [
+            151,
+            132
+          ],
+          "lhand": [
+            62,
+            100
+          ],
+          "rhand": [
+            178,
+            100
+          ]
+        }
+      },
+      {
+        "name": "Draw In",
+        "durationMs": 5000,
+        "cue": "Breathe out - draw the hands inward toward the chest.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            80,
+            119
+          ],
+          "relb": [
+            160,
+            119
+          ],
+          "lhand": [
+            108,
+            150
+          ],
+          "rhand": [
+            132,
+            150
+          ]
+        }
+      },
+      {
+        "name": "Rest at Dantian",
+        "durationMs": 5000,
+        "cue": "Let the hands settle low at the belly, resting and still.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            97,
+            138
+          ],
+          "relb": [
+            143,
+            138
+          ],
+          "lhand": [
+            116,
+            176
+          ],
+          "rhand": [
+            124,
+            176
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "tc_arm_float_breathing",
+    "name": "Slow Breathing with Arm Float",
+    "view": "front",
+    "object": null,
+    "targetReps": 8,
+    "isHold": false,
+    "holdMs": 0,
+    "staticLabels": [
+      "Inhale Float",
+      "Exhale Sink"
+    ],
+    "phases": [
+      {
+        "name": "Inhale Float",
+        "durationMs": 5000,
+        "cue": "Breathe in slowly - let both hands float up to chest height, standing tall.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            81,
+            122
+          ],
+          "relb": [
+            159,
+            122
+          ],
+          "lhand": [
+            112,
+            150
+          ],
+          "rhand": [
+            128,
+            150
+          ]
+        }
+      },
+      {
+        "name": "Exhale Sink",
+        "durationMs": 6000,
+        "cue": "Breathe out longer - let the hands sink down, soft and unhurried.",
+        "pose": {
+          "head": [
+            120,
+            70
+          ],
+          "sh": [
+            120,
+            100
+          ],
+          "hip": [
+            120,
+            180
+          ],
+          "lknee": [
+            104,
+            248
+          ],
+          "rknee": [
+            136,
+            248
+          ],
+          "lankle": [
+            102,
+            312
+          ],
+          "rankle": [
+            138,
+            312
+          ],
+          "lelb": [
+            97,
+            138
+          ],
+          "relb": [
+            143,
+            138
+          ],
+          "lhand": [
+            110,
+            178
+          ],
+          "rhand": [
+            130,
+            178
+          ]
+        }
+      }
+    ]
+  }
+]

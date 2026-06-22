@@ -1,0 +1,248 @@
+[
+  {
+    "id": "tc_gather_part_clouds",
+    "level": "standing",
+    "focus": "breathing",
+    "primary_benefit": "Slow, wide breathing paired to opening and gathering the arms, for relaxation and psychological wellbeing associated with regular Tai Chi practice (R09).",
+    "refs": [
+      "R09"
+    ],
+    "red_flags": true,
+    "notes": "Stay tall - do not sink the hips. Breathe in as the arms open and rise, out as they gather and lower. A simplified breath pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or living with a condition."
+  },
+  {
+    "id": "tc_ball_circles",
+    "level": "standing",
+    "focus": "mobility",
+    "primary_benefit": "Gentle shoulder and arm range-of-motion, in the spirit of the low-impact movement used in the Tai Chi for Arthritis program (R13).",
+    "refs": [
+      "R13"
+    ],
+    "red_flags": true,
+    "notes": "High, easy stance; let the shoulder, not the back, do the work. Breathe slowly and continuously around each circle. A mobility pacer, not instructed form; seek clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_spinal_twist",
+    "level": "standing",
+    "focus": "mobility",
+    "primary_benefit": "Gentle rotational range-of-motion through the trunk, consistent with the easy mobility work of the Tai Chi for Arthritis program (R13).",
+    "refs": [
+      "R13"
+    ],
+    "red_flags": true,
+    "notes": "Keep the stance tall and the twist small and comfortable; let the arms swing freely. Exhale softly into each turn. A mobility pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_weight_shift_fwd_back",
+    "level": "standing",
+    "focus": "balance",
+    "primary_benefit": "Forward-back weight-transfer practice for balance; regular Tai Chi practice reduces falls in older adults (R01, R02, R14). This single movement is one component, not independently tested.",
+    "refs": [
+      "R01",
+      "R02",
+      "R14"
+    ],
+    "red_flags": true,
+    "notes": "Feet stay planted; keep the stance high and the knee softly bent. Breathe in shifting forward, out settling back. Use a wall or chair nearby if unsteady. A balance pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_single_leg_supported",
+    "level": "supported",
+    "focus": "balance",
+    "primary_benefit": "Single-leg standing balance with support; static and dynamic balance work of this kind is part of Tai Chi programs that reduce falls in older adults (R01, R02, R14).",
+    "refs": [
+      "R01",
+      "R02",
+      "R14"
+    ],
+    "red_flags": true,
+    "notes": "Keep one hand on a wall or sturdy chair throughout. Lift the foot only as high as is comfortable and breathe slowly while you hold. Lower if you feel unsteady. A balance pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_tandem_heel_toe",
+    "level": "supported",
+    "focus": "balance",
+    "primary_benefit": "Narrow heel-to-toe standing to challenge balance; this kind of stance work features in Tai Chi programs shown to reduce falls in older adults (R01, R14).",
+    "refs": [
+      "R01",
+      "R14"
+    ],
+    "red_flags": true,
+    "notes": "Keep a hand within reach of a wall or chair. Bring the feet into a narrow line only as far as feels safe; arms out helps balance. Breathe slowly and hold. A balance pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_knee_raise_supported",
+    "level": "supported",
+    "focus": "balance",
+    "primary_benefit": "Standing single-leg balance and gentle hip control with support; balance work of this type is part of falls-prevention Tai Chi programs (R01, R14).",
+    "refs": [
+      "R01",
+      "R14"
+    ],
+    "red_flags": true,
+    "notes": "Keep one hand on the wall. Raise the knee only to a comfortable height, stay tall, and alternate legs each breath cycle. Breathe in lifting, out lowering. A balance pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_heel_toe_raises",
+    "level": "supported",
+    "focus": "lower-limb",
+    "primary_benefit": "Activates the lower-leg muscles that support standing balance; lower-limb work of this kind is part of falls-prevention Tai Chi programs (R01, R14).",
+    "refs": [
+      "R01",
+      "R14"
+    ],
+    "red_flags": true,
+    "notes": "Hold a wall or chair for light support. Rise smoothly onto the balls of the feet, then rock back onto the heels - no bouncing. Breathe in rising, out rocking back. A movement pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_commencement",
+    "level": "standing",
+    "focus": "breathing",
+    "primary_benefit": "The opening breath of the form - slow paced breathing for relaxation and psychological wellbeing associated with regular Tai Chi practice (R09).",
+    "refs": [
+      "R09"
+    ],
+    "red_flags": true,
+    "notes": "Stay tall with only a slight sink on the press; let the breath lead the hands. Breathe in as the hands rise, out as they press down. A breath pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_part_wild_horse",
+    "level": "standing",
+    "focus": "coordination",
+    "primary_benefit": "Whole-body coordination and weight transfer in a high stance; practiced as part of a Tai Chi program, this style of movement is linked to reduced falls in older adults (R01, R02).",
+    "refs": [
+      "R01",
+      "R02"
+    ],
+    "red_flags": true,
+    "notes": "Keep the stance high and knee-sparing; shift smoothly and alternate sides each cycle. Breathe in opening and shifting forward, out gathering back. A simplified pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_brush_knee_push",
+    "level": "standing",
+    "focus": "coordination",
+    "primary_benefit": "Coordinated step-and-push weight transfer; performed within a Tai Chi program, movement of this kind is associated with reduced falls in older adults (R01, R02).",
+    "refs": [
+      "R01",
+      "R02"
+    ],
+    "red_flags": true,
+    "notes": "High stance, front knee softly bent over the foot; press the palm slowly and alternate sides. Breathe in chambering, out pushing. A simplified pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_wave_hands_clouds",
+    "level": "standing",
+    "focus": "coordination",
+    "primary_benefit": "Continuous side-to-side weight transfer with circling arms for coordination; as part of a Tai Chi practice this style of movement is linked to reduced falls (R01, R02, R14).",
+    "refs": [
+      "R01",
+      "R02",
+      "R14"
+    ],
+    "red_flags": true,
+    "notes": "Keep a high, even stance and let the waist turn the arms. Breathe slowly and continuously as the weight flows side to side. A simplified pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_repulse_monkey",
+    "level": "standing",
+    "focus": "coordination",
+    "primary_benefit": "Backward-stepping coordination and weight transfer; practiced within a Tai Chi program, movement of this kind is associated with reduced falls in older adults (R01, R02).",
+    "refs": [
+      "R01",
+      "R02"
+    ],
+    "red_flags": true,
+    "notes": "Step back only onto stable ground and stay tall; alternate hands and sides. Breathe in opening, out pressing and settling back. A simplified pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_grasp_sparrows_tail",
+    "level": "standing",
+    "focus": "coordination",
+    "primary_benefit": "A four-part form compressed to a simple ward-and-rollback weight transfer for coordination; as part of a Tai Chi practice this style of movement is linked to reduced falls (R01, R02).",
+    "refs": [
+      "R01",
+      "R02"
+    ],
+    "red_flags": true,
+    "notes": "Simplified to two phases - not the full form. Keep the stance high and shift smoothly. Breathe in pressing forward, out rolling back. A simplified pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_golden_rooster_supported",
+    "level": "supported",
+    "focus": "balance",
+    "primary_benefit": "Single-leg balance with a raised knee and arm, performed with support; balance work of this kind is part of Tai Chi programs that reduce falls in older adults (R01, R02, R14).",
+    "refs": [
+      "R01",
+      "R02",
+      "R14"
+    ],
+    "red_flags": true,
+    "notes": "Keep one hand on a wall or chair. Lift the knee only as high as is comfortable; raise the same-side hand and breathe slowly while you hold. Lower if unsteady. A balance pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_seated_cloud_hands",
+    "level": "chair",
+    "focus": "mobility",
+    "primary_benefit": "Seated shoulder and trunk range-of-motion, in the spirit of the gentle, joint-friendly movement of the Tai Chi for Arthritis program (R13).",
+    "refs": [
+      "R13"
+    ],
+    "red_flags": true,
+    "notes": "Sit tall toward the front of a sturdy chair, feet flat. Let the hand float in slow clouds within a comfortable range. Breathe in rising, out sinking. A seated mobility pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_seated_openings",
+    "level": "chair",
+    "focus": "breathing",
+    "primary_benefit": "Seated paced breathing with opening and gathering arms, for relaxation and psychological wellbeing associated with regular Tai Chi practice (R09).",
+    "refs": [
+      "R09"
+    ],
+    "red_flags": true,
+    "notes": "Sit tall and stable, feet flat on the floor. Breathe in as the arm opens, out as it gathers in. A seated breath pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_seated_marching",
+    "level": "chair",
+    "focus": "lower-limb",
+    "primary_benefit": "Seated hip-flexor and leg activation supporting standing balance; lower-limb work of this kind features in falls-prevention Tai Chi programs (R14).",
+    "refs": [
+      "R14"
+    ],
+    "red_flags": true,
+    "notes": "Sit tall toward the front of a sturdy chair; lift each foot in turn to a comfortable height and alternate legs. Breathe in lifting, out lowering. A seated movement pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_ankle_calf_pumps",
+    "level": "chair",
+    "focus": "lower-limb",
+    "primary_benefit": "Seated ankle and lower-leg activation supporting standing balance and circulation; lower-limb work of this kind features in falls-prevention Tai Chi programs (R14).",
+    "refs": [
+      "R14"
+    ],
+    "red_flags": true,
+    "notes": "Sit tall and stable, feet flat to start. Flex the toes up, then point them - slow and smooth, no force. Breathe in flexing, out pointing. A seated movement pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_gather_qi_close",
+    "level": "standing",
+    "focus": "breathing",
+    "primary_benefit": "A closing breath sequence - slow, wide breathing to settle, for relaxation and psychological wellbeing associated with regular Tai Chi practice (R09).",
+    "refs": [
+      "R09"
+    ],
+    "red_flags": true,
+    "notes": "Stay tall and unhurried; the breath leads the hands home to rest at the belly. Breathe in gathering wide, out drawing in and settling. A breath pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  },
+  {
+    "id": "tc_arm_float_breathing",
+    "level": "standing",
+    "focus": "breathing",
+    "primary_benefit": "Slow paced breathing with a gentle arm float and a longer exhale, for relaxation and psychological wellbeing associated with regular Tai Chi practice (R09).",
+    "refs": [
+      "R09"
+    ],
+    "red_flags": true,
+    "notes": "Stand tall with no knee sink; keep the exhale longer than the inhale. Breathe in as the hands float up, out as they sink. A breath pacer, not instructed form; get clinician/PAR-Q+ clearance if older, deconditioned, pregnant, or with a condition."
+  }
+]
