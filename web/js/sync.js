@@ -49,8 +49,13 @@ const SyncView = (() => {
     try { about = await (await fetch("/content/history/about.json")).json(); } catch (_) {}
 
     const input = U.el("input", { type: "text", id: "export-path",
-      placeholder: "Path to a Garmin/Strava export .zip or folder (e.g. ~/Downloads/garmin_export.zip)" });
-    const btn = U.el("button", { class: "btn", id: "export-btn", onclick: () => startExport(input.value) },
+      style: "flex:1;min-width:240px",
+      placeholder: "Choose a Garmin/Strava export .zip or folder…" });
+    const browse = U.el("button", { class: "btn", onclick: async () => {
+      const picked = await Picker.open({ mode: "any", exts: [".zip"], title: "Choose your account export" });
+      if (picked) input.value = picked;
+    } }, [U.el("span", { text: "Browse…" })]);
+    const btn = U.el("button", { class: "btn primary", id: "export-btn", onclick: () => startExport(input.value) },
       [U.el("span", { text: "Import history" })]);
 
     const details = (about.rationale || (about.sources || []).length)
@@ -68,7 +73,7 @@ const SyncView = (() => {
     return U.el("div", { class: "card pad", style: "margin-top:var(--sp-5)" }, [
       U.el("h3", { style: "margin:0 0 4px", text: about.title || "Liberate your history" }),
       U.el("div", { class: "sub", text: "Import your full Garmin/Strava account export (the downloaded .zip or folder). Nested zips and gzipped files are handled; the source is never modified and everything is de-duplicated." }),
-      U.el("div", { class: "export-row", style: "display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap;margin-top:var(--sp-3)" }, [input, btn]),
+      U.el("div", { class: "browse-row", style: "margin-top:var(--sp-3)" }, [input, browse, btn]),
       details,
     ]);
   }

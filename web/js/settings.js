@@ -25,7 +25,7 @@ const SettingsView = (() => {
     root.appendChild(U.el("div", { class: "page-head" }, [
       U.el("div", {}, [
         U.el("h1", { text: "Settings" }),
-        U.el("div", { class: "sub", text: "Athlete thresholds that power your analytics — stored locally, never uploaded." }),
+        U.el("div", { class: "sub", text: "Your activity source and the athlete thresholds that power your analytics — stored locally, never uploaded." }),
       ]),
     ]));
 
@@ -44,10 +44,86 @@ const SettingsView = (() => {
       ]),
     ]));
 
+    root.appendChild(sourcePanel());
+
     const watch = watchPanel();
     if (watch) root.appendChild(watch);
 
     U.setView(root);
+  }
+
+  const SOURCE_MODES = [
+    ["auto", "Auto-detect (USB / MTP)"],
+    ["mass_storage", "USB mass storage"],
+    ["mtp", "MTP (jmtpfs)"],
+    ["folder", "A folder of files"],
+    ["file", "A single file"],
+    ["zip", "A .zip archive"],
+    ["export", "Account export (Garmin/Strava)"],
+    ["path", "Explicit path"],
+  ];
+
+  // Where activities are read from. The path field never has to be typed — the
+  // Browse button opens a local file/folder picker.
+  function sourcePanel() {
+    const src = cfg.source || {};
+    const modeSel = U.el("select", { id: "set-src-mode" },
+      SOURCE_MODES.map(([v, label]) => U.el("option", { value: v, text: label })));
+    modeSel.value = src.mode || "auto";
+
+    const pathInput = U.el("input", { id: "set-src-path", type: "text",
+      style: "flex:1;min-width:240px", value: src.path || "",
+      placeholder: "Choose a folder, file or export…" });
+    const browse = U.el("button", { class: "btn", onclick: async () => {
+      const folderMode = ["folder", "mass_storage", "mtp", "auto", "path"].includes(modeSel.value);
+      const picked = await Picker.open({
+        mode: folderMode ? "folder" : "any",
+        title: "Choose the activity source",
+      });
+      if (picked) pathInput.value = picked;
+    } }, [U.el("span", { text: "Browse…" })]);
+
+    const recursive = U.el("input", { id: "set-src-recursive", type: "checkbox" });
+    recursive.checked = !!src.recursive;
+
+    return U.el("div", { class: "card pad", style: "max-width:560px;margin-top:var(--sp-5)" }, [
+      U.el("h3", { class: "set-title", text: "Activity source" }),
+      U.el("div", { class: "set-field" }, [
+        U.el("label", { for: "set-src-mode", text: "Read activities from" }),
+        modeSel,
+      ]),
+      U.el("div", { class: "set-field" }, [
+        U.el("label", { for: "set-src-path", text: "Location" }),
+        U.el("div", { class: "browse-row" }, [pathInput, browse]),
+        U.el("div", { class: "set-hint", text: "Used by folder / file / zip / export / explicit-path modes. Auto-detect ignores it." }),
+      ]),
+      U.el("label", { class: "anon-toggle", style: "margin-top:var(--sp-2)" }, [
+        recursive, document.createTextNode(" Descend into subdirectories"),
+      ]),
+      U.el("div", { class: "set-actions" }, [
+        U.el("button", { class: "btn primary", id: "set-src-save", text: "Save source", onclick: saveSource }),
+      ]),
+    ]);
+  }
+
+  async function saveSource() {
+    const btn = document.getElementById("set-src-save");
+    btn.disabled = true;
+    cfg.source = {
+      ...(cfg.source || {}),
+      mode: document.getElementById("set-src-mode").value,
+      path: document.getElementById("set-src-path").value.trim(),
+      recursive: document.getElementById("set-src-recursive").checked,
+    };
+    try {
+      cfg = await API.putConfig(cfg);
+      U.toast("Source saved.", "good");
+    } catch (e) {
+      U.toast("Could not save: " + e.message, "bad");
+    } finally {
+      const b = document.getElementById("set-src-save");
+      if (b) b.disabled = false;
+    }
   }
 
   function thresholdField(id, label, unit, value, hint, suggestion) {
