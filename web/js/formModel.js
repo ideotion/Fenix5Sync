@@ -23,7 +23,8 @@ const FormModel = (() => {
 
   // ---- shared, persisted preferences ----
   const PREF_KEY = "f5s-fm-prefs";
-  const DEFAULTS = { trails: true, ring: true, shading: true, sound: false };
+  const DEFAULTS = { trails: true, ring: true, shading: true, sound: false, figure: "minimal" };
+  const FIGURES = [["minimal", "Minimal"], ["cartoon", "Cartoon"]];
   function loadPrefs() {
     try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(PREF_KEY)) || {}); }
     catch (_) { return Object.assign({}, DEFAULTS); }
@@ -169,6 +170,18 @@ const FormModel = (() => {
       ["trails", "Motion trails"], ["ring", "Breath ring"], ["shading", "Depth shading"], ["sound", "Sound"],
     ];
     prefsPanel.innerHTML = `<summary>Display &amp; sound</summary>`;
+
+    // Figure style ("theme list") — Minimal stick figure or a Cartoon avatar.
+    const figRow = el("div", "fm-pref-row");
+    const figWrap = el("label", "fm-pref");
+    const figSel = el("select");
+    FIGURES.forEach(([v, label]) => { const o = el("option"); o.value = v; o.textContent = label; figSel.appendChild(o); });
+    figSel.value = prefs.figure;
+    figSel.addEventListener("change", () => { prefs.figure = figSel.value; savePrefs(prefs); applyPref("figure"); });
+    figWrap.append(document.createTextNode("Figure "), figSel);
+    figRow.appendChild(figWrap);
+    prefsPanel.appendChild(figRow);
+
     const prefRow = el("div", "fm-pref-row");
     prefDefs.forEach(([key, label]) => {
       const id = `${uid}-${key}`;
@@ -212,7 +225,7 @@ const FormModel = (() => {
     const figGroup = mk("g", { class: "fm-figure" });
     svg.append(glowEll, breathRing, groundLine, shadowEll, ghostsGroup, objGroup, figGroup);
 
-    let segNodes = [], headOutline = null, headRing = null, ghostNodes = [];
+    let segNodes = [], headOutline = null, headRing = null, ghostNodes = [], faceNodes = null;
 
     function applyLines(lines, p) {
       SEG[view].forEach(([a, b], i) => {
@@ -234,24 +247,61 @@ const FormModel = (() => {
           ghostsGroup.appendChild(g); ghostNodes.push(lines);
         }
       }
-      segNodes = SEG[view].map(() => ({ outline: mk("line", { class: "fm-bone-outline" }), core: mk("line", { class: "fm-bone" }) }));
+      const cartoon = prefs.figure === "cartoon";
+      segNodes = SEG[view].map(() => ({
+        outline: mk("line", { class: cartoon ? "fm-cartoon-outline" : "fm-bone-outline" }),
+        core: mk("line", { class: cartoon ? "fm-cartoon-bone" : "fm-bone" }),
+      }));
       segNodes.forEach((s) => figGroup.appendChild(s.outline));
       segNodes.forEach((s) => { applyShadingTo(s.core); figGroup.appendChild(s.core); });
-      headOutline = mk("circle", { r: 18, class: "fm-head-outline" });
-      headRing = mk("circle", { r: 16, class: "fm-head" });
-      figGroup.append(headOutline, headRing);
+      if (cartoon) {
+        headOutline = mk("circle", { r: 22, class: "fm-cartoon-headout" });  // collar/outline
+        headRing = mk("circle", { r: 21, class: "fm-cartoon-head" });
+        faceNodes = {
+          eyeL: mk("circle", { r: 2.6, class: "fm-cartoon-eye" }),
+          eyeR: mk("circle", { r: 2.6, class: "fm-cartoon-eye" }),
+          mouth: mk("path", { class: "fm-cartoon-mouth" }),
+        };
+        figGroup.append(headOutline, headRing, faceNodes.mouth, faceNodes.eyeL, faceNodes.eyeR);
+      } else {
+        faceNodes = null;
+        headOutline = mk("circle", { r: 18, class: "fm-head-outline" });
+        headRing = mk("circle", { r: 16, class: "fm-head" });
+        figGroup.append(headOutline, headRing);
+      }
     }
 
     function applyShadingTo(coreLine) {
-      if (prefs.shading) coreLine.setAttribute("stroke", `url(#${uid}-limb)`);
+      // Depth gradient only applies to the minimal figure; the cartoon avatar
+      // keeps its own flat fill colour.
+      if (prefs.shading && prefs.figure === "minimal") coreLine.setAttribute("stroke", `url(#${uid}-limb)`);
       else coreLine.removeAttribute("stroke");
     }
 
     function drawPose(p) {
       applyLines(segNodes.map((s) => s.outline), p);
       applyLines(segNodes.map((s) => s.core), p);
-      if (p.head) { for (const n of [headOutline, headRing]) { n.setAttribute("cx", p.head[0]); n.setAttribute("cy", p.head[1]); n.style.display = ""; } }
-      else { headOutline.style.display = "none"; headRing.style.display = "none"; }
+      if (p.head) {
+        const hx = p.head[0], hy = p.head[1];
+        headOutline.setAttribute("cx", hx); headOutline.setAttribute("cy", hy); headOutline.style.display = "";
+        headRing.setAttribute("cx", hx); headRing.setAttribute("cy", hy); headRing.style.display = "";
+        if (faceNodes) {
+          if (view === "front") {
+            faceNodes.eyeL.setAttribute("cx", hx - 7); faceNodes.eyeL.setAttribute("cy", hy - 3);
+            faceNodes.eyeR.setAttribute("cx", hx + 7); faceNodes.eyeR.setAttribute("cy", hy - 3);
+            faceNodes.eyeR.style.display = "";
+            faceNodes.mouth.setAttribute("d", `M ${hx - 7} ${hy + 6} Q ${hx} ${hy + 12} ${hx + 7} ${hy + 6}`);
+          } else {  // side view — face looks forward (+x)
+            faceNodes.eyeL.setAttribute("cx", hx + 6); faceNodes.eyeL.setAttribute("cy", hy - 3);
+            faceNodes.eyeR.style.display = "none";
+            faceNodes.mouth.setAttribute("d", `M ${hx + 2} ${hy + 7} Q ${hx + 9} ${hy + 11} ${hx + 13} ${hy + 5}`);
+          }
+          faceNodes.eyeL.style.display = ""; faceNodes.mouth.style.display = "";
+        }
+      } else {
+        headOutline.style.display = "none"; headRing.style.display = "none";
+        if (faceNodes) { faceNodes.eyeL.style.display = "none"; faceNodes.eyeR.style.display = "none"; faceNodes.mouth.style.display = "none"; }
+      }
       const hx = p.hip ? p.hip[0] : 120, hy = p.hip ? p.hip[1] : 190;
       shadowEll.setAttribute("cx", hx.toFixed(1));
       shadowEll.setAttribute("rx", clamp(40 + (hy - 178) * 0.16, 36, 60).toFixed(1));
@@ -384,7 +434,7 @@ const FormModel = (() => {
 
     // Live-apply a changed preference without losing place.
     function applyPref(key) {
-      if (key === "trails") { buildFigure(); if (!playing) showRest(); }
+      if (key === "trails" || key === "figure") { buildFigure(); if (!playing) showRest(); }
       else if (key === "shading") { segNodes.forEach((s) => applyShadingTo(s.core)); }
       else if (key === "ring" && !playing) { breathRing.style.display = "none"; }
     }

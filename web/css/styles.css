@@ -567,3 +567,12 @@ td .muted { color: var(--text-faint); }
 .fm-pref-row { display: flex; gap: var(--sp-4); flex-wrap: wrap; margin-top: var(--sp-3); }
 .fm-pref { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); cursor: pointer; user-select: none; }
 .fm-pref input { accent-color: var(--accent); cursor: pointer; margin: 0; }
+
+/* ---------- Form-model: cartoon avatar figure ---------- */
+.fm-cartoon-outline { stroke: #2a1c12; stroke-width: 25; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.fm-cartoon-bone { stroke: var(--accent); stroke-width: 19; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.fm-cartoon-headout { fill: #2a1c12; }
+.fm-cartoon-head { fill: #ffd7a8; }
+.fm-cartoon-eye { fill: #2a1c12; }
+.fm-cartoon-mouth { fill: none; stroke: #2a1c12; stroke-width: 2.4; stroke-linecap: round; }
+.fm-prefs select { margin-left: 6px; }
