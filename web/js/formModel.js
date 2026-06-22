@@ -23,7 +23,9 @@ const FormModel = (() => {
 
   // ---- shared, persisted preferences ----
   const PREF_KEY = "f5s-fm-prefs";
-  const DEFAULTS = { trails: true, ring: true, shading: true, sound: false };
+  const DEFAULTS = { trails: true, ring: true, shading: true, sound: false, figure: "minimal", character: "neutral" };
+  const FIGURES = [["minimal", "Minimal"], ["cartoon", "Cartoon"]];
+  const CHARACTERS = [["neutral", "Neutral"], ["female", "Female"], ["male", "Male"]];
   function loadPrefs() {
     try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(PREF_KEY)) || {}); }
     catch (_) { return Object.assign({}, DEFAULTS); }
@@ -32,6 +34,23 @@ const FormModel = (() => {
   const prefs = loadPrefs();
 
   // ---- tiny Web Audio synth (created lazily on a user gesture) ----
+  // One sound "type" per visual theme: the dark theme gets a warm sine timbre,
+  // the light theme a brighter triangle timbre (with its own frequency set). The
+  // active theme is read at cue time, so sound follows the theme toggle live.
+  const PALETTES = {
+    dark: {  // "Warm"
+      type: "sine", gain: 0.06,
+      breathUp: [330, 494], breathDown: [277, 196],
+      tick: 587, second: 440, rep: 660, finishA: 587, finishB: 784,
+    },
+    light: {  // "Bright"
+      type: "triangle", gain: 0.045,
+      breathUp: [523, 784], breathDown: [392, 294],
+      tick: 988, second: 740, rep: 1047, finishA: 784, finishB: 1175,
+    },
+  };
+  const palette = () => PALETTES[document.documentElement.getAttribute("data-theme")] || PALETTES.dark;
+
   const Audio = (() => {
     let ctx = null;
     function ensure() {
@@ -40,27 +59,29 @@ const FormModel = (() => {
       if (AC) ctx = new AC();
       return ctx;
     }
-    function tone(freq, dur, { gain = 0.06, type = "sine", glideTo = null } = {}) {
+    function tone(freq, dur, { gain, type, glideTo = null } = {}) {
       if (!prefs.sound) return;
       const c = ensure(); if (!c) return;
       if (c.state === "suspended") c.resume();
+      const pal = palette();
       const t0 = c.currentTime;
       const osc = c.createOscillator(); const g = c.createGain();
-      osc.type = type; osc.frequency.setValueAtTime(freq, t0);
+      osc.type = type || pal.type;
+      osc.frequency.setValueAtTime(freq, t0);
       if (glideTo) osc.frequency.exponentialRampToValueAtTime(glideTo, t0 + dur);
       g.gain.setValueAtTime(0, t0);
-      g.gain.linearRampToValueAtTime(gain, t0 + 0.012);
+      g.gain.linearRampToValueAtTime(gain != null ? gain : pal.gain, t0 + 0.012);
       g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
       osc.connect(g); g.connect(c.destination);
       osc.start(t0); osc.stop(t0 + dur + 0.02);
     }
     return {
       resume() { const c = ensure(); if (c && c.state === "suspended") c.resume(); },
-      breath(up) { tone(up ? 392 : 294, 0.5, { gain: 0.05, type: "sine", glideTo: up ? 523 : 247 }); },
-      tick() { tone(660, 0.05, { gain: 0.04, type: "triangle" }); },
-      secondTick() { tone(523, 0.04, { gain: 0.03, type: "triangle" }); },
-      rep() { tone(740, 0.09, { gain: 0.05 }); },
-      finish() { tone(659, 0.14, { gain: 0.06 }); setTimeout(() => tone(880, 0.22, { gain: 0.06 }), 130); },
+      breath(up) { const p = palette(); const f = up ? p.breathUp : p.breathDown; tone(f[0], 0.5, { glideTo: f[1] }); },
+      tick() { tone(palette().tick, 0.05, { gain: palette().gain * 0.7 }); },
+      secondTick() { tone(palette().second, 0.04, { gain: palette().gain * 0.55 }); },
+      rep() { tone(palette().rep, 0.09); },
+      finish() { const p = palette(); tone(p.finishA, 0.14); setTimeout(() => tone(p.finishB, 0.22), 130); },
     };
   })();
 
@@ -150,6 +171,26 @@ const FormModel = (() => {
       ["trails", "Motion trails"], ["ring", "Breath ring"], ["shading", "Depth shading"], ["sound", "Sound"],
     ];
     prefsPanel.innerHTML = `<summary>Display &amp; sound</summary>`;
+
+    // Figure style ("theme list") — Minimal stick figure or a Cartoon avatar.
+    const figRow = el("div", "fm-pref-row");
+    const figWrap = el("label", "fm-pref");
+    const figSel = el("select");
+    FIGURES.forEach(([v, label]) => { const o = el("option"); o.value = v; o.textContent = label; figSel.appendChild(o); });
+    figSel.value = prefs.figure;
+    figSel.addEventListener("change", () => { prefs.figure = figSel.value; savePrefs(prefs); applyPref("figure"); });
+    figWrap.append(document.createTextNode("Figure "), figSel);
+    figRow.appendChild(figWrap);
+
+    const charWrap = el("label", "fm-pref");
+    const charSel = el("select");
+    CHARACTERS.forEach(([v, label]) => { const o = el("option"); o.value = v; o.textContent = label; charSel.appendChild(o); });
+    charSel.value = prefs.character;
+    charSel.addEventListener("change", () => { prefs.character = charSel.value; savePrefs(prefs); applyPref("figure"); });
+    charWrap.append(document.createTextNode("Character "), charSel);
+    figRow.appendChild(charWrap);
+    prefsPanel.appendChild(figRow);
+
     const prefRow = el("div", "fm-pref-row");
     prefDefs.forEach(([key, label]) => {
       const id = `${uid}-${key}`;
@@ -193,7 +234,8 @@ const FormModel = (() => {
     const figGroup = mk("g", { class: "fm-figure" });
     svg.append(glowEll, breathRing, groundLine, shadowEll, ghostsGroup, objGroup, figGroup);
 
-    let segNodes = [], headOutline = null, headRing = null, ghostNodes = [];
+    let segNodes = [], headOutline = null, headRing = null, ghostNodes = [], faceNodes = null;
+    let charNodes = null, headR = 16;
 
     function applyLines(lines, p) {
       SEG[view].forEach(([a, b], i) => {
@@ -215,27 +257,105 @@ const FormModel = (() => {
           ghostsGroup.appendChild(g); ghostNodes.push(lines);
         }
       }
-      segNodes = SEG[view].map(() => ({ outline: mk("line", { class: "fm-bone-outline" }), core: mk("line", { class: "fm-bone" }) }));
+      const cartoon = prefs.figure === "cartoon";
+      segNodes = SEG[view].map(() => ({
+        outline: mk("line", { class: cartoon ? "fm-cartoon-outline" : "fm-bone-outline" }),
+        core: mk("line", { class: cartoon ? "fm-cartoon-bone" : "fm-bone" }),
+      }));
       segNodes.forEach((s) => figGroup.appendChild(s.outline));
       segNodes.forEach((s) => { applyShadingTo(s.core); figGroup.appendChild(s.core); });
-      headOutline = mk("circle", { r: 18, class: "fm-head-outline" });
-      headRing = mk("circle", { r: 16, class: "fm-head" });
+      headR = cartoon ? 21 : 16;
+      const hairFill = cartoon ? "#3a2a1a" : "var(--text)";
+
+      // Character cues (gender is read from silhouette): a skirt + long hair for
+      // female, a short hair cap for male, nothing for neutral. Hair behind the
+      // head; the male cap sits over the head; the skirt drapes over the hips.
+      charNodes = {};
+      const back = [], front = [];
+      if (prefs.character === "female") {
+        charNodes.hairBack = mk("circle", { r: headR + 3, class: "fm-hair", fill: hairFill });
+        charNodes.lockL = mk("ellipse", { rx: (headR * 0.5).toFixed(1), ry: (headR * 1.25).toFixed(1), class: "fm-hair", fill: hairFill });
+        charNodes.lockR = mk("ellipse", { rx: (headR * 0.5).toFixed(1), ry: (headR * 1.25).toFixed(1), class: "fm-hair", fill: hairFill });
+        back.push(charNodes.hairBack, charNodes.lockL, charNodes.lockR);
+        if (cartoon) { charNodes.skirt = mk("path", { class: "fm-skirt" }); back.unshift(charNodes.skirt); }
+      } else if (prefs.character === "male") {
+        charNodes.cap = mk("path", { class: "fm-hair", fill: hairFill });
+        front.push(charNodes.cap);
+      }
+
+      if (cartoon) {
+        headOutline = mk("circle", { r: 22, class: "fm-cartoon-headout" });  // collar/outline
+        headRing = mk("circle", { r: 21, class: "fm-cartoon-head" });
+        faceNodes = {
+          eyeL: mk("circle", { r: 2.6, class: "fm-cartoon-eye" }),
+          eyeR: mk("circle", { r: 2.6, class: "fm-cartoon-eye" }),
+          mouth: mk("path", { class: "fm-cartoon-mouth" }),
+        };
+      } else {
+        faceNodes = null;
+        headOutline = mk("circle", { r: 18, class: "fm-head-outline" });
+        headRing = mk("circle", { r: 16, class: "fm-head" });
+      }
+
+      back.forEach((n) => figGroup.appendChild(n));    // skirt + female hair (behind head)
       figGroup.append(headOutline, headRing);
+      front.forEach((n) => figGroup.appendChild(n));   // male hair cap (over head)
+      if (faceNodes) figGroup.append(faceNodes.mouth, faceNodes.eyeL, faceNodes.eyeR);
     }
 
     function applyShadingTo(coreLine) {
-      if (prefs.shading) coreLine.setAttribute("stroke", `url(#${uid}-limb)`);
+      // Depth gradient only applies to the minimal figure; the cartoon avatar
+      // keeps its own flat fill colour.
+      if (prefs.shading && prefs.figure === "minimal") coreLine.setAttribute("stroke", `url(#${uid}-limb)`);
       else coreLine.removeAttribute("stroke");
     }
 
     function drawPose(p) {
       applyLines(segNodes.map((s) => s.outline), p);
       applyLines(segNodes.map((s) => s.core), p);
-      if (p.head) { for (const n of [headOutline, headRing]) { n.setAttribute("cx", p.head[0]); n.setAttribute("cy", p.head[1]); n.style.display = ""; } }
-      else { headOutline.style.display = "none"; headRing.style.display = "none"; }
+      if (p.head) {
+        const hx = p.head[0], hy = p.head[1];
+        headOutline.setAttribute("cx", hx); headOutline.setAttribute("cy", hy); headOutline.style.display = "";
+        headRing.setAttribute("cx", hx); headRing.setAttribute("cy", hy); headRing.style.display = "";
+        if (faceNodes) {
+          if (view === "front") {
+            faceNodes.eyeL.setAttribute("cx", hx - 7); faceNodes.eyeL.setAttribute("cy", hy - 3);
+            faceNodes.eyeR.setAttribute("cx", hx + 7); faceNodes.eyeR.setAttribute("cy", hy - 3);
+            faceNodes.eyeR.style.display = "";
+            faceNodes.mouth.setAttribute("d", `M ${hx - 7} ${hy + 6} Q ${hx} ${hy + 12} ${hx + 7} ${hy + 6}`);
+          } else {  // side view — face looks forward (+x)
+            faceNodes.eyeL.setAttribute("cx", hx + 6); faceNodes.eyeL.setAttribute("cy", hy - 3);
+            faceNodes.eyeR.style.display = "none";
+            faceNodes.mouth.setAttribute("d", `M ${hx + 2} ${hy + 7} Q ${hx + 9} ${hy + 11} ${hx + 13} ${hy + 5}`);
+          }
+          faceNodes.eyeL.style.display = ""; faceNodes.mouth.style.display = "";
+        }
+      } else {
+        headOutline.style.display = "none"; headRing.style.display = "none";
+        if (faceNodes) { faceNodes.eyeL.style.display = "none"; faceNodes.eyeR.style.display = "none"; faceNodes.mouth.style.display = "none"; }
+      }
       const hx = p.hip ? p.hip[0] : 120, hy = p.hip ? p.hip[1] : 190;
       shadowEll.setAttribute("cx", hx.toFixed(1));
       shadowEll.setAttribute("rx", clamp(40 + (hy - 178) * 0.16, 36, 60).toFixed(1));
+      updateChar(p);
+    }
+
+    function updateChar(p) {
+      if (!charNodes) return;
+      const h = p.head;
+      const show = (n, on) => { if (n) n.style.display = on ? "" : "none"; };
+      if (charNodes.hairBack) { if (h) { charNodes.hairBack.setAttribute("cx", h[0]); charNodes.hairBack.setAttribute("cy", h[1]); } show(charNodes.hairBack, !!h); }
+      if (charNodes.lockL) { if (h) { charNodes.lockL.setAttribute("cx", (h[0] - headR * 0.78).toFixed(1)); charNodes.lockL.setAttribute("cy", (h[1] + headR * 0.6).toFixed(1)); } show(charNodes.lockL, !!h); }
+      if (charNodes.lockR) { if (h) { charNodes.lockR.setAttribute("cx", (h[0] + headR * 0.78).toFixed(1)); charNodes.lockR.setAttribute("cy", (h[1] + headR * 0.6).toFixed(1)); } show(charNodes.lockR, !!h); }
+      if (charNodes.cap) { if (h) charNodes.cap.setAttribute("d", `M ${h[0] - headR} ${h[1] - 1} A ${headR} ${headR} 0 0 1 ${h[0] + headR} ${h[1] - 1} Z`); show(charNodes.cap, !!h); }
+      if (charNodes.skirt) {
+        const kneeY = p.lknee ? p.lknee[1] : (p.knee ? p.knee[1] : (p.hip ? p.hip[1] + 60 : 0));
+        if (p.hip) {
+          const hipx = p.hip[0], hyy = p.hip[1], thighY = (hyy + kneeY) / 2;
+          charNodes.skirt.setAttribute("d", `M ${(hipx - 26).toFixed(1)} ${thighY.toFixed(1)} L ${hipx} ${(hyy - 16).toFixed(1)} L ${(hipx + 26).toFixed(1)} ${thighY.toFixed(1)} Z`);
+        }
+        show(charNodes.skirt, !!p.hip);
+      }
     }
 
     function updateGhosts() {
@@ -365,7 +485,7 @@ const FormModel = (() => {
 
     // Live-apply a changed preference without losing place.
     function applyPref(key) {
-      if (key === "trails") { buildFigure(); if (!playing) showRest(); }
+      if (key === "trails" || key === "figure") { buildFigure(); if (!playing) showRest(); }
       else if (key === "shading") { segNodes.forEach((s) => applyShadingTo(s.core)); }
       else if (key === "ring" && !playing) { breathRing.style.display = "none"; }
     }
