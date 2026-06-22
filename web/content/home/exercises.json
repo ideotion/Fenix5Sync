@@ -1,0 +1,105 @@
+{
+  "_note": "Data-driven exercise library for the Sports at Home form-model engine. A figure is named joints (2-D coords in a 240x340 viewBox); a movement is keyframe poses the engine interpolates between, clocked by tempo. Object glyphs are referenced by id and drawn by web/js/formModel.js. Authored conservatively: only movements whose keyframes are verified are shipped. Extend by adding entries here — no engine change needed.",
+  "ground_y": 318,
+  "exercises": [
+    {
+      "id": "sts",
+      "name": "Chair sit-to-stand",
+      "pattern": "squat",
+      "tier": "seated",
+      "object": {"side": "chair", "front": null},
+      "targetReps": 8,
+      "views": {
+        "side": {
+          "stand": {"head": [120, 70], "sh": [118, 98], "hip": [116, 178], "knee": [114, 248], "ankle": [112, 312], "toe": [140, 312], "elb": [136, 134], "hand": [150, 170]},
+          "sit": {"head": [140, 150], "sh": [138, 170], "hip": [150, 236], "knee": [112, 242], "ankle": [112, 312], "toe": [140, 312], "elb": [170, 196], "hand": [150, 224]}
+        },
+        "front": {
+          "stand": {"head": [120, 70], "sh": [120, 100], "hip": [120, 180], "lknee": [104, 248], "rknee": [136, 248], "lankle": [102, 312], "rankle": [138, 312], "lelb": [96, 140], "relb": [144, 140], "lhand": [92, 180], "rhand": [148, 180]},
+          "sit": {"head": [120, 118], "sh": [120, 148], "hip": [120, 228], "lknee": [100, 232], "rknee": [140, 232], "lankle": [100, 312], "rankle": [140, 312], "lelb": [150, 180], "relb": [150, 180], "lhand": [112, 210], "rhand": [128, 210]}
+        }
+      },
+      "phases": [
+        {"name": "Down", "dur": 2200, "from": "stand", "to": "sit"},
+        {"name": "Sit", "dur": 500, "from": "sit", "to": "sit"},
+        {"name": "Up", "dur": 1400, "from": "sit", "to": "stand"},
+        {"name": "Stand", "dur": 600, "from": "stand", "to": "stand"}
+      ],
+      "cues": {
+        "Down": "Push hips <b>back</b>, sit slowly to the chair — control the lower.",
+        "Sit": "Light touch — don't crash down.",
+        "Up": "Drive through the <b>heels</b>, stand tall.",
+        "Stand": "Breathe. Reset for the next rep."
+      },
+      "staticCues": [
+        "Sit tall on the front of a stable chair, feet flat, hands reaching forward.",
+        "Push hips back and stand by driving through your heels.",
+        "Stand fully upright, then lower slowly back to the chair under control.",
+        "Breathe out as you rise; never hold your breath."
+      ]
+    },
+    {
+      "id": "wall",
+      "name": "Wall sit",
+      "pattern": "isometric",
+      "tier": "standing",
+      "isometric": true,
+      "object": {"side": "wall", "front": null},
+      "holdMs": 20000,
+      "views": {
+        "side": {
+          "stand": {"head": [120, 70], "sh": [118, 98], "hip": [116, 178], "knee": [114, 248], "ankle": [112, 312], "toe": [140, 312], "elb": [136, 134], "hand": [150, 170]},
+          "sit": {"head": [98, 128], "sh": [98, 150], "hip": [98, 216], "knee": [170, 216], "ankle": [170, 300], "toe": [196, 300], "elb": [126, 182], "hand": [152, 208]}
+        }
+      },
+      "phases": [
+        {"name": "Settle", "dur": 1800, "from": "stand", "to": "sit"},
+        {"name": "Hold", "dur": 20000, "from": "sit", "to": "sit", "isHold": true},
+        {"name": "Up", "dur": 1400, "from": "sit", "to": "stand"}
+      ],
+      "cues": {
+        "Settle": "Slide down the wall until thighs are about parallel.",
+        "Hold": "Hold steady — <b>keep breathing</b>, don't hold your breath.",
+        "Up": "Slide back up the wall to stand."
+      },
+      "staticCues": [
+        "Stand with your back flat against a wall, feet a step forward.",
+        "Slide down until your knees are bent about 90 degrees (thighs parallel).",
+        "Hold the position and breathe normally throughout — do not hold your breath.",
+        "Slide back up to standing to finish."
+      ]
+    },
+    {
+      "id": "calf",
+      "name": "Standing calf raise",
+      "pattern": "balance",
+      "tier": "standing",
+      "object": {"side": null, "front": null},
+      "targetReps": 12,
+      "views": {
+        "side": {
+          "stand": {"head": [120, 70], "sh": [118, 98], "hip": [116, 178], "knee": [114, 248], "ankle": [112, 312], "toe": [140, 312], "elb": [136, 134], "hand": [150, 170]},
+          "up": {"head": [121, 54], "sh": [119, 82], "hip": [117, 162], "knee": [115, 232], "ankle": [114, 296], "toe": [140, 312], "elb": [137, 118], "hand": [151, 154]}
+        }
+      },
+      "phases": [
+        {"name": "Up", "dur": 900, "from": "stand", "to": "up"},
+        {"name": "Hold", "dur": 400, "from": "up", "to": "up"},
+        {"name": "Down", "dur": 1100, "from": "up", "to": "stand"},
+        {"name": "Reset", "dur": 400, "from": "stand", "to": "stand"}
+      ],
+      "cues": {
+        "Up": "Rise smoothly onto the balls of your feet.",
+        "Hold": "Pause at the top — tall and steady.",
+        "Down": "Lower your heels slowly under control.",
+        "Reset": "Light touch on a counter or wall if you need balance."
+      },
+      "staticCues": [
+        "Stand tall, feet hip-width, a counter or wall within reach for balance.",
+        "Rise onto the balls of your feet, lifting both heels.",
+        "Pause briefly at the top, then lower your heels slowly to the floor.",
+        "Hold support lightly if your balance is unsure."
+      ]
+    }
+  ]
+}

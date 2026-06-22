@@ -28,6 +28,7 @@
         case "privacy": return await PrivacyView.render();
         case "segments": return await SegmentsView.render();
         case "taichi": return await TaiChiView.render();
+        case "home-training": return await HomeView.render();
         case "coach": return await CoachView.render();
         case "activity": return await ActivityView.render(arg);
         case "sync": return await SyncView.render();

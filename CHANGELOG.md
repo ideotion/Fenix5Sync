@@ -11,6 +11,11 @@ GitHub Releases page for the auto-generated notes per tag.
 ## [Unreleased]
 
 ### Added
+- **Sports at Home** — guided, evidence-based home training with household
+  objects: a bundled offline content pack + curation report, a PAR-Q+-style
+  readiness screen (client-only) that gates isometric work, a data-driven SVG
+  form-model animation engine (tempo pacer, front/side views, reduced-motion
+  fallback) and a 30-second sit-to-stand capacity check.
 - **Year in Sport recap** — a private, local annual/all-time recap with a
   self-contained, shareable HTML export.
 - **Personal privacy audit** — a defensive, local self-audit of what your tracks
