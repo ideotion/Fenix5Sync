@@ -103,6 +103,10 @@ const HomeView = (() => {
 
   // ---------- guided movement (form-model engine) ----------
   let guidedHost = null, player = null, currentEx = null;
+  const ENGINE_KEY = "f5s-home-engine";
+  function getEngine() { try { return localStorage.getItem(ENGINE_KEY) === "3d" ? "3d" : "2d"; } catch (_) { return "2d"; } }
+  function setEngine(v) { try { localStorage.setItem(ENGINE_KEY, v); } catch (_) {} }
+  function engineApi() { return getEngine() === "3d" && typeof FormModel3D !== "undefined" ? FormModel3D : FormModel; }
   function rebuildGuided() { if (guidedHost) drawGuided(guidedHost); }
 
   function drawGuided(host) {
@@ -118,9 +122,17 @@ const HomeView = (() => {
         [document.createTextNode(ex.name + (lock ? " 🔒" : ""))]);
     }));
 
+    // 2-D / 3-D engine toggle (3-D is the new canvas renderer; offline, no WebGL).
+    const engRow = U.el("div", { class: "home-engine-row" });
+    const mk2d = U.el("button", { class: "btn sm" + (getEngine() === "2d" ? " active" : ""), text: "2-D" });
+    const mk3d = U.el("button", { class: "btn sm" + (getEngine() === "3d" ? " active" : ""), text: "3-D (beta)" });
+    mk2d.onclick = () => { if (getEngine() !== "2d") { setEngine("2d"); mk2d.classList.add("active"); mk3d.classList.remove("active"); if (currentEx) select(currentEx); } };
+    mk3d.onclick = () => { if (getEngine() !== "3d") { setEngine("3d"); mk3d.classList.add("active"); mk2d.classList.remove("active"); if (currentEx) select(currentEx); } };
+    engRow.append(U.el("span", { class: "set-hint", text: "Figure" }), mk2d, mk3d);
+
     const stageHost = U.el("div", { class: "home-fm" });
     const infoHost = U.el("div", { class: "home-ex-info" });
-    host.append(picker, stageHost, infoHost);
+    host.append(picker, engRow, stageHost, infoHost);
 
     function exInfo(ex) {
       const tagline = [ex.pattern, ex.tier].filter(Boolean).join(" · ");
@@ -148,7 +160,7 @@ const HomeView = (() => {
       if (player) player.destroy();
       const ex = exercises.find((e) => e.id === id);
       Array.from(picker.children).forEach((b, i) => b.classList.toggle("active", exercises[i].id === id));
-      player = FormModel.create(stageHost, ex);
+      player = engineApi().create(stageHost, ex);
       infoHost.innerHTML = "";
       infoHost.appendChild(exInfo(ex));
     }

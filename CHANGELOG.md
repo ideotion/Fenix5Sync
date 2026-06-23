@@ -11,6 +11,17 @@ GitHub Releases page for the auto-generated notes per tag.
 ## [Unreleased]
 
 ### Added
+- **3-D movement figure (beta).** A new engine-agnostic 3-D motion core
+  (`web/js/pose3d.js`): a humanoid skeleton, quaternion bone-rotation math,
+  forward kinematics, pose interpolation, and a 2-D→3-D IK adapter that derives
+  3-D bone rotations from the existing 2-D keyframes — so all 56 exercises gain a
+  3-D pose with no re-authoring (hand-authored `poses3d` tracks can override). A
+  dependency-free canvas renderer (`web/js/formModel3d.js`) draws an orbitable,
+  depth-shaded capsule figure with no WebGL; a **2-D / 3-D (beta)** toggle sits in
+  the Home tab, with the SVG engine staying the default and reduced-motion
+  fallback. A heavier three.js skinned-avatar renderer is planned on the same pose
+  data (see `docs/form-model-3d/architecture.md`); asset-licensing rules are in
+  CONTRIBUTING. Math is unit-tested (`tests/js/pose3d.test.js`).
 - **GUI session builder (Home + Tai Chi).** A pure, unit-tested selection function
   (`web/js/sessionBuilder.js`) turns the libraries + your inputs (length, sets/
   reps, equipment, tier, focus) into a balanced, time-budgeted session: Home
