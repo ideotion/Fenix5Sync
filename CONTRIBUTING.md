@@ -46,6 +46,21 @@ pip-audit                            # dependency vulnerabilities
 - Keep PRs focused; one logical change per PR is easiest to review.
 - Describe what changed and why, and how you tested it.
 
+## 3-D figure & vendored assets (licensing)
+
+Everything ships **offline and vendored** under GPL-3.0, so any 3-D asset (engine,
+avatar, animation) must be **redistributable in-repo, offline-capable, and
+GPL-compatible**. Permitted licenses: **CC0, MIT, Apache-2.0, Unlicense, CC-BY**.
+
+**Never add — in any form, including hand-edited derivatives:** Mixamo (Adobe ToS
+forbids redistributing the files), SMPL / SMPL-X / AMASS (non-commercial research
+license), Ready Player Me (CC BY-NC-SA). CMU MoCap (BVH) may be used only as an
+authoring *reference*; the redistributed artifact must be JSON authored by us.
+
+New exercise motion is contributed as JSON (2-D keyframes today; optional 3-D
+`poses3d` bone-rotation tracks). See
+[`docs/form-model-3d/architecture.md`](docs/form-model-3d/architecture.md).
+
 ## Releases
 
 Releases are version-file driven. The only manual step is bumping `version` in

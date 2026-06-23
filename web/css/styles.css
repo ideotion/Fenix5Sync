@@ -515,6 +515,9 @@ td .muted { color: var(--text-faint); }
   background: radial-gradient(120% 88% at 50% 6%, var(--surface-2) 0%, var(--bg) 72%);
   border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-3); min-height: 320px; overflow: hidden; }
 .fm-stage svg { width: 100%; max-width: 280px; height: auto; display: block; }
+.fm3d-stage { display: block; }
+.fm3d-stage canvas { width: 100%; max-width: 300px; height: auto; display: block; margin: 0 auto; }
+.home-engine-row { display: flex; gap: var(--sp-2); align-items: center; margin-bottom: var(--sp-3); }
 .fm-glow { transition: opacity .45s var(--ease); }
 .fm-shadow { fill: rgba(0, 0, 0, .30); }
 .fm-bone-outline { stroke: var(--bg); stroke-width: 20; stroke-linecap: round; stroke-linejoin: round; fill: none; }
