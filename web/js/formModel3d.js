@@ -23,26 +23,40 @@ const FormModel3D = (() => {
   function savePrefs(p) { try { localStorage.setItem(PREF_KEY, JSON.stringify(p)); } catch (_) {} }
   const prefs = loadPrefs();
 
-  // Segments to draw, as joint pairs + a stroke weight (relative limb girth).
-  const SEGMENTS = [
-    ["hips", "spine", 26], ["spine", "head", 16],
-    ["shoulderL", "shoulderR", 14], ["hipL", "hipR", 18],
-    ["shoulderL", "elbowL", 15], ["elbowL", "handL", 12],
-    ["shoulderR", "elbowR", 15], ["elbowR", "handR", 12],
-    ["hipL", "kneeL", 20], ["kneeL", "ankleL", 16], ["ankleL", "footL", 11],
-    ["hipR", "kneeR", 20], ["kneeR", "ankleR", 16], ["ankleR", "footR", 11],
+  // Capsule limbs taper between joint girths; a filled torso + sphere-shaded
+  // joints/head give the stick figure volume. Girth is a world-space radius per
+  // joint (scaled by the projection at draw time).
+  const GIRTH = {
+    hips: 12, spine: 11, shoulderL: 7, shoulderR: 7, elbowL: 5.5, elbowR: 5.5,
+    handL: 4, handR: 4, hipL: 9, hipR: 9, kneeL: 7.5, kneeR: 7.5,
+    ankleL: 5.5, ankleR: 5.5, footL: 4.5, footR: 4.5,
+  };
+  const LIMBS = [
+    ["shoulderL", "elbowL"], ["elbowL", "handL"], ["shoulderR", "elbowR"], ["elbowR", "handR"],
+    ["hipL", "kneeL"], ["kneeL", "ankleL"], ["ankleL", "footL"],
+    ["hipR", "kneeR"], ["kneeR", "ankleR"], ["ankleR", "footR"], ["spine", "head"],
   ];
+  const TORSO_Q = ["shoulderL", "shoulderR", "hipR", "hipL"];
+  const JOINTS = Object.keys(GIRTH);
+  // Light direction in screen space (upper-left-front; y is down).
+  const LIGHT = (() => { const v = [-0.45, -0.8]; const l = Math.hypot(v[0], v[1]); return [v[0] / l, v[1] / l]; })();
 
-  function cssVar(name, fallback) {
-    try { const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim(); return v || fallback; }
-    catch (_) { return fallback; }
+  function parseRGB(str, fb) {
+    if (!str) return fb;
+    str = str.trim();
+    let m = str.match(/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+    if (m) return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+    m = str.match(/^#?([0-9a-f])([0-9a-f])([0-9a-f])$/i);
+    if (m) return [17 * parseInt(m[1], 16), 17 * parseInt(m[2], 16), 17 * parseInt(m[3], 16)];
+    m = str.match(/(\d+)\D+(\d+)\D+(\d+)/);
+    if (m) return [+m[1], +m[2], +m[3]];
+    return fb;
   }
-  // Mix a hex/rgb-ish colour toward black/white by f in [-1,1] for depth shading.
-  function shade(color, f) {
-    const m = color.match(/\d+/g);
-    if (!m || m.length < 3) return color;
-    const adj = (c) => clamp(Math.round(c + f * 90), 0, 255);
-    return `rgb(${adj(+m[0])}, ${adj(+m[1])}, ${adj(+m[2])})`;
+  function rgbVar(name, fb) { try { return parseRGB(getComputedStyle(document.documentElement).getPropertyValue(name), fb); } catch (_) { return fb; } }
+  // Lighten (+) / darken (-) an [r,g,b] by amount, to a CSS string.
+  function shade(rgb, f) {
+    const a = (c) => clamp(Math.round(c + f * 150), 0, 255);
+    return `rgb(${a(rgb[0])}, ${a(rgb[1])}, ${a(rgb[2])})`;
   }
 
   function makeCamera() {
@@ -126,39 +140,68 @@ const FormModel3D = (() => {
 
     function drawPose(pose) {
       const w = canvas.width / (window.devicePixelRatio || 1), h = canvas.height / (window.devicePixelRatio || 1);
-      const cx = w / 2, cyc = h * 0.54;
+      const cx = w / 2, cyc = h * 0.55;
       ctx.clearRect(0, 0, w, h);
       const jp = P.forwardKinematics(pose);
+      const text = rgbVar("--text", [232, 232, 234]), surface = rgbVar("--surface", [26, 26, 32]);
 
-      // Ground shadow under the hips.
-      const hp = cam.project(jp.hips);
-      ctx.save();
-      ctx.fillStyle = "rgba(0,0,0,0.22)";
-      ctx.beginPath();
-      ctx.ellipse(cx + cam.project(jp.ankleL)[0] * 0 + hp.x, cyc + 150, 46, 12, 0, 0, Math.PI * 2);
-      ctx.fill(); ctx.restore();
+      // Project every joint to absolute screen space once.
+      const pj = {};
+      JOINTS.concat(["head"]).forEach((nm) => {
+        const p = cam.project(jp[nm]);
+        pj[nm] = { x: cx + p.x, y: cyc + p.y, depth: p.depth, scale: p.scale };
+      });
+      const depthAmt = (d) => (prefs.shading ? clamp((540 - d) / 300, -0.34, 0.24) : 0);
+      const avgDepth = (names) => names.reduce((s, n) => s + pj[n].depth, 0) / names.length;
 
-      const text = cssVar("--text", "#e8e8ea"), bg = cssVar("--bg", "#101014");
-      // Build, project, depth-sort, and paint capsule segments far -> near.
-      const segs = SEGMENTS.map(([a, b, gw]) => {
-        const pa = cam.project(jp[a]), pb = cam.project(jp[b]);
-        return { pa, pb, gw, depth: (pa.depth + pb.depth) / 2 };
-      }).sort((s1, s2) => s2.depth - s1.depth);
+      // Soft contact shadows under the feet (and hips), grounding the figure.
+      const groundY = Math.max(pj.footL.y, pj.footR.y, pj.ankleL.y, pj.ankleR.y) + 6;
+      ctx.save(); ctx.fillStyle = "rgba(0,0,0,0.20)";
+      [["footL", 22], ["footR", 22], ["hips", 30]].forEach(([nm, rw]) => {
+        ctx.beginPath(); ctx.ellipse(pj[nm].x, groundY, rw * pj[nm].scale, 7 * pj[nm].scale, 0, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.restore();
 
-      const depthShade = (d) => prefs.shading ? clamp((540 - d) / 220, -0.5, 0.5) : 0;
-      for (const s of segs) {
-        const x1 = cx + s.pa.x, y1 = cyc + s.pa.y, x2 = cx + s.pb.x, y2 = cyc + s.pb.y;
-        const gw = s.gw * ((s.pa.scale + s.pb.scale) / 2);
-        ctx.lineCap = "round"; ctx.lineJoin = "round";
-        ctx.strokeStyle = bg; ctx.lineWidth = gw + 6;
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-        ctx.strokeStyle = shade(text, depthShade(s.depth)); ctx.lineWidth = gw;
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-      }
-      // Head.
-      const head = cam.project(jp.head), r = 17 * head.scale;
-      ctx.fillStyle = cssVar("--surface", "#1a1a20"); ctx.strokeStyle = shade(text, 0); ctx.lineWidth = 5 * head.scale;
-      ctx.beginPath(); ctx.arc(cx + head.x, cyc + head.y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      // ---- drawing primitives ----
+      const capsule = (a, b, ra, rb, depth) => {
+        const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1;
+        const nx = -dy / len, ny = dx / len;
+        ctx.beginPath();
+        ctx.moveTo(a.x + nx * ra, a.y + ny * ra); ctx.lineTo(b.x + nx * rb, b.y + ny * rb);
+        ctx.lineTo(b.x - nx * rb, b.y - ny * rb); ctx.lineTo(a.x - nx * ra, a.y - ny * ra);
+        ctx.closePath();
+        const lit = nx * LIGHT[0] + ny * LIGHT[1], d = depthAmt(depth);
+        const g = ctx.createLinearGradient(a.x + nx * ra, a.y + ny * ra, a.x - nx * ra, a.y - ny * ra);
+        g.addColorStop(0, shade(text, d + (lit > 0 ? 0.16 : -0.15)));
+        g.addColorStop(1, shade(text, d + (lit > 0 ? -0.15 : 0.16)));
+        ctx.fillStyle = g; ctx.fill();
+      };
+      const ball = (p, r, depth, base) => {
+        const hx = p.x + LIGHT[0] * r * 0.4, hy = p.y + LIGHT[1] * r * 0.4, d = depthAmt(depth);
+        const g = ctx.createRadialGradient(hx, hy, r * 0.12, p.x, p.y, r);
+        g.addColorStop(0, shade(base, d + 0.24)); g.addColorStop(1, shade(base, d - 0.17));
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+      };
+      const torso = (depth) => {
+        ctx.beginPath();
+        TORSO_Q.forEach((nm, i) => { const p = pj[nm]; i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); });
+        ctx.closePath();
+        const top = pj[TORSO_Q[0]], bot = pj[TORSO_Q[2]], d = depthAmt(depth);
+        const g = ctx.createLinearGradient(top.x, top.y, bot.x, bot.y);
+        g.addColorStop(0, shade(text, d + 0.10)); g.addColorStop(1, shade(text, d - 0.10));
+        ctx.fillStyle = g; ctx.fill();
+      };
+
+      // Collect every part with its depth, paint far -> near.
+      const items = [{ depth: avgDepth(TORSO_Q), draw: () => torso(avgDepth(TORSO_Q)) }];
+      LIMBS.forEach(([j1, j2]) => {
+        const a = pj[j1], b = pj[j2], dep = (a.depth + b.depth) / 2;
+        items.push({ depth: dep, draw: () => capsule(a, b, (GIRTH[j1] || 6) * a.scale, (GIRTH[j2] || 6) * b.scale, dep) });
+      });
+      JOINTS.forEach((nm) => { const p = pj[nm]; items.push({ depth: p.depth, draw: () => ball(p, GIRTH[nm] * p.scale, p.depth, text) }); });
+      const head = pj.head;
+      items.push({ depth: head.depth, draw: () => ball(head, 17 * head.scale, head.depth, surface) });
+      items.sort((m, n) => n.depth - m.depth).forEach((it) => it.draw());
     }
 
     function frame(ts) {
