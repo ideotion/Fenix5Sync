@@ -218,6 +218,50 @@ test("PR2: two-bone IK clamps an out-of-reach target (no NaN, leg straightens)",
   assert.ok(reach <= l1 + l2 + 1e-2 && reach > (l1 + l2) - 1, "clamped near full extension");
 });
 
+// ------------------------------ PR3: joint limits --------------------------- //
+test("PR3: no bone exceeds its joint limit across any phase of any movement", () => {
+  const EPS = 0.01 * Math.PI / 180; // 0.01 degree slack
+  for (const ex of allMovements()) {
+    const poses = P.adaptExercise(ex);
+    for (const ph of ex.phases) {
+      for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+        const pose = P.slerpPose(poses[ph.from] || poses[ph.to], poses[ph.to] || poses[ph.from], t);
+        for (const b of P.BONES) {
+          const lim = (P.JOINT_LIMITS[b.name] || 180) * Math.PI / 180;
+          assert.ok(P.swingAngle(pose[b.name]) <= lim + EPS, `${ex.id} ${ph.name}@${t}: ${b.name} over limit`);
+        }
+      }
+    }
+  }
+});
+
+test("PR3: clampJoint caps an over-limit rotation to the limit, axis preserved", () => {
+  const axis = P.V.norm([0.2, 1, 0.3]);
+  const big = 175 * Math.PI / 180; // beyond the forearm's 160 limit
+  const q = [axis[0] * Math.sin(big / 2), axis[1] * Math.sin(big / 2), axis[2] * Math.sin(big / 2), Math.cos(big / 2)];
+  const c = P.clampJoint("forearmL", q);
+  assert.ok(Math.abs(P.swingAngle(c) - 160 * Math.PI / 180) < 1e-3, `clamped angle ${P.swingAngle(c)}`);
+  // axis unchanged (same direction of the vector part).
+  const ca = P.V.norm([c[0], c[1], c[2]]);
+  assert.ok(Math.abs(ca[0] - axis[0]) < 1e-6 && Math.abs(ca[1] - axis[1]) < 1e-6, "swing axis preserved");
+});
+
+test("PR3: clampJoint leaves an in-range rotation untouched", () => {
+  const small = 30 * Math.PI / 180; // under every limit
+  const q = [0, Math.sin(small / 2), 0, Math.cos(small / 2)];
+  assert.deepStrictEqual(P.clampJoint("thighL", q), q);
+});
+
+test("PR3: clamping removes the impossible 177-degree elbow from current content", () => {
+  // forearmR reached ~177deg before clamping; it must now sit at/under its limit.
+  let worst = 0;
+  for (const ex of allMovements()) {
+    const poses = P.adaptExercise(ex);
+    for (const p of Object.values(poses)) worst = Math.max(worst, P.swingAngle(p.forearmR) * 180 / Math.PI);
+  }
+  assert.ok(worst <= 160 + 0.01, `forearmR still ${worst} deg`);
+});
+
 test("slerpPose blends two poses per bone and stays normalized", () => {
   const a = P.adaptPose({ side: { stand: { hip: [116, 178], sh: [118, 98], head: [120, 70], knee: [114, 248], ankle: [112, 312], toe: [140, 312], elb: [136, 134], hand: [150, 170] } } }, "stand");
   const b = P.adaptPose({ side: { sit: { hip: [150, 236], sh: [138, 170], head: [140, 150], knee: [112, 242], ankle: [112, 312], toe: [140, 312], elb: [170, 196], hand: [150, 224] } } }, "sit");
