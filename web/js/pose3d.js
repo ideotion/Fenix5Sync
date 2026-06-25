@@ -128,6 +128,42 @@
 
   const GROUND_Y = 0; // world height of the floor (rest feet sit here)
 
+  // ---- joint limits --------------------------------------------------------
+  // Per-bone maximum SWING (degrees) of the local rotation away from its rest
+  // direction — a cone limit that keeps frames out of clearly-impossible ranges.
+  // PROVISIONAL & deliberately generous: the elbow/knee/hip/shoulder bounds catch
+  // impossibilities (e.g. a 177-degree elbow) while the spine and ankle stay wide
+  // because the single rigid spine has to rotate the whole body for floor/prone
+  // poses (push-ups, planks). True anatomical hinge limits await the segmented
+  // spine (later PR) and the biomechanics ROM appendix; the clamp infra is here.
+  const _RAD = Math.PI / 180;
+  const JOINT_LIMITS = {
+    spine: 140, head: 80,
+    upperArmL: 175, upperArmR: 175,   // shoulder: highly mobile
+    forearmL: 160, forearmR: 160,     // elbow flexion (no 180 fold)
+    thighL: 130, thighR: 130,         // hip flexion cone
+    shinL: 160, shinR: 160,           // knee flexion
+    footL: 140, footR: 140,           // ankle (wide: floor poses)
+  };
+
+  // Rotation angle of a unit quaternion (radians), double-cover safe.
+  function swingAngle(q) {
+    return 2 * Math.atan2(Math.hypot(q[0], q[1], q[2]), Math.abs(q[3]));
+  }
+  // Clamp a bone's local rotation to its cone limit, preserving the swing axis.
+  function clampJoint(name, q) {
+    const lim = (JOINT_LIMITS[name] != null ? JOINT_LIMITS[name] : 180) * _RAD;
+    const a = swingAngle(q);
+    if (a <= lim || a < 1e-6) return q;
+    return Q.slerp(Q.IDENT, q, lim / a);
+  }
+
+  // Quaternion of a rotation by `angle` (radians) about a unit-ised `axis`.
+  function axisAngleQuat(axis, angle) {
+    const u = V.norm(axis), s = Math.sin(angle / 2);
+    return [u[0] * s, u[1] * s, u[2] * s, Math.cos(angle / 2)];
+  }
+
   // ------------------------------------------------------ forward kinematics
   // Given per-bone LOCAL quaternions, return world positions for every joint.
   function forwardKinematics(localQ, opts = {}) {
@@ -136,9 +172,16 @@
     const worldQ = {}, jointPos = { hips: root.slice() };
     const lq = (n) => localQ[n] || Q.IDENT;
 
+    const twist = localQ.__twist;
     for (const b of BONES) {
       const parentWorld = b.parent ? (worldQ[b.parent] || Q.IDENT) : Q.IDENT;
-      worldQ[b.name] = Q.mul(parentWorld, lq(b.name));
+      // Compose the swing with an optional axial twist (roll about the bone's rest
+      // axis). Twist about the bone's own axis leaves THIS bone's direction
+      // unchanged but rolls the frame its children inherit (pronation, femoral
+      // rotation, spinal/head turn). Default (no __twist) is bit-for-bit unchanged.
+      let local = lq(b.name);
+      if (twist && twist[b.name]) local = Q.mul(local, axisAngleQuat(REST_DIR[b.name], twist[b.name]));
+      worldQ[b.name] = Q.mul(parentWorld, local);
       // Determine where the bone starts.
       let start;
       if (b.name === "spine") start = jointPos.hips;
@@ -253,10 +296,12 @@
     const worldQ = {}, localQ = {};
     for (const b of BONES) {
       const target = _targetDir(b, sidePose, frontPose);
-      const wq = target ? Q.fromTo(REST_DIR[b.name], target) : Q.IDENT;
-      worldQ[b.name] = wq;
       const parentWorld = b.parent ? (worldQ[b.parent] || Q.IDENT) : Q.IDENT;
-      localQ[b.name] = Q.norm(Q.mul(Q.conj(parentWorld), wq));
+      const wq = target ? Q.fromTo(REST_DIR[b.name], target) : Q.IDENT;
+      // Clamp the joint to its limit, then carry the clamped world to children.
+      const local = clampJoint(b.name, Q.norm(Q.mul(Q.conj(parentWorld), wq)));
+      localQ[b.name] = local;
+      worldQ[b.name] = Q.mul(parentWorld, local);
     }
     return localQ;
   }
@@ -294,17 +339,25 @@
     const names = new Set([...Object.keys(a), ...Object.keys(b)]);
     for (const n of names) {
       if (n === "__root") continue;
-      out[n] = Q.slerp(a[n] || Q.IDENT, b[n] || Q.IDENT, t);
+      out[n] = clampJoint(n, Q.slerp(a[n] || Q.IDENT, b[n] || Q.IDENT, t));
     }
     if (a.__root || b.__root) {
       const ra = a.__root || REST.hips, rb = b.__root || REST.hips;
       out.__root = [ra[0] + (rb[0] - ra[0]) * t, ra[1] + (rb[1] - ra[1]) * t, ra[2] + (rb[2] - ra[2]) * t];
     }
+    if (a.__twist || b.__twist) {
+      const ta = a.__twist || {}, tb = b.__twist || {}, tw = {};
+      for (const n of new Set([...Object.keys(ta), ...Object.keys(tb)])) {
+        tw[n] = (ta[n] || 0) + ((tb[n] || 0) - (ta[n] || 0)) * t;
+      }
+      out.__twist = tw;
+    }
     return out;
   }
 
   return {
-    V, Q, REST, BONES, BONE_BY_NAME, REST_DIR, BONE_LEN, GROUND_Y,
+    V, Q, REST, BONES, BONE_BY_NAME, REST_DIR, BONE_LEN, GROUND_Y, JOINT_LIMITS,
     forwardKinematics, adaptPose, adaptExercise, slerpPose, solveTwoBoneIK,
+    swingAngle, clampJoint, axisAngleQuat,
   };
 });

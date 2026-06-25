@@ -218,6 +218,98 @@ test("PR2: two-bone IK clamps an out-of-reach target (no NaN, leg straightens)",
   assert.ok(reach <= l1 + l2 + 1e-2 && reach > (l1 + l2) - 1, "clamped near full extension");
 });
 
+// ------------------------------ PR3: joint limits --------------------------- //
+test("PR3: no bone exceeds its joint limit across any phase of any movement", () => {
+  const EPS = 0.01 * Math.PI / 180; // 0.01 degree slack
+  for (const ex of allMovements()) {
+    const poses = P.adaptExercise(ex);
+    for (const ph of ex.phases) {
+      for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+        const pose = P.slerpPose(poses[ph.from] || poses[ph.to], poses[ph.to] || poses[ph.from], t);
+        for (const b of P.BONES) {
+          const lim = (P.JOINT_LIMITS[b.name] || 180) * Math.PI / 180;
+          assert.ok(P.swingAngle(pose[b.name]) <= lim + EPS, `${ex.id} ${ph.name}@${t}: ${b.name} over limit`);
+        }
+      }
+    }
+  }
+});
+
+test("PR3: clampJoint caps an over-limit rotation to the limit, axis preserved", () => {
+  const axis = P.V.norm([0.2, 1, 0.3]);
+  const big = 175 * Math.PI / 180; // beyond the forearm's 160 limit
+  const q = [axis[0] * Math.sin(big / 2), axis[1] * Math.sin(big / 2), axis[2] * Math.sin(big / 2), Math.cos(big / 2)];
+  const c = P.clampJoint("forearmL", q);
+  assert.ok(Math.abs(P.swingAngle(c) - 160 * Math.PI / 180) < 1e-3, `clamped angle ${P.swingAngle(c)}`);
+  // axis unchanged (same direction of the vector part).
+  const ca = P.V.norm([c[0], c[1], c[2]]);
+  assert.ok(Math.abs(ca[0] - axis[0]) < 1e-6 && Math.abs(ca[1] - axis[1]) < 1e-6, "swing axis preserved");
+});
+
+test("PR3: clampJoint leaves an in-range rotation untouched", () => {
+  const small = 30 * Math.PI / 180; // under every limit
+  const q = [0, Math.sin(small / 2), 0, Math.cos(small / 2)];
+  assert.deepStrictEqual(P.clampJoint("thighL", q), q);
+});
+
+test("PR3: clamping removes the impossible 177-degree elbow from current content", () => {
+  // forearmR reached ~177deg before clamping; it must now sit at/under its limit.
+  let worst = 0;
+  for (const ex of allMovements()) {
+    const poses = P.adaptExercise(ex);
+    for (const p of Object.values(poses)) worst = Math.max(worst, P.swingAngle(p.forearmR) * 180 / Math.PI);
+  }
+  assert.ok(worst <= 160 + 0.01, `forearmR still ${worst} deg`);
+});
+
+// ------------------------------ PR4: axial twist ---------------------------- //
+function identityPose() {
+  const p = {};
+  P.BONES.forEach((b) => { p[b.name] = P.Q.IDENT; });
+  return p;
+}
+
+test("PR4: zero/absent twist leaves FK bit-for-bit unchanged (back-compat)", () => {
+  const ex = loadExercise("bodyweight-squat") || loadExercise("supported-squat");
+  const poses = P.adaptExercise(ex);
+  const name = Object.keys(poses)[0];
+  const base = P.forwardKinematics(poses[name]);
+  const withZero = P.forwardKinematics(Object.assign({}, poses[name], { __twist: { spine: 0, thighL: 0 } }));
+  for (const j of Object.keys(base)) assert.deepStrictEqual(withZero[j], base[j], `${j} changed under zero twist`);
+});
+
+test("PR4: a spine twist rolls the shoulders about the vertical rest axis", () => {
+  const base = P.forwardKinematics(identityPose());
+  const twisted = P.forwardKinematics(Object.assign(identityPose(), { __twist: { spine: Math.PI / 2 } }));
+  // Spine rest axis is +Y; a +90deg twist rotates the shoulder offset about Y.
+  const spine = base.spine;
+  const off0 = P.V.sub(base.shoulderL, spine);          // ~[-20, 18, 0]
+  const off1 = P.V.sub(twisted.shoulderL, twisted.spine);
+  // Rotating [-20,18,0] by +90deg about Y -> [0, 18, 20] (x->z, z->-x => here x'=z=0, z'=-x=20).
+  assert.ok(Math.abs(off1[0] - 0) < 1e-3 && Math.abs(off1[2] - 20) < 1e-3, `rolled offset ${off1}`);
+  assert.ok(Math.abs(off1[1] - off0[1]) < 1e-6, "vertical component unchanged by a vertical-axis twist");
+});
+
+test("PR4: twist does not move the twisted bone's own tip (axis roll)", () => {
+  // upperArmL twist must not move the elbow (rolling about the arm's own axis).
+  const base = P.forwardKinematics(identityPose());
+  const twisted = P.forwardKinematics(Object.assign(identityPose(), { __twist: { upperArmL: 1.2 } }));
+  assert.ok(P.V.len(P.V.sub(twisted.elbowL, base.elbowL)) < 1e-6, "elbow should not move under upper-arm twist");
+});
+
+test("PR4: axisAngleQuat rotates a perpendicular vector by the given angle", () => {
+  const q = P.axisAngleQuat([0, 1, 0], Math.PI / 2);
+  const r = P.Q.rotate(q, [1, 0, 0]); // +X about +Y by 90deg -> -Z
+  assert.ok(Math.abs(r[0]) < 1e-6 && Math.abs(r[2] + 1) < 1e-6, `got ${r}`);
+});
+
+test("PR4: slerpPose interpolates twist linearly", () => {
+  const a = Object.assign(identityPose(), { __twist: { spine: 0 } });
+  const b = Object.assign(identityPose(), { __twist: { spine: 1 } });
+  const mid = P.slerpPose(a, b, 0.5);
+  assert.ok(Math.abs(mid.__twist.spine - 0.5) < 1e-9, "twist midpoint should be the average");
+});
+
 test("slerpPose blends two poses per bone and stays normalized", () => {
   const a = P.adaptPose({ side: { stand: { hip: [116, 178], sh: [118, 98], head: [120, 70], knee: [114, 248], ankle: [112, 312], toe: [140, 312], elb: [136, 134], hand: [150, 170] } } }, "stand");
   const b = P.adaptPose({ side: { sit: { hip: [150, 236], sh: [138, 170], head: [140, 150], knee: [112, 242], ankle: [112, 312], toe: [140, 312], elb: [170, 196], hand: [150, 224] } } }, "sit");
