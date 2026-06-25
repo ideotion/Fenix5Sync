@@ -126,6 +126,8 @@
     upperArmL: V.sub(REST.shoulderL, REST.spine), upperArmR: V.sub(REST.shoulderR, REST.spine),
   };
 
+  const GROUND_Y = 0; // world height of the floor (rest feet sit here)
+
   // ------------------------------------------------------ forward kinematics
   // Given per-bone LOCAL quaternions, return world positions for every joint.
   function forwardKinematics(localQ, opts = {}) {
@@ -154,7 +156,42 @@
     jointPos.hipR = V.add(jointPos.hips, V.sub(REST.hipR, REST.hips));
     jointPos.shoulderL = jointPos.shoulderL || V.add(jointPos.spine, SHOULDER_OFFSET.upperArmL);
     jointPos.shoulderR = jointPos.shoulderR || V.add(jointPos.spine, SHOULDER_OFFSET.upperArmR);
+
+    // Foot grounding (opt-in): translate the whole skeleton so the lowest foot
+    // rests on the world ground plane. With the pelvis pinned high (PR1) and the
+    // legs bent, this is what pulls the body down into a squat and stops the feet
+    // floating — without touching any authored bone angle.
+    if (opts.ground) {
+      const feet = [jointPos.footL, jointPos.footR].filter(Boolean);
+      if (feet.length) {
+        const shift = GROUND_Y - Math.min(...feet.map((f) => f[1]));
+        if (Math.abs(shift) > 1e-9) {
+          for (const k in jointPos) jointPos[k] = [jointPos[k][0], jointPos[k][1] + shift, jointPos[k][2]];
+        }
+      }
+    }
     return jointPos;
+  }
+
+  // Two-bone analytic IK (law of cosines): orient a hip->knee->ankle chain so the
+  // ankle reaches `target`, bending toward `pole`. Reach is clamped so an
+  // out-of-range target straightens (or folds) the leg instead of breaking it.
+  // The building block for grounding both feet in asymmetric double-support poses
+  // (applied once authored poses need it; global grounding covers symmetric ones).
+  function solveTwoBoneIK(hip, target, l1, l2, pole) {
+    const u0 = V.sub(target, hip);
+    let d = V.len(u0);
+    const u = d > 1e-9 ? V.scale(u0, 1 / d) : [0, -1, 0];
+    d = Math.max(Math.abs(l1 - l2) + 1e-3, Math.min(l1 + l2 - 1e-3, d)); // clamp to reachable
+    const cosA = Math.max(-1, Math.min(1, (l1 * l1 + d * d - l2 * l2) / (2 * l1 * d)));
+    const sinA = Math.sqrt(Math.max(0, 1 - cosA * cosA));
+    let n = V.sub(pole || [0, 0, 1], V.scale(u, V.dot(pole || [0, 0, 1], u)));
+    if (V.len(n) < 1e-6) { n = V.sub([0, 0, 1], V.scale(u, V.dot([0, 0, 1], u))); }
+    if (V.len(n) < 1e-6) n = [1, 0, 0];
+    n = V.norm(n);
+    const knee = V.add(hip, V.add(V.scale(u, l1 * cosA), V.scale(n, l1 * sinA)));
+    const ankle = V.add(hip, V.scale(u, d));
+    return { knee, ankle };
   }
 
   // ------------------------------------------------------------ 2-D -> 3-D
@@ -267,7 +304,7 @@
   }
 
   return {
-    V, Q, REST, BONES, BONE_BY_NAME, REST_DIR, BONE_LEN,
-    forwardKinematics, adaptPose, adaptExercise, slerpPose,
+    V, Q, REST, BONES, BONE_BY_NAME, REST_DIR, BONE_LEN, GROUND_Y,
+    forwardKinematics, adaptPose, adaptExercise, slerpPose, solveTwoBoneIK,
   };
 });

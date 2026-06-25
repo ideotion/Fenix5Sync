@@ -150,7 +150,7 @@ const FormModel3D = (() => {
       const w = canvas.width / (window.devicePixelRatio || 1), h = canvas.height / (window.devicePixelRatio || 1);
       const cx = w / 2, cyc = h * 0.55;
       ctx.clearRect(0, 0, w, h);
-      const jp = P.forwardKinematics(pose);
+      const jp = P.forwardKinematics(pose, { ground: true });
       const text = rgbVar("--text", [232, 232, 234]), surface = rgbVar("--surface", [26, 26, 32]);
 
       // Project every joint to absolute screen space once.
