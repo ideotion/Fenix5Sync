@@ -159,6 +159,65 @@ test("PR1: FK with all-identity (no __root) still rests at REST.hips (back-compa
   assert.deepStrictEqual(P.forwardKinematics(localQ).hips, P.REST.hips);
 });
 
+// ------------------------------ PR2: foot grounding ------------------------- //
+function allMovements() {
+  const home = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "web/content/home/exercises.json"), "utf8")).exercises;
+  const tc = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "web/content/taichi/movements.json"), "utf8")).movements;
+  return home.concat(tc);
+}
+
+test("PR2: the lowest foot is grounded across every phase of every movement", () => {
+  const TOL = 0.5;
+  for (const ex of allMovements()) {
+    const poses = P.adaptExercise(ex);
+    for (const ph of ex.phases) {
+      for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+        const pose = P.slerpPose(poses[ph.from] || poses[ph.to], poses[ph.to] || poses[ph.from], t);
+        const jp = P.forwardKinematics(pose, { ground: true });
+        const lowest = Math.min(jp.footL[1], jp.footR[1]);
+        assert.ok(Math.abs(lowest - P.GROUND_Y) <= TOL, `${ex.id} ${ph.name}@${t}: lowest foot ${lowest}`);
+        assert.ok(jp.footL[1] >= P.GROUND_Y - TOL && jp.footR[1] >= P.GROUND_Y - TOL, `${ex.id}: a foot dipped below ground`);
+      }
+    }
+  }
+});
+
+test("PR2: grounding makes the squat sit below the standing pose", () => {
+  // A full bodyweight squat: bending the (planted-foot) legs must drop the grounded
+  // pelvis well below the standing pose — the visible 'lowering' PR1 alone lacked.
+  const ex = loadExercise("bodyweight-squat") || loadExercise("single-leg-sit-to-stand");
+  const poses = P.adaptExercise(ex);
+  const heights = Object.values(poses).map((p) => P.forwardKinematics(p, { ground: true }).hips[1]);
+  assert.ok(Math.max(...heights) - Math.min(...heights) > 8, `grounded pelvis should descend; got ${Math.max(...heights) - Math.min(...heights)}`);
+});
+
+test("PR2: grounding is opt-in (FK unchanged without it)", () => {
+  const ex = loadExercise("bodyweight-squat") || loadExercise("supported-squat");
+  const poses = P.adaptExercise(ex);
+  const name = Object.keys(poses)[0];
+  const plain = P.forwardKinematics(poses[name]);
+  const grounded = P.forwardKinematics(poses[name], { ground: true });
+  // Only a uniform vertical shift may differ; X and Z are identical.
+  assert.ok(Math.abs(plain.hips[0] - grounded.hips[0]) < 1e-9 && Math.abs(plain.hips[2] - grounded.hips[2]) < 1e-9);
+});
+
+test("PR2: two-bone IK reaches a target and keeps both bone lengths", () => {
+  const hip = [0, 96, 0], l1 = 46, l2 = 44;
+  const { knee, ankle } = P.solveTwoBoneIK(hip, [0, 40, 10], l1, l2, [0, 0, 1]);
+  const d1 = Math.hypot(knee[0] - hip[0], knee[1] - hip[1], knee[2] - hip[2]);
+  const d2 = Math.hypot(ankle[0] - knee[0], ankle[1] - knee[1], ankle[2] - knee[2]);
+  assert.ok(Math.abs(d1 - l1) < 1e-3, `thigh length ${d1}`);
+  assert.ok(Math.abs(d2 - l2) < 1e-3, `shin length ${d2}`);
+});
+
+test("PR2: two-bone IK clamps an out-of-reach target (no NaN, leg straightens)", () => {
+  const hip = [0, 96, 0], l1 = 45, l2 = 45;
+  const { knee, ankle } = P.solveTwoBoneIK(hip, [0, -200, 0], l1, l2, [0, 0, 1]); // far beyond reach
+  [...knee, ...ankle].forEach((v) => assert.ok(Number.isFinite(v), "IK produced a finite coordinate"));
+  const reach = Math.hypot(ankle[0] - hip[0], ankle[1] - hip[1], ankle[2] - hip[2]);
+  assert.ok(reach <= l1 + l2 + 1e-2 && reach > (l1 + l2) - 1, "clamped near full extension");
+});
+
 test("slerpPose blends two poses per bone and stays normalized", () => {
   const a = P.adaptPose({ side: { stand: { hip: [116, 178], sh: [118, 98], head: [120, 70], knee: [114, 248], ankle: [112, 312], toe: [140, 312], elb: [136, 134], hand: [150, 170] } } }, "stand");
   const b = P.adaptPose({ side: { sit: { hip: [150, 236], sh: [138, 170], head: [140, 150], knee: [112, 242], ankle: [112, 312], toe: [140, 312], elb: [170, 196], hand: [150, 224] } } }, "sit");
