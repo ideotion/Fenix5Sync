@@ -65,6 +65,11 @@ function loadExercise(id) {
   return lib.exercises.find((e) => e.id === id);
 }
 
+function loadTaichi(id) {
+  const lib = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "web/content/taichi/movements.json"), "utf8"));
+  return lib.movements.find((m) => m.id === id);
+}
+
 test("adaptPose then FK reproduces the 2-D-derived bone direction (spine)", () => {
   // A side pose: shoulders directly above the hips -> spine points up (+Y),
   // with a tiny forward lean from the small x offset.
@@ -100,6 +105,58 @@ test("adaptExercise covers every pose with every bone, normalized", () => {
       assert.ok(close(Math.hypot(q[0], q[1], q[2], q[3]), 1, 1e-6), `${name}.${b.name} not unit`);
     }
   }
+});
+
+// ------------------------------ PR1: root travel ---------------------------- //
+test("PR1: pelvis world displacement equals the scaled 2-D hip travel (squat)", () => {
+  const ex = loadExercise("supported-squat") || loadExercise("bodyweight-squat");
+  const side = ex.views.side, names = Object.keys(side);
+  const poses = P.adaptExercise(ex);
+  const a = names[0], b = names[1];
+  const ha = side[a].hip, hb = side[b].hip;
+  // side view: art-x -> world Z, art-y -> -world Y; scaled art->world (matches the core).
+  const scale = (P.REST.hips[1] - P.REST.ankleL[1]) / 134;
+  const expDY = -(hb[1] - ha[1]) * scale, expDZ = (hb[0] - ha[0]) * scale;
+  const ra = poses[a].__root, rb = poses[b].__root;
+  assert.ok(Math.abs((rb[1] - ra[1]) - expDY) < 1e-6, "pelvis Y tracks the authored hip art-y");
+  assert.ok(Math.abs((rb[2] - ra[2]) - expDZ) < 1e-6, "pelvis Z tracks the authored hip art-x");
+  // Every pose carries a bounded root (no runaway scaling).
+  Object.values(poses).forEach((p) => {
+    assert.ok(p.__root && p.__root.length === 3, "pose missing __root");
+    assert.ok(Math.abs(p.__root[1] - P.REST.hips[1]) < 120, "pelvis travel runaway");
+  });
+});
+
+test("PR1: a fixed-hip exercise keeps the pelvis at rest height", () => {
+  // marching-in-place: the authored hip does not drop, so the pelvis should not.
+  const ex = loadExercise("marching-in-place") || loadExercise("wall-pushup");
+  const poses = P.adaptExercise(ex);
+  const ys = Object.values(poses).map((p) => p.__root[1]);
+  assert.ok(Math.max(...ys) - Math.min(...ys) < 25, "no authored descent -> little pelvis travel");
+});
+
+test("PR1: pelvis translates in depth with a weight shift (tai chi)", () => {
+  const mv = loadTaichi("tc_weight_shift_fwd_back");
+  if (!mv) return;
+  const poses = P.adaptExercise(mv);
+  const zs = Object.values(poses).map((p) => p.__root[2]);
+  assert.ok(Math.max(...zs) - Math.min(...zs) > 5, "weight shift should translate the pelvis");
+});
+
+test("PR1: root is interpolated by slerpPose", () => {
+  const ex = loadExercise("supported-squat") || loadExercise("bodyweight-squat");
+  const poses = P.adaptExercise(ex);
+  const ns = Object.keys(poses);
+  const mid = P.slerpPose(poses[ns[0]], poses[ns[1]], 0.5);
+  assert.ok(mid.__root, "slerpPose should carry __root");
+  const expectY = (poses[ns[0]].__root[1] + poses[ns[1]].__root[1]) / 2;
+  assert.ok(Math.abs(mid.__root[1] - expectY) < 1e-6, "root midpoint should be the average");
+});
+
+test("PR1: FK with all-identity (no __root) still rests at REST.hips (back-compat)", () => {
+  const localQ = {};
+  P.BONES.forEach((b) => { localQ[b.name] = Q.IDENT; });
+  assert.deepStrictEqual(P.forwardKinematics(localQ).hips, P.REST.hips);
 });
 
 test("slerpPose blends two poses per bone and stays normalized", () => {

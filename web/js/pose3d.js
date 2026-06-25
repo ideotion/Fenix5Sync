@@ -129,7 +129,8 @@
   // ------------------------------------------------------ forward kinematics
   // Given per-bone LOCAL quaternions, return world positions for every joint.
   function forwardKinematics(localQ, opts = {}) {
-    const root = opts.root || REST.hips;
+    // Pelvis position: explicit opts.root, else the pose's own __root travel, else rest.
+    const root = opts.root || localQ.__root || REST.hips;
     const worldQ = {}, jointPos = { hips: root.slice() };
     const lq = (n) => localQ[n] || Q.IDENT;
 
@@ -189,6 +190,24 @@
     return sideDir ? V.norm(sideDir) : (frontDir ? V.norm(frontDir) : null);
   }
 
+  // ---- root (pelvis) travel ------------------------------------------------
+  // The bone-direction adapter discards the body's absolute rise/fall and sway
+  // (a squat lowers, a weight-shift translates). We recover it from the 2-D hip
+  // joint: its displacement from the exercise's reference pose, scaled from art
+  // units into skeleton units, becomes a per-pose pelvis offset from REST.hips.
+  const ART_LEG = 134; // canonical standing hip->ankle vertical span in the 240x340 art space
+  const ART_TO_WORLD = (REST.hips[1] - REST.ankleL[1]) / ART_LEG; // ~0.67
+
+  // Map the 2-D hip to world axes for DISPLACEMENT (origin cancels): front x->X,
+  // side x->Z, art-y->-Y. A missing view contributes 0 on its axis.
+  function _hipVec(sidePose, frontPose) {
+    const fh = frontPose && frontPose.hip, sh = sidePose && sidePose.hip;
+    const ys = [];
+    if (fh) ys.push(-fh[1]);
+    if (sh) ys.push(-sh[1]);
+    return [fh ? fh[0] : 0, ys.length ? ys.reduce((s, v) => s + v, 0) / ys.length : 0, sh ? sh[0] : 0];
+  }
+
   // Convert one keyframe pose (the views' joint maps for a pose name) to per-bone
   // LOCAL quaternions, solved top-down so FK reproduces the target directions.
   function adaptPose(views, poseName) {
@@ -213,14 +232,37 @@
     for (const v of Object.values(views)) for (const k of Object.keys(v)) poseNames.add(k);
     const poses = {};
     for (const name of poseNames) poses[name] = adaptPose(views, name);
+
+    // Attach pelvis travel: each pose's hip displacement from the reference pose
+    // (the rest pose if present, else the first), scaled into skeleton units.
+    const names = [...poseNames];
+    const refName = poseNames.has("stand") ? "stand" : names[0];
+    if (refName) {
+      const refVec = _hipVec(views.side && views.side[refName], views.front && views.front[refName]);
+      for (const name of names) {
+        const v = _hipVec(views.side && views.side[name], views.front && views.front[name]);
+        poses[name].__root = [
+          REST.hips[0] + (v[0] - refVec[0]) * ART_TO_WORLD,
+          REST.hips[1] + (v[1] - refVec[1]) * ART_TO_WORLD,
+          REST.hips[2] + (v[2] - refVec[2]) * ART_TO_WORLD,
+        ];
+      }
+    }
     return poses;
   }
 
-  // Interpolate two bone-rotation poses (per-bone slerp).
+  // Interpolate two bone-rotation poses (per-bone slerp + linear pelvis travel).
   function slerpPose(a, b, t) {
     const out = {};
     const names = new Set([...Object.keys(a), ...Object.keys(b)]);
-    for (const n of names) out[n] = Q.slerp(a[n] || Q.IDENT, b[n] || Q.IDENT, t);
+    for (const n of names) {
+      if (n === "__root") continue;
+      out[n] = Q.slerp(a[n] || Q.IDENT, b[n] || Q.IDENT, t);
+    }
+    if (a.__root || b.__root) {
+      const ra = a.__root || REST.hips, rb = b.__root || REST.hips;
+      out.__root = [ra[0] + (rb[0] - ra[0]) * t, ra[1] + (rb[1] - ra[1]) * t, ra[2] + (rb[2] - ra[2]) * t];
+    }
     return out;
   }
 
