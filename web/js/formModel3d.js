@@ -18,7 +18,9 @@ const FormModel3D = (() => {
   const DEG = Math.PI / 180;
 
   const PREF_KEY = "f5s-fm3d-prefs";
-  const DEFAULTS = { yaw: 22, pitch: 8, shading: true };
+  // `yaw` is a viewing OFFSET from each exercise's authored angle (side -> profile,
+  // front -> frontal), so every movement renders at the angle it was authored for.
+  const DEFAULTS = { yaw: 0, pitch: 8, shading: true };
   function loadPrefs() { try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(PREF_KEY)) || {}); } catch (_) { return Object.assign({}, DEFAULTS); } }
   function savePrefs(p) { try { localStorage.setItem(PREF_KEY, JSON.stringify(p)); } catch (_) {} }
   const prefs = loadPrefs();
@@ -59,9 +61,9 @@ const FormModel3D = (() => {
     return `rgb(${a(rgb[0])}, ${a(rgb[1])}, ${a(rgb[2])})`;
   }
 
-  function makeCamera() {
+  function makeCamera(baseYaw) {
     const target = [0, 108, 0];
-    let yaw = (prefs.yaw || 0) * DEG, pitch = (prefs.pitch || 0) * DEG;
+    let yaw = (baseYaw + (prefs.yaw || 0)) * DEG, pitch = (prefs.pitch || 0) * DEG;
     const dist = 540, focal = 560;
     return {
       set yaw(v) { yaw = v; }, get yaw() { return yaw; },
@@ -88,7 +90,13 @@ const FormModel3D = (() => {
 
     let raf = null, phaseIdx = 0, phaseStart = 0, reps = 0, playing = false, destroyed = false;
     let tempoScale = 1, staticMode = reduceMotion;
-    const cam = makeCamera();
+    // Render each exercise from the view it was authored for: side-only poses
+    // only carry profile (sagittal) depth, so a 3/4 angle collapses the L/R limbs
+    // onto each other and looks broken — show those side-on instead.
+    const onlySide = ex.views && ex.views.side && !ex.views.front;
+    const onlyFront = ex.views && ex.views.front && !ex.views.side;
+    const baseYaw = onlySide ? 90 : onlyFront ? 0 : 24;
+    const cam = makeCamera(baseYaw);
 
     host.innerHTML = "";
     const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
@@ -254,7 +262,7 @@ const FormModel3D = (() => {
     resetBtn.onclick = reset;
     tempoNorm.onclick = () => { tempoScale = 1; tempoNorm.classList.add("active"); tempoSlow.classList.remove("active"); };
     tempoSlow.onclick = () => { tempoScale = 1.6; tempoSlow.classList.add("active"); tempoNorm.classList.remove("active"); };
-    yawS.addEventListener("input", () => { prefs.yaw = Number(yawS.value) || 0; savePrefs(prefs); cam.yaw = prefs.yaw * DEG; if (!playing) drawPose(currentPose()); });
+    yawS.addEventListener("input", () => { prefs.yaw = Number(yawS.value) || 0; savePrefs(prefs); cam.yaw = (baseYaw + prefs.yaw) * DEG; if (!playing) drawPose(currentPose()); });
     pitchS.addEventListener("input", () => { prefs.pitch = Number(pitchS.value) || 0; savePrefs(prefs); cam.pitch = prefs.pitch * DEG; if (!playing) drawPose(currentPose()); });
     const onResize = () => resize();
     window.addEventListener("resize", onResize);
