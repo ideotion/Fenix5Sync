@@ -158,6 +158,12 @@
     return Q.slerp(Q.IDENT, q, lim / a);
   }
 
+  // Quaternion of a rotation by `angle` (radians) about a unit-ised `axis`.
+  function axisAngleQuat(axis, angle) {
+    const u = V.norm(axis), s = Math.sin(angle / 2);
+    return [u[0] * s, u[1] * s, u[2] * s, Math.cos(angle / 2)];
+  }
+
   // ------------------------------------------------------ forward kinematics
   // Given per-bone LOCAL quaternions, return world positions for every joint.
   function forwardKinematics(localQ, opts = {}) {
@@ -166,9 +172,16 @@
     const worldQ = {}, jointPos = { hips: root.slice() };
     const lq = (n) => localQ[n] || Q.IDENT;
 
+    const twist = localQ.__twist;
     for (const b of BONES) {
       const parentWorld = b.parent ? (worldQ[b.parent] || Q.IDENT) : Q.IDENT;
-      worldQ[b.name] = Q.mul(parentWorld, lq(b.name));
+      // Compose the swing with an optional axial twist (roll about the bone's rest
+      // axis). Twist about the bone's own axis leaves THIS bone's direction
+      // unchanged but rolls the frame its children inherit (pronation, femoral
+      // rotation, spinal/head turn). Default (no __twist) is bit-for-bit unchanged.
+      let local = lq(b.name);
+      if (twist && twist[b.name]) local = Q.mul(local, axisAngleQuat(REST_DIR[b.name], twist[b.name]));
+      worldQ[b.name] = Q.mul(parentWorld, local);
       // Determine where the bone starts.
       let start;
       if (b.name === "spine") start = jointPos.hips;
@@ -332,12 +345,19 @@
       const ra = a.__root || REST.hips, rb = b.__root || REST.hips;
       out.__root = [ra[0] + (rb[0] - ra[0]) * t, ra[1] + (rb[1] - ra[1]) * t, ra[2] + (rb[2] - ra[2]) * t];
     }
+    if (a.__twist || b.__twist) {
+      const ta = a.__twist || {}, tb = b.__twist || {}, tw = {};
+      for (const n of new Set([...Object.keys(ta), ...Object.keys(tb)])) {
+        tw[n] = (ta[n] || 0) + ((tb[n] || 0) - (ta[n] || 0)) * t;
+      }
+      out.__twist = tw;
+    }
     return out;
   }
 
   return {
     V, Q, REST, BONES, BONE_BY_NAME, REST_DIR, BONE_LEN, GROUND_Y, JOINT_LIMITS,
     forwardKinematics, adaptPose, adaptExercise, slerpPose, solveTwoBoneIK,
-    swingAngle, clampJoint,
+    swingAngle, clampJoint, axisAngleQuat,
   };
 });
