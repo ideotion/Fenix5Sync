@@ -52,6 +52,7 @@ from core.zones import compute_zones
 from .progress import JobManager
 from core.coach_state import compute_coach_state
 from core.plan_builder import Objective, agenda_to_ics, build_plan
+from core.wellness import DayWellness
 from .schemas import (
     ActivityDetail,
     ActivityList,
@@ -701,13 +702,23 @@ def put_config(new: ConfigModel, request: Request) -> ConfigModel:
 _RUN_SPORTS = {"running", "run", "trail_running", "treadmill_running", "track_running"}
 
 
+def _wellness_days(store: Store) -> list[DayWellness]:
+    """Stored daily wellness summaries as records the readiness gate can read."""
+    return [DayWellness(**d) for d in store.all_wellness_days()]
+
+
 def _coach_state(store: Store, cfg: Config):
-    """A CoachState from the local running history, or None if there's none yet."""
+    """A CoachState from the local running history, or None if there's none yet.
+
+    The ``_RUN_SPORTS`` pre-filter is the only sport scope (no second exact-match
+    ``sport=`` filter inside, which would silently drop trail/treadmill/track
+    runs), and stored wellness days feed the resting-HR/stress readiness gate.
+    """
     runs = [a for a in store.all_activities(with_series=False)
             if (a.sport or "").lower() in _RUN_SPORTS]
     if not runs:
         return None
-    return compute_coach_state(runs, cfg.athlete, sport="running")
+    return compute_coach_state(runs, cfg.athlete, wellness=_wellness_days(store))
 
 
 def _objective_from(body: CoachPlanRequest) -> Objective:
@@ -717,6 +728,25 @@ def _objective_from(body: CoachPlanRequest) -> Objective:
         sessions_per_week=body.sessions_per_week,
         available_days=body.available_days or [0, 1, 2, 3, 4, 5, 6], level=body.level,
     )
+
+
+@router.get("/coach/state")
+def coach_state(
+    store: Store = Depends(get_store),
+    cfg: Config = Depends(get_config),
+) -> dict:
+    """Where you stand today: fitness/fatigue/form, ramp, ACWR, readiness.
+
+    The sensor half of the dynamic coach -- the same state that gates and sizes
+    ``/coach/plan`` -- evaluated as of today (UTC), so rest days decay fitness
+    and fatigue instead of freezing them at the last workout. With no running
+    history yet this still returns the honest empty state (and any
+    wellness-derived readiness), never a 404.
+    """
+    state = _coach_state(store, cfg)
+    if state is None:
+        state = compute_coach_state([], cfg.athlete, wellness=_wellness_days(store))
+    return state.as_dict()
 
 
 @router.post("/coach/plan")

@@ -67,6 +67,9 @@ const CoachView = (() => {
       U.el("span", { style: DIM, text: data.disclaimer }),
     ]));
 
+    // where you stand today (the sensor state that gates and sizes the plan)
+    root.appendChild(todayCard());
+
     // objective -> personalized plan (+ .ics export)
     root.appendChild(plannerCard());
 
@@ -172,6 +175,71 @@ const CoachView = (() => {
       U.el("div", { class: "k", text: k }),
       U.el("div", { class: "v", style: "font-size:13px;font-weight:600", text: v }),
     ]);
+  }
+
+  // ---------- where you stand today (GET /api/coach/state) ----------
+  const ACWR_ZONE = {
+    undertraining: ["undertraining", "--accent-2"],
+    sweet_spot: ["sweet spot", "--good"],
+    caution: ["caution", "--warn"],
+    high_risk: ["high risk", "--bad"],
+  };
+  const num = (v, signed) => v === null || v === undefined ? "—"
+    : (signed && v > 0 ? "+" : "") + v;
+
+  function todayCard() {
+    const card = U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" });
+    const body = U.el("div");
+    card.appendChild(U.el("h3", { style: H, text: "Where you stand today" }));
+    card.appendChild(body);
+    body.appendChild(U.spinner("Reading your training state…"));
+
+    API.coachState().then((s) => {
+      body.innerHTML = "";
+      if (!s.history_days) {
+        body.appendChild(U.el("div", { style: DIM, text: "No running history yet — sync some activities and your fitness, fatigue and form will appear here." }));
+        return;
+      }
+      const zone = ACWR_ZONE[s.acwr_zone];
+      body.appendChild(U.el("div", { class: "meta-grid" }, [
+        metaItem("Form (TSB)", num(s.tsb, true)),
+        metaItem("Fitness (CTL)", num(s.ctl)),
+        metaItem("Fatigue (ATL)", num(s.atl)),
+        metaItem("Ramp /wk", num(s.ramp_rate, true)),
+        metaItem("Load ratio (ACWR)", s.acwr === null ? "—" : String(s.acwr)),
+        metaItem("Days since hard", num(s.days_since_hard)),
+      ]));
+      const badges = U.el("div", { style: "display:flex;gap:var(--sp-2);flex-wrap:wrap;margin-top:var(--sp-3)" });
+      if (zone) {
+        badges.appendChild(U.el("span", {
+          style: `font-size:11px;font-weight:700;color:#fff;border-radius:4px;padding:2px 8px;background:var(${zone[1]})`,
+          text: "load: " + zone[0],
+        }));
+      }
+      const r = s.readiness;
+      if (r && r.fresh !== null) {
+        badges.appendChild(U.el("span", {
+          style: `font-size:11px;font-weight:700;color:#fff;border-radius:4px;padding:2px 8px;background:var(${r.fresh ? "--good" : "--warn"})`,
+          text: r.fresh ? "recovered (resting HR at baseline)"
+                        : `resting HR +${r.rhr_delta} bpm over baseline — favour recovery`,
+        }));
+      } else {
+        badges.appendChild(U.el("span", { style: FAINT, text: "Readiness: no wellness data yet (sync monitoring files to enable the recovery check)." }));
+      }
+      if (badges.childNodes.length) body.appendChild(badges);
+      if (s.needs && s.needs.length) {
+        body.appendChild(U.el("div", { style: FAINT + ";margin-top:var(--sp-3)", text: "Sharper with: " + s.needs.join(", ") + " (Settings → Athlete)." }));
+      }
+      if (s.notes && s.notes.length) {
+        body.appendChild(U.el("ul", { style: FAINT + ";margin-top:var(--sp-3);padding-left:18px;line-height:1.6" },
+          s.notes.map((n) => U.el("li", { text: n }))));
+      }
+      body.appendChild(U.el("div", { style: FAINT + ";margin-top:var(--sp-3)", text: `As of ${s.as_of} · ${s.history_days} days of history · unit ${s.unit}. These signals gate and size the plan below.` }));
+    }).catch((e) => {
+      body.innerHTML = "";
+      body.appendChild(U.el("div", { style: DIM, text: "Training state unavailable: " + e.message }));
+    });
+    return card;
   }
 
   // ---------- objective -> dated plan ----------
