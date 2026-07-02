@@ -237,10 +237,11 @@ test("PR3: no bone exceeds its joint limit across any phase of any movement", ()
 
 test("PR3: clampJoint caps an over-limit rotation to the limit, axis preserved", () => {
   const axis = P.V.norm([0.2, 1, 0.3]);
-  const big = 175 * Math.PI / 180; // beyond the forearm's 160 limit
+  const lim = P.JOINT_LIMITS.forearmL; // AAOS elbow ceiling (deg)
+  const big = (lim + 20) * Math.PI / 180; // beyond the forearm limit
   const q = [axis[0] * Math.sin(big / 2), axis[1] * Math.sin(big / 2), axis[2] * Math.sin(big / 2), Math.cos(big / 2)];
   const c = P.clampJoint("forearmL", q);
-  assert.ok(Math.abs(P.swingAngle(c) - 160 * Math.PI / 180) < 1e-3, `clamped angle ${P.swingAngle(c)}`);
+  assert.ok(Math.abs(P.swingAngle(c) - lim * Math.PI / 180) < 1e-3, `clamped angle ${P.swingAngle(c)}`);
   // axis unchanged (same direction of the vector part).
   const ca = P.V.norm([c[0], c[1], c[2]]);
   assert.ok(Math.abs(ca[0] - axis[0]) < 1e-6 && Math.abs(ca[1] - axis[1]) < 1e-6, "swing axis preserved");
@@ -259,7 +260,7 @@ test("PR3: clamping removes the impossible 177-degree elbow from current content
     const poses = P.adaptExercise(ex);
     for (const p of Object.values(poses)) worst = Math.max(worst, P.swingAngle(p.forearmR) * 180 / Math.PI);
   }
-  assert.ok(worst <= 160 + 0.01, `forearmR still ${worst} deg`);
+  assert.ok(worst <= P.JOINT_LIMITS.forearmR + 0.01, `forearmR still ${worst} deg`);
 });
 
 // ------------------------------ PR4: axial twist ---------------------------- //
