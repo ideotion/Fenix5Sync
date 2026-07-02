@@ -170,6 +170,73 @@
     return [u[0] * s, u[1] * s, u[2] * s, Math.cos(angle / 2)];
   }
 
+  // ---- timing: per-phase easing --------------------------------------------
+  // A phase may carry `ease: "inout" | "linear" | "in" | "out"` in the content
+  // JSON. "inout" is the historical default (cubic), so absent/unknown names
+  // change nothing. "linear" is the near-constant-speed profile flowing motion
+  // (Tai Chi) wants; "in"/"out" let an eccentric lower read slower than the
+  // concentric rise within one phase.
+  const EASINGS = {
+    inout: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+    linear: (t) => t,
+    in: (t) => t * t * t,
+    out: (t) => 1 - Math.pow(1 - t, 3),
+  };
+  function easingFor(name) { return EASINGS[name] || EASINGS.inout; }
+
+  // ---- procedural life: breath + postural sway ------------------------------
+  // Small, bounded, DETERMINISTIC oscillations so holds are not frozen. Values
+  // anchor to the biomechanics appendix (Sect. D): resting breath 12-20/min
+  // (default 15, inhale slightly faster than the exhale); quiet-standing sway is
+  // quasi-random with power below ~1 Hz and a-few-mm amplitude — modeled as two
+  // incommensurate sine octaves per axis (AP larger than ML). 1 world unit is
+  // ~9 mm at our 192-unit stature, so the defaults sit in the cited mm range.
+  // Everything clamps to LIFE_MAX regardless of overrides; scale 0 = no-op.
+  const LIFE_DEFAULTS = {
+    breathRate: 15,      // breaths/min
+    breathAmpDeg: 1.6,   // spine pitch amplitude (degrees)
+    inhaleFrac: 0.45,    // fraction of the cycle spent inhaling (< 0.5 = faster in)
+    swayAP: 0.7,         // front-back amplitude, world units (~6 mm)
+    swayML: 0.4,         // side-side amplitude, world units (~3.5 mm)
+  };
+  const LIFE_MAX = { breathAmpDeg: 3.0, sway: 2.0 };
+  const _clamp01 = (v) => Math.max(0, Math.min(1, Number(v) || 0));
+
+  // Breath waveform in [-1, 1]: rises over the inhale fraction, falls over the
+  // exhale (piecewise cosine, C1 at the joins), so inhale reads faster.
+  function breathWave(tMs, rate, inhaleFrac) {
+    const period = 60000 / (rate || LIFE_DEFAULTS.breathRate);
+    const p = (((tMs % period) + period) % period) / period;
+    const fi = inhaleFrac || LIFE_DEFAULTS.inhaleFrac;
+    return p < fi ? -Math.cos(Math.PI * p / fi) : Math.cos(Math.PI * (p - fi) / (1 - fi));
+  }
+
+  // Overlay life onto a pose (pure: returns a new pose, input untouched).
+  // opts: { breath: 0..1, sway: 0..1, breathAmpDeg?, swayAP?, swayML? }.
+  function applyLife(pose, tMs, opts = {}) {
+    const breath = _clamp01(opts.breath);
+    const sway = _clamp01(opts.sway);
+    if (!breath && !sway) return pose;
+    const out = Object.assign({}, pose);
+    if (breath) {
+      const amp = Math.min(opts.breathAmpDeg != null ? opts.breathAmpDeg : LIFE_DEFAULTS.breathAmpDeg,
+        LIFE_MAX.breathAmpDeg) * breath * _RAD;
+      const w = breathWave(tMs, opts.breathRate, opts.inhaleFrac);
+      out.spine = Q.mul(pose.spine || Q.IDENT, axisAngleQuat([1, 0, 0], amp * w));
+    }
+    if (sway) {
+      const t = tMs / 1000;
+      const ampAP = Math.min(opts.swayAP != null ? opts.swayAP : LIFE_DEFAULTS.swayAP, LIFE_MAX.sway) * sway;
+      const ampML = Math.min(opts.swayML != null ? opts.swayML : LIFE_DEFAULTS.swayML, LIFE_MAX.sway) * sway;
+      // weights sum to 1, so each axis never exceeds its amplitude.
+      const ap = ampAP * (0.72 * Math.sin(2 * Math.PI * 0.30 * t) + 0.28 * Math.sin(2 * Math.PI * 0.85 * t + 1.7));
+      const ml = ampML * (0.75 * Math.sin(2 * Math.PI * 0.23 * t + 0.9) + 0.25 * Math.sin(2 * Math.PI * 0.70 * t + 2.6));
+      const base = pose.__root || REST.hips;
+      out.__root = [base[0] + ml, base[1], base[2] + ap];
+    }
+    return out;
+  }
+
   // ------------------------------------------------------ forward kinematics
   // Given per-bone LOCAL quaternions, return world positions for every joint.
   function forwardKinematics(localQ, opts = {}) {
@@ -365,5 +432,6 @@
     V, Q, REST, BONES, BONE_BY_NAME, REST_DIR, BONE_LEN, GROUND_Y, JOINT_LIMITS,
     forwardKinematics, adaptPose, adaptExercise, slerpPose, solveTwoBoneIK,
     swingAngle, clampJoint, axisAngleQuat,
+    EASINGS, easingFor, LIFE_DEFAULTS, LIFE_MAX, breathWave, applyLife,
   };
 });

@@ -13,7 +13,6 @@
    with no re-authoring). */
 const FormModel3D = (() => {
   const P = (typeof Pose3D !== "undefined") ? Pose3D : null;
-  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const DEG = Math.PI / 180;
 
@@ -220,7 +219,13 @@ const FormModel3D = (() => {
       if (!phaseStart) phaseStart = ts;
       const elapsed = ts - phaseStart;
       let t = elapsed / dur; if (t > 1) t = 1;
-      _pose = P.slerpPose(poses[ph.from] || poses[restName], poses[ph.to] || poses[restName], ease(t));
+      // Per-phase easing (content may set ph.ease; default = historical cubic),
+      // then the bounded life overlay: full breath during holds, subtle otherwise.
+      const easeFn = P.easingFor(ph.ease);
+      _pose = P.applyLife(
+        P.slerpPose(poses[ph.from] || poses[restName], poses[ph.to] || poses[restName], easeFn(t)),
+        ts, { breath: ph.isHold ? 1 : 0.3, sway: 1 },
+      );
       drawPose(_pose);
       prog.style.width = (t * 100).toFixed(1) + "%";
       if (ph.isHold) { const left = Math.ceil((dur - elapsed) / 1000); countEl.textContent = left > 0 ? left + "s hold" : ""; }
