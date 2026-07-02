@@ -28,14 +28,17 @@ const FormModel3D = (() => {
   // joints/head give the stick figure volume. Girth is a world-space radius per
   // joint (scaled by the projection at draw time).
   const GIRTH = {
-    hips: 12, spine: 11, shoulderL: 7, shoulderR: 7, elbowL: 5.5, elbowR: 5.5,
-    handL: 4, handR: 4, hipL: 9, hipR: 9, kneeL: 7.5, kneeR: 7.5,
-    ankleL: 5.5, ankleR: 5.5, footL: 4.5, footR: 4.5,
+    hips: 12, lspine: 11.5, spine: 11, neckBase: 8, shoulderL: 7, shoulderR: 7,
+    elbowL: 5.5, elbowR: 5.5, handL: 4, handR: 4, hipL: 9, hipR: 9,
+    kneeL: 7.5, kneeR: 7.5, ankleL: 5.5, ankleR: 5.5,
+    footL: 4.5, footR: 4.5, toeL: 3.2, toeR: 3.2,
   };
   const LIMBS = [
     ["shoulderL", "elbowL"], ["elbowL", "handL"], ["shoulderR", "elbowR"], ["elbowR", "handR"],
-    ["hipL", "kneeL"], ["kneeL", "ankleL"], ["ankleL", "footL"],
-    ["hipR", "kneeR"], ["kneeR", "ankleR"], ["ankleR", "footR"], ["spine", "head"],
+    ["hipL", "kneeL"], ["kneeL", "ankleL"], ["ankleL", "footL"], ["footL", "toeL"],
+    ["hipR", "kneeR"], ["kneeR", "ankleR"], ["ankleR", "footR"], ["footR", "toeR"],
+    // The trunk chain drawn segment-by-segment so spinal curvature shows.
+    ["hips", "lspine"], ["lspine", "spine"], ["spine", "neckBase"], ["neckBase", "head"],
   ];
   const TORSO_Q = ["shoulderL", "shoulderR", "hipR", "hipL"];
   const JOINTS = Object.keys(GIRTH);

@@ -174,8 +174,8 @@ test("PR2: the lowest foot is grounded across every phase of every movement", ()
       for (const t of [0, 0.25, 0.5, 0.75, 1]) {
         const pose = P.slerpPose(poses[ph.from] || poses[ph.to], poses[ph.to] || poses[ph.from], t);
         const jp = P.forwardKinematics(pose, { ground: true });
-        const lowest = Math.min(jp.footL[1], jp.footR[1]);
-        assert.ok(Math.abs(lowest - P.GROUND_Y) <= TOL, `${ex.id} ${ph.name}@${t}: lowest foot ${lowest}`);
+        const lowest = Math.min(jp.footL[1], jp.footR[1], jp.toeL[1], jp.toeR[1]);
+        assert.ok(Math.abs(lowest - P.GROUND_Y) <= TOL, `${ex.id} ${ph.name}@${t}: lowest contact ${lowest}`);
         assert.ok(jp.footL[1] >= P.GROUND_Y - TOL && jp.footR[1] >= P.GROUND_Y - TOL, `${ex.id}: a foot dipped below ground`);
       }
     }
@@ -275,13 +275,13 @@ test("PR4: zero/absent twist leaves FK bit-for-bit unchanged (back-compat)", () 
   const poses = P.adaptExercise(ex);
   const name = Object.keys(poses)[0];
   const base = P.forwardKinematics(poses[name]);
-  const withZero = P.forwardKinematics(Object.assign({}, poses[name], { __twist: { spine: 0, thighL: 0 } }));
+  const withZero = P.forwardKinematics(Object.assign({}, poses[name], { __twist: { thoracic: 0, thighL: 0 } }));
   for (const j of Object.keys(base)) assert.deepStrictEqual(withZero[j], base[j], `${j} changed under zero twist`);
 });
 
-test("PR4: a spine twist rolls the shoulders about the vertical rest axis", () => {
+test("PR4: a trunk (thoracic) twist rolls the shoulders about the vertical rest axis", () => {
   const base = P.forwardKinematics(identityPose());
-  const twisted = P.forwardKinematics(Object.assign(identityPose(), { __twist: { spine: Math.PI / 2 } }));
+  const twisted = P.forwardKinematics(Object.assign(identityPose(), { __twist: { thoracic: Math.PI / 2 } }));
   // Spine rest axis is +Y; a +90deg twist rotates the shoulder offset about Y.
   const spine = base.spine;
   const off0 = P.V.sub(base.shoulderL, spine);          // ~[-20, 18, 0]
@@ -305,10 +305,10 @@ test("PR4: axisAngleQuat rotates a perpendicular vector by the given angle", () 
 });
 
 test("PR4: slerpPose interpolates twist linearly", () => {
-  const a = Object.assign(identityPose(), { __twist: { spine: 0 } });
-  const b = Object.assign(identityPose(), { __twist: { spine: 1 } });
+  const a = Object.assign(identityPose(), { __twist: { thoracic: 0 } });
+  const b = Object.assign(identityPose(), { __twist: { thoracic: 1 } });
   const mid = P.slerpPose(a, b, 0.5);
-  assert.ok(Math.abs(mid.__twist.spine - 0.5) < 1e-9, "twist midpoint should be the average");
+  assert.ok(Math.abs(mid.__twist.thoracic - 0.5) < 1e-9, "twist midpoint should be the average");
 });
 
 // --------------------------- PR5: timing + life ----------------------------- //
@@ -341,7 +341,7 @@ test("PR5: applyLife is bounded even under absurd overrides", () => {
   const maxRad = P.LIFE_MAX.breathAmpDeg * Math.PI / 180 + 1e-9;
   for (let tMs = 0; tMs <= 60000; tMs += 97) {
     const p = P.applyLife(base, tMs, { breath: 1, sway: 1, breathAmpDeg: 999, swayAP: 999, swayML: 999 });
-    assert.ok(P.swingAngle(p.spine) <= maxRad, `breath over bound at ${tMs}`);
+    assert.ok(P.swingAngle(p.thoracic) <= maxRad, `breath over bound at ${tMs}`);
     assert.ok(Math.abs(p.__root[0] - P.REST.hips[0]) <= P.LIFE_MAX.sway + 1e-9, `ML sway over bound at ${tMs}`);
     assert.ok(Math.abs(p.__root[2] - P.REST.hips[2]) <= P.LIFE_MAX.sway + 1e-9, `AP sway over bound at ${tMs}`);
     assert.strictEqual(p.__root[1], P.REST.hips[1], "sway never changes height");
@@ -350,15 +350,15 @@ test("PR5: applyLife is bounded even under absurd overrides", () => {
 
 test("PR5: applyLife is deterministic, pure, and a no-op at zero scale", () => {
   const base = identityPose();
-  const spineBefore = base.spine;
+  const spineBefore = base.thoracic;
   const a = P.applyLife(base, 1234, { breath: 1, sway: 1 });
   const b = P.applyLife(base, 1234, { breath: 1, sway: 1 });
   assert.deepStrictEqual(a, b, "same t -> same output");
-  assert.strictEqual(base.spine, spineBefore, "input pose not mutated");
+  assert.strictEqual(base.thoracic, spineBefore, "input pose not mutated");
   assert.strictEqual(P.applyLife(base, 1234, { breath: 0, sway: 0 }), base, "zero scales -> same object");
   // And it actually moves something at some time.
   const moved = P.applyLife(base, 900, { breath: 1, sway: 1 });
-  assert.ok(P.swingAngle(moved.spine) > 1e-4 || Math.abs(moved.__root[2] - P.REST.hips[2]) > 1e-4);
+  assert.ok(P.swingAngle(moved.thoracic) > 1e-4 || Math.abs(moved.__root[2] - P.REST.hips[2]) > 1e-4);
 });
 
 test("PR5: default life amplitudes sit in the cited few-mm / small-degree range", () => {
@@ -366,6 +366,72 @@ test("PR5: default life amplitudes sit in the cited few-mm / small-degree range"
   assert.ok(P.LIFE_DEFAULTS.breathAmpDeg <= P.LIFE_MAX.breathAmpDeg);
   assert.ok(P.LIFE_DEFAULTS.swayAP <= 1.2 && P.LIFE_DEFAULTS.swayML <= P.LIFE_DEFAULTS.swayAP,
     "AP sway larger than ML, both under ~10 mm equivalent");
+});
+
+// ------------------------- PR6: SKEL-2 segmented trunk ---------------------- //
+test("PR6: identity FK places the new chain joints at their rest positions", () => {
+  const jp = P.forwardKinematics(identityPose());
+  assert.deepStrictEqual(jp.lspine.map(Math.round), [0, 126, 0]);
+  assert.deepStrictEqual(jp.spine.map(Math.round), [0, 150, 0]);
+  assert.deepStrictEqual(jp.neckBase.map(Math.round), [0, 168, 0]);
+  assert.deepStrictEqual(jp.shoulderL.map(Math.round), [-20, 168, 0]);
+  assert.deepStrictEqual(jp.shoulderR.map(Math.round), [20, 168, 0]);
+  assert.ok(Math.abs(jp.toeL[1] - P.GROUND_Y) < 1e-9 && Math.abs(jp.toeR[1] - P.GROUND_Y) < 1e-9,
+    "toes rest on the ground");
+});
+
+test("PR6: the rigid default keeps the trunk straight (legacy behaviour)", () => {
+  // A bent-trunk pose: with curve 0, thoracic/cervical locals are identity, so
+  // the whole trunk rotates as one — exactly the old single-spine behaviour.
+  const views = { side: { bend: { hip: [116, 178], sh: [160, 150], head: [172, 130], knee: [114, 248], ankle: [112, 312], toe: [140, 312], elb: [170, 180], hand: [176, 210] } } };
+  const pose = P.adaptPose(views, "bend");
+  assert.ok(P.swingAngle(pose.thoracic) < 1e-9, "thoracic local identity at curve 0");
+  assert.ok(P.swingAngle(pose.cervical) < 1e-9, "cervical local identity at curve 0");
+  const jp = P.forwardKinematics(pose);
+  // Chain is straight: hips->lspine and spine->neckBase directions coincide.
+  const d1 = dir(jp.hips, jp.lspine), d2 = dir(jp.spine, jp.neckBase);
+  assert.ok(vClose(d1, d2, 1e-6), "straight trunk under the rigid default");
+});
+
+test("PR6: opting into curvature bends the spine but preserves chest orientation", () => {
+  const views = { side: { bend: { hip: [116, 178], sh: [160, 150], head: [172, 130], knee: [114, 248], ankle: [112, 312], toe: [140, 312], elb: [170, 180], hand: [176, 210] } } };
+  const rigid = P.adaptPose(views, "bend", { curve: 0 });
+  const curved = P.adaptPose(views, "bend", { curve: 1 });
+  const jr = P.forwardKinematics(rigid), jc = P.forwardKinematics(curved);
+  const fromVertical = (a, b) => Math.acos(Math.max(-1, Math.min(1, dir(a, b)[1])));
+  // Lumbar lags, the top segment leads: visible curvature.
+  const lumbarAngle = fromVertical(jc.hips, jc.lspine);
+  const topAngle = fromVertical(jc.spine, jc.neckBase);
+  assert.ok(topAngle - lumbarAngle > 0.15, `expected visible curvature, got ${topAngle - lumbarAngle}`);
+  // Chest orientation is preserved: the top trunk segment points the same way.
+  assert.ok(vClose(dir(jr.spine, jr.neckBase), dir(jc.spine, jc.neckBase), 1e-6),
+    "cervical segment direction identical between curve 0 and 1");
+  // And the arms keep their world direction (they hang off the same chest frame).
+  assert.ok(vClose(dir(jr.shoulderL, jr.elbowL), dir(jc.shoulderL, jc.elbowL), 1e-6));
+});
+
+test("PR6: adaptExercise honors an exercise-level spineCurve", () => {
+  const ex = loadExercise("bodyweight-squat") || loadExercise("supported-squat");
+  const rigid = P.adaptExercise(ex);
+  const curved = P.adaptExercise(Object.assign({}, ex, { spineCurve: 1 }));
+  // At least one pose must differ in its lumbar local between the two settings.
+  const differs = Object.keys(rigid).some((n) =>
+    Math.abs(P.swingAngle(rigid[n].lumbar) - P.swingAngle(curved[n].lumbar)) > 1e-6);
+  assert.ok(differs, "spineCurve should change the lumbar distribution");
+});
+
+test("PR6: every movement resolves to a valid, grounded pose on SKEL-2", () => {
+  // Full-content sweep: all bones present + normalized (incl. the new ones),
+  // and the grounding invariant still holds with toes in the contact set.
+  for (const ex of allMovements()) {
+    const poses = P.adaptExercise(ex);
+    for (const p of Object.values(poses)) {
+      for (const b of P.BONES) {
+        const q = p[b.name];
+        assert.ok(q && Math.abs(Math.hypot(q[0], q[1], q[2], q[3]) - 1) < 1e-6, `${ex.id}: bad ${b.name}`);
+      }
+    }
+  }
 });
 
 test("slerpPose blends two poses per bone and stays normalized", () => {

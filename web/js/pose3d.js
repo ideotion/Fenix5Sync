@@ -85,8 +85,14 @@
 
   // ------------------------------------------------------ humanoid skeleton
   // Rest world joint positions (a relaxed standing pose, arms at the sides).
+  // SKEL-2: the trunk is a lumbar -> thoracic -> cervical chain (so posture can
+  // curve), clavicles root the arms off the cervicothoracic junction, and each
+  // foot gains a toe joint (pairs with the 2-D heel for future foot roll). The
+  // legacy joint names ("spine" = top of the thoracic segment, "head") survive,
+  // so renderers and content keep working.
   const REST = {
-    hips: [0, 96, 0], spine: [0, 150, 0], head: [0, 196, 0],
+    hips: [0, 96, 0], lspine: [0, 126, 0], spine: [0, 150, 0],
+    neckBase: [0, 168, 0], head: [0, 196, 0],
     shoulderL: [-20, 168, 0], shoulderR: [20, 168, 0],
     elbowL: [-26, 130, 0], elbowR: [26, 130, 0],
     handL: [-30, 96, 0], handR: [30, 96, 0],
@@ -94,23 +100,32 @@
     kneeL: [-13, 50, 0], kneeR: [13, 50, 0],
     ankleL: [-14, 6, 0], ankleR: [14, 6, 0],
     footL: [-14, 0, 14], footR: [14, 0, 14],
+    toeL: [-14, 0, 21], toeR: [14, 0, 21],
   };
   // Bone hierarchy: each bone orients the segment parentJoint -> joint.
   // `pair` is the [from, to] 2-D joint names the IK adapter reads (side names;
-  // front uses the l/r-prefixed variants). `mirror` flags arms/legs so a
-  // side-only (profile) pose drives both limbs.
+  // front uses the l/r-prefixed variants); pair-less bones (clavicles, toes)
+  // rest at identity until authored. The three trunk bones share one pair: the
+  // adapter derives one trunk rotation and distributes it (rigid by default,
+  // curved on request — see adaptPose). Order = parents before children.
   const BONES = [
-    { name: "spine", parent: null, from: "hips", to: "spine", pair: ["hip", "sh"] },
-    { name: "head", parent: "spine", from: "spine", to: "head", pair: ["sh", "head"] },
+    { name: "lumbar", parent: null, from: "hips", to: "lspine", pair: ["hip", "sh"] },
+    { name: "thoracic", parent: "lumbar", from: "lspine", to: "spine", pair: ["hip", "sh"] },
+    { name: "cervical", parent: "thoracic", from: "spine", to: "neckBase", pair: ["hip", "sh"] },
+    { name: "clavicleL", parent: "cervical", from: "neckBase", to: "shoulderL" },
+    { name: "clavicleR", parent: "cervical", from: "neckBase", to: "shoulderR" },
+    { name: "head", parent: "cervical", from: "neckBase", to: "head", pair: ["sh", "head"] },
     { name: "thighL", parent: null, from: "hipL", to: "kneeL", pair: ["hip", "knee"], side: "L" },
     { name: "shinL", parent: "thighL", from: "kneeL", to: "ankleL", pair: ["knee", "ankle"], side: "L" },
     { name: "footL", parent: "shinL", from: "ankleL", to: "footL", pair: ["ankle", "toe"], side: "L" },
+    { name: "toeL", parent: "footL", from: "footL", to: "toeL", side: "L" },
     { name: "thighR", parent: null, from: "hipR", to: "kneeR", pair: ["hip", "knee"], side: "R" },
     { name: "shinR", parent: "thighR", from: "kneeR", to: "ankleR", pair: ["knee", "ankle"], side: "R" },
     { name: "footR", parent: "shinR", from: "ankleR", to: "footR", pair: ["ankle", "toe"], side: "R" },
-    { name: "upperArmL", parent: "spine", from: "shoulderL", to: "elbowL", pair: ["sh", "elb"], side: "L" },
+    { name: "toeR", parent: "footR", from: "footR", to: "toeR", side: "R" },
+    { name: "upperArmL", parent: "clavicleL", from: "shoulderL", to: "elbowL", pair: ["sh", "elb"], side: "L" },
     { name: "forearmL", parent: "upperArmL", from: "elbowL", to: "handL", pair: ["elb", "hand"], side: "L" },
-    { name: "upperArmR", parent: "spine", from: "shoulderR", to: "elbowR", pair: ["sh", "elb"], side: "R" },
+    { name: "upperArmR", parent: "clavicleR", from: "shoulderR", to: "elbowR", pair: ["sh", "elb"], side: "R" },
     { name: "forearmR", parent: "upperArmR", from: "elbowR", to: "handR", pair: ["elb", "hand"], side: "R" },
   ];
   const BONE_BY_NAME = Object.fromEntries(BONES.map((b) => [b.name, b]));
@@ -121,9 +136,17 @@
     BONE_LEN[b.name] = V.len(d);
     REST_DIR[b.name] = V.norm(d);
   }
-  // Shoulder sockets hang off the (rotating) spine; arms inherit spine motion.
-  const SHOULDER_OFFSET = {
-    upperArmL: V.sub(REST.shoulderL, REST.spine), upperArmR: V.sub(REST.shoulderR, REST.spine),
+  // Trunk-rotation share per segment as a function of the curve amount c in
+  // [0, 1]. c = 0 -> all three segments carry the full rotation (a straight,
+  // rigid trunk — exactly the legacy single-spine behaviour, and the SAFE
+  // default: blind curvature would demonstrate rounded-back hinges to the
+  // fragile users this app serves). c = 1 -> the lumbar lags most, the chest
+  // (cervical) always reaches the full rotation, so arm/head placement is
+  // orientation-stable while the spine visibly curves.
+  const TRUNK_SHARE = {
+    lumbar: (c) => 1 - 0.55 * c,
+    thoracic: (c) => 1 - 0.25 * c,
+    cervical: () => 1,
   };
 
   const GROUND_Y = 0; // world height of the floor (rest feet sit here)
@@ -137,19 +160,24 @@
   // the clamp only catches clearly-impossible frames (e.g. a 177-degree elbow).
   // Knee/elbow are hinges: this caps the fold; the bend DIRECTION (no
   // hyperextension) is fixed by the IK pole, not here. Hip/shoulder are cones.
-  // The spine stays wide because the single rigid spine bone must rotate the
-  // whole body for floor/prone poses (push-ups, planks); true segmented
-  // cervical/thoracic/lumbar limits (Apti 2023) arrive with the segmented-spine
-  // PR. The tighter FUNCTIONAL ranges feed animation defaults + the plausibility
-  // test (PR5/PR7), not these hard clamps.
+  // The LUMBAR (trunk root) stays wide because it carries the whole-body
+  // rotation for floor/prone poses (push-ups, planks) under the rigid default;
+  // thoracic/cervical LOCAL rotations are only curvature deltas, so they take
+  // segment-scale limits (Apti 2023 measured spine norms). The tighter
+  // FUNCTIONAL ranges feed animation defaults + the plausibility test
+  // (PR5/PR7), not these hard clamps.
   const _RAD = Math.PI / 180;
   const JOINT_LIMITS = {
-    spine: 140, head: 70,             // cervical ~45-60; wide for the single spine bone
+    lumbar: 140,                      // trunk root: whole-body rotation for floor poses
+    thoracic: 45, cervical: 45,       // local curvature deltas (segmented spine)
+    head: 70,                         // neck on top of the cervical segment
+    clavicleL: 30, clavicleR: 30,     // shoulder-girdle shrug/protraction (authored later)
     upperArmL: 180, upperArmR: 180,   // shoulder flexion/abduction 0-180 (AAOS)
     forearmL: 150, forearmR: 150,     // elbow flexion 0-150 (AAOS)
     thighL: 130, thighR: 130,         // hip flexion 0-120 (to ~140 knee-bent)
     shinL: 150, shinR: 150,           // knee flexion 0-135..150 (AAOS range)
     footL: 140, footR: 140,           // wide: floor/prone whole-body rotation
+    toeL: 60, toeR: 60,               // toe break (foot roll, authored later)
   };
 
   // Rotation angle of a unit quaternion (radians), double-cover safe.
@@ -222,7 +250,7 @@
       const amp = Math.min(opts.breathAmpDeg != null ? opts.breathAmpDeg : LIFE_DEFAULTS.breathAmpDeg,
         LIFE_MAX.breathAmpDeg) * breath * _RAD;
       const w = breathWave(tMs, opts.breathRate, opts.inhaleFrac);
-      out.spine = Q.mul(pose.spine || Q.IDENT, axisAngleQuat([1, 0, 0], amp * w));
+      out.thoracic = Q.mul(pose.thoracic || Q.IDENT, axisAngleQuat([1, 0, 0], amp * w));
     }
     if (sway) {
       const t = tMs / 1000;
@@ -255,13 +283,13 @@
       let local = lq(b.name);
       if (twist && twist[b.name]) local = Q.mul(local, axisAngleQuat(REST_DIR[b.name], twist[b.name]));
       worldQ[b.name] = Q.mul(parentWorld, local);
-      // Determine where the bone starts.
+      // Where the bone starts: the trunk roots at the pelvis, the thighs at the
+      // (rigid) hip sockets, everything else at its parent-chain joint — the
+      // clavicles hang off neckBase, so the shoulders are real chain joints now.
       let start;
-      if (b.name === "spine") start = jointPos.hips;
+      if (b.name === "lumbar") start = jointPos.hips;
       else if (b.name === "thighL") start = V.add(jointPos.hips, V.sub(REST.hipL, REST.hips));
       else if (b.name === "thighR") start = V.add(jointPos.hips, V.sub(REST.hipR, REST.hips));
-      else if (b.name === "upperArmL") start = V.add(jointPos.spine, Q.rotate(worldQ.spine, SHOULDER_OFFSET.upperArmL));
-      else if (b.name === "upperArmR") start = V.add(jointPos.spine, Q.rotate(worldQ.spine, SHOULDER_OFFSET.upperArmR));
       else start = jointPos[b.from];
       jointPos[b.from] = jointPos[b.from] || start;
       const dir = Q.rotate(worldQ[b.name], REST_DIR[b.name]);
@@ -270,15 +298,14 @@
     // Fill fixed joints for renderers.
     jointPos.hipL = V.add(jointPos.hips, V.sub(REST.hipL, REST.hips));
     jointPos.hipR = V.add(jointPos.hips, V.sub(REST.hipR, REST.hips));
-    jointPos.shoulderL = jointPos.shoulderL || V.add(jointPos.spine, SHOULDER_OFFSET.upperArmL);
-    jointPos.shoulderR = jointPos.shoulderR || V.add(jointPos.spine, SHOULDER_OFFSET.upperArmR);
 
     // Foot grounding (opt-in): translate the whole skeleton so the lowest foot
-    // rests on the world ground plane. With the pelvis pinned high (PR1) and the
-    // legs bent, this is what pulls the body down into a squat and stops the feet
-    // floating — without touching any authored bone angle.
+    // contact (heel-side foot joints or the toes) rests on the world ground
+    // plane. With the pelvis pinned high (PR1) and the legs bent, this is what
+    // pulls the body down into a squat and stops the feet floating — without
+    // touching any authored bone angle.
     if (opts.ground) {
-      const feet = [jointPos.footL, jointPos.footR].filter(Boolean);
+      const feet = [jointPos.footL, jointPos.footR, jointPos.toeL, jointPos.toeR].filter(Boolean);
       if (feet.length) {
         const shift = GROUND_Y - Math.min(...feet.map((f) => f[1]));
         if (Math.abs(shift) > 1e-9) {
@@ -320,8 +347,10 @@
     return axisIsSide ? [0, dy, dx] : [dx, dy, 0];
   }
 
-  // Target world direction for a bone, fusing whatever views exist.
+  // Target world direction for a bone, fusing whatever views exist. Pair-less
+  // bones (clavicles, toes) have no 2-D drive and rest at identity.
   function _targetDir(bone, sidePose, frontPose) {
+    if (!bone.pair) return null;
     const [f, t] = bone.pair;
     const sideKey = (j) => j; // side pose uses unprefixed joints
     const frontKey = (j) => {
@@ -363,16 +392,29 @@
 
   // Convert one keyframe pose (the views' joint maps for a pose name) to per-bone
   // LOCAL quaternions, solved top-down so FK reproduces the target directions.
-  function adaptPose(views, poseName) {
+  // opts.curve in [0, 1] bends the trunk (see TRUNK_SHARE): 0 = rigid legacy
+  // trunk (the safe default), 1 = full curvature with the chest orientation
+  // preserved, so arm and head placement stays orientation-stable.
+  function adaptPose(views, poseName, opts = {}) {
     const sidePose = views.side && views.side[poseName];
     const frontPose = views.front && views.front[poseName];
+    const curve = _clamp01(opts.curve);
     const worldQ = {}, localQ = {};
     for (const b of BONES) {
-      const target = _targetDir(b, sidePose, frontPose);
       const parentWorld = b.parent ? (worldQ[b.parent] || Q.IDENT) : Q.IDENT;
-      const wq = target ? Q.fromTo(REST_DIR[b.name], target) : Q.IDENT;
-      // Clamp the joint to its limit, then carry the clamped world to children.
-      const local = clampJoint(b.name, Q.norm(Q.mul(Q.conj(parentWorld), wq)));
+      let local;
+      if (!b.pair) {
+        // Structural bones (clavicles, toes) have no 2-D drive: LOCAL identity,
+        // i.e. they follow their parent (shoulders ride the chest, toes the foot).
+        local = Q.IDENT;
+      } else {
+        const target = _targetDir(b, sidePose, frontPose);
+        let wq = target ? Q.fromTo(REST_DIR[b.name], target) : Q.IDENT;
+        // Trunk segments carry a share of the one trunk rotation.
+        if (target && TRUNK_SHARE[b.name]) wq = Q.slerp(Q.IDENT, wq, TRUNK_SHARE[b.name](curve));
+        // Clamp the joint to its limit, then carry the clamped world to children.
+        local = clampJoint(b.name, Q.norm(Q.mul(Q.conj(parentWorld), wq)));
+      }
       localQ[b.name] = local;
       worldQ[b.name] = Q.mul(parentWorld, local);
     }
@@ -381,12 +423,16 @@
 
   // Convert a whole exercise's views into 3-D bone-rotation pose tracks:
   //   { poseName: { boneName: [x,y,z,w], ... }, ... }
+  // An exercise may opt into spinal curvature via `spineCurve` (0..1) — an
+  // authoring decision per movement (e.g. a gentle crouch curves; a hinge must
+  // stay neutral-spine), never a blind default.
   function adaptExercise(exercise) {
     const views = exercise.views || {};
+    const curve = _clamp01(exercise.spineCurve);
     const poseNames = new Set();
     for (const v of Object.values(views)) for (const k of Object.keys(v)) poseNames.add(k);
     const poses = {};
-    for (const name of poseNames) poses[name] = adaptPose(views, name);
+    for (const name of poseNames) poses[name] = adaptPose(views, name, { curve });
 
     // Attach pelvis travel: each pose's hip displacement from the reference pose
     // (the rest pose if present, else the first), scaled into skeleton units.
