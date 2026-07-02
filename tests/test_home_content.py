@@ -86,8 +86,19 @@ def test_bibliography_entries_have_locators(pack):
         assert b["url"].startswith("http")
 
 
-def test_sessions_marked_pending(pack):
-    assert pack["sessions"]["status"] == "pending"
+def test_sessions_shipped_with_valid_templates(pack):
+    # The WS5 builder/player are live; the pack now ships one-click templates
+    # whose opts must be valid SessionBuilder.buildHome inputs.
+    s = pack["sessions"]
+    assert s["status"] == "shipped" and s["note"]
+    assert s["templates"], "shipped sessions must offer at least one template"
+    for t in s["templates"]:
+        assert t["id"] and t["name"] and t["desc"], f"bad template: {t}"
+        o = t["opts"]
+        assert 5 <= o["lengthMin"] <= 45
+        assert 1 <= o["sets"] <= 4 and 4 <= o["reps"] <= 20
+        assert o["equipment"] in {"bodyweight", "household", "weights"}
+        assert o["focus"] in {"full_body", "lower_body", "upper_body", "core", "balance"}
 
 
 def test_objects_have_required_fields(pack):
@@ -113,6 +124,26 @@ def test_exercise_library_shape(library):
     assert set(PUSHUP_PROGRESSION) <= set(ids)
     positions = [ids.index(p) for p in PUSHUP_PROGRESSION]
     assert positions == sorted(positions), "push-up progression is out of order"
+
+
+_SPACES = {"standing", "chair", "wall", "counter", "table", "floor", "stairs"}
+
+
+def test_every_exercise_carries_practice_guidance(library):
+    # The enriched library: a starting dose, where it happens (so the UI can
+    # hide floor work), and the most common form fault.
+    for ex in library["exercises"]:
+        dose = ex["dose"]
+        assert 1 <= dose["sets"] <= 4, f"{ex['id']}: odd sets {dose['sets']}"
+        assert ("reps" in dose) != ("seconds" in dose), f"{ex['id']}: dose needs exactly one of reps/seconds"
+        lo, hi = dose.get("reps") or dose.get("seconds")
+        assert isinstance(lo, int) and isinstance(hi, int) and 0 < lo < hi, f"{ex['id']}: bad dose range"
+        assert ex["space"] in _SPACES, f"{ex['id']}: unknown space {ex['space']!r}"
+        assert ex["watch_for"].strip(), f"{ex['id']}: empty watch_for"
+    # Floor work is exactly the lying/prone set called out in the curation notes.
+    floor = {e["id"] for e in library["exercises"] if e["space"] == "floor"}
+    assert floor == {"towel-hamstring-slider", "knee-pushup", "full-pushup",
+                     "prone-ytw", "knee-plank", "full-plank"}
 
 
 def test_every_exercise_carries_library_metadata(library):

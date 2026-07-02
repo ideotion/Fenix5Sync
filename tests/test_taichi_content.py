@@ -76,9 +76,30 @@ def test_bibliography_entries_have_locators(pack):
         assert b["url"].startswith("http")
 
 
-def test_sessions_marked_pending(pack):
-    # Movement library + videos are not shipped yet; the pack must say so.
-    assert pack["sessions"]["status"] == "pending"
+def test_sessions_shipped_with_valid_templates(pack):
+    # The flow builder/player are live; the pack now ships one-click templates
+    # whose opts must be valid SessionBuilder.buildTaiChi inputs.
+    s = pack["sessions"]
+    assert s["status"] == "shipped" and s["note"]
+    assert s["templates"], "shipped sessions must offer at least one template"
+    for t in s["templates"]:
+        assert t["id"] and t["name"] and t["desc"], f"bad template: {t}"
+        o = t["opts"]
+        assert 5 <= o["lengthMin"] <= 30
+        assert o["level"] in {"chair", "supported", "standing"}
+        assert o["focus"] in {"full", "balance", "mobility", "lower-limb", "breathing"}
+
+
+def test_every_movement_carries_stage_and_origin(movements):
+    # The enriched library: session position (groups the picker) + lineage label.
+    stages = {"warmup", "drill", "form", "seated", "closing"}
+    for mv in movements["movements"]:
+        assert mv["stage"] in stages, f"{mv['id']}: unknown stage {mv.get('stage')!r}"
+        assert mv["origin"].strip(), f"{mv['id']}: empty origin"
+    by_stage = {s: [m["id"] for m in movements["movements"] if m["stage"] == s] for s in stages}
+    assert len(by_stage["form"]) == 7, "the simplified Yang-24 selection ships 7 forms"
+    assert all("24-form" in m["origin"] for m in movements["movements"] if m["stage"] == "form")
+    assert by_stage["closing"] == ["tc_gather_qi_close"]
 
 
 # ---- shared form-model engine: Tai Chi movement pacers ----

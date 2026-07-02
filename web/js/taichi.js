@@ -53,14 +53,31 @@ const TaiChiView = (() => {
     let current = null;
     const stageHost = U.el("div", { class: "home-fm" });
     const infoHost = U.el("div", { class: "home-ex-info" });
-    const picker = U.el("div", { class: "home-ex-picker" }, list.map((mv) =>
-      U.el("button", { class: "btn sm", text: mv.name, onclick: () => select(mv.id) })));
+
+    // Picker grouped by session stage (library metadata; falls back to "form").
+    const STAGES = [
+      ["warmup", "Warm-up & breath"], ["drill", "Balance & ankle drills"],
+      ["form", "The form (Yang 24, simplified)"], ["seated", "Seated"], ["closing", "Closing"],
+    ];
+    const btns = new Map();
+    const picker = U.el("div");
+    STAGES.forEach(([key, label]) => {
+      const group = list.filter((mv) => (mv.stage || "form") === key);
+      if (!group.length) return;
+      picker.appendChild(U.el("div", { class: "set-hint", style: "margin:6px 0 2px", text: label }));
+      picker.appendChild(U.el("div", { class: "home-ex-picker" }, group.map((mv) => {
+        const b = U.el("button", { class: "btn sm", text: mv.name, onclick: () => select(mv.id) });
+        btns.set(mv.id, b);
+        return b;
+      })));
+    });
 
     function mvInfo(mv) {
       const tagline = [mv.level, mv.focus].filter(Boolean).join(" · ");
       return U.el("div", { class: "card pad" }, [
         U.el("div", { class: "tc-prog-head" }, [U.el("strong", { text: mv.name }), refChips(mv.refs)]),
         tagline ? U.el("div", { class: "tc-met", text: tagline, style: "margin:2px 0 6px" }) : null,
+        mv.origin ? U.el("div", { class: "set-hint", style: "margin:0 0 6px", text: mv.origin }) : null,
         mv.primary_benefit ? U.el("div", { class: "sub", text: mv.primary_benefit }) : null,
         mv.notes ? U.el("div", { class: "set-hint", text: mv.notes }) : null,
       ]);
@@ -70,7 +87,7 @@ const TaiChiView = (() => {
       current = id;
       if (tcPlayer) tcPlayer.destroy();
       const mv = list.find((m) => m.id === id);
-      Array.from(picker.children).forEach((b, i) => b.classList.toggle("active", list[i].id === id));
+      btns.forEach((b, bid) => b.classList.toggle("active", bid === id));
       tcPlayer = FormModel.create(stageHost, mv);
       infoHost.innerHTML = "";
       infoHost.appendChild(mvInfo(mv));
@@ -116,10 +133,7 @@ const TaiChiView = (() => {
     const field = (label, node) => U.el("label", { class: "coach-field" }, [U.el("span", { class: "coach-field-l", text: label }), node]);
     const preview = U.el("div", { class: "coach-plan-preview" });
 
-    function buildAndShow() {
-      const o = { lengthMin: Number(length.value), level: level.value, focus: focus.value, seed: nextSeed() };
-      saveBuild({ lengthMin: o.lengthMin, level: o.level, focus: o.focus });
-      const session = SessionBuilder.buildTaiChi(list, o);
+    function showSession(session) {
       preview.innerHTML = "";
       const wrap = U.el("div", { style: "margin-top:var(--sp-4)" });
       wrap.appendChild(U.el("div", { class: "sub", text: `${session.items.length} movements · ~${session.minutes} min` }));
@@ -132,9 +146,25 @@ const TaiChiView = (() => {
       preview.appendChild(wrap);
     }
 
+    function buildAndShow() {
+      const o = { lengthMin: Number(length.value), level: level.value, focus: focus.value, seed: nextSeed() };
+      saveBuild({ lengthMin: o.lengthMin, level: o.level, focus: o.focus });
+      showSession(SessionBuilder.buildTaiChi(list, o));
+    }
+
+    // One-click flows from the content pack's shipped session templates.
+    const templates = ((data && data.sessions) || {}).templates || [];
+    const tplRow = !templates.length ? null : U.el("div", { style: "margin-bottom:var(--sp-3)" }, [
+      U.el("div", { class: "coach-field-l", text: "One-click flows" }),
+      U.el("div", { class: "home-ex-picker", style: "margin-top:6px" }, templates.map((t) =>
+        U.el("button", { class: "btn sm", title: t.desc, text: t.name, onclick: () =>
+          showSession(SessionBuilder.buildTaiChi(list, Object.assign({}, t.opts, { seed: nextSeed() }))) }))),
+    ]);
+
     return U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [
       U.el("h3", { class: "tc-h", text: "Build a flow" }),
       U.el("div", { class: "sub", style: "margin-bottom:var(--sp-3)", text: "A length-adjustable sequence covering balance, mobility, lower-limb and breathing, opening and closing on the breath. Balance is always included at the chair/fragile level. A gentle pacer, not instructed form." }),
+      tplRow,
       U.el("div", { class: "coach-form" }, [field("Length", length), field("Level", level), field("Focus", focus)]),
       U.el("div", { style: "margin-top:var(--sp-3)" }, [U.el("button", { class: "btn primary", text: "Build flow", onclick: buildAndShow })]),
       preview,
@@ -160,14 +190,6 @@ const TaiChiView = (() => {
 
     const builder = builderCard();
     if (builder) root.appendChild(builder);
-
-    if (data.sessions) {
-      root.appendChild(U.el("div", { class: "card pad", style: "margin-bottom:var(--sp-5)" }, [
-        U.el("h3", { class: "tc-h", text: "Guided sessions — coming soon" }),
-        U.el("div", { class: "sub", text: data.sessions.note }),
-        U.el("ul", { class: "tc-list" }, (data.sessions.planned || []).map((p) => U.el("li", { text: p }))),
-      ]));
-    }
 
     root.appendChild(U.el("h2", { class: "tc-section", text: "Levels" }));
     const levels = U.el("div", { class: "charts" });

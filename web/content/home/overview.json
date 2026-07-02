@@ -131,13 +131,13 @@
     ]
   },
   "sessions": {
-    "status": "pending",
-    "note": "Guided sessions (object library, movement-pattern exercise library, balanced session templates, and the animated form-model engine) are the next research deliverables. This page ships the evidence and taxonomy foundation that those build on. A working animation engine prototype ships at web/prototype/form-model.html.",
-    "planned": [
-      "Balanced 12-15 min daily sessions drawing across squat/hinge/push/pull/carry/balance patterns",
-      "3-5 min exercise-snack micro-sessions and break-up-sitting prompts",
-      "Longer conditioning sessions for fitter users",
-      "Per-exercise animated figures with front/side/mirror views, the object in place, and tempo pacing"
+    "status": "shipped",
+    "note": "Balanced sessions are live: the builder assembles a warmed-up, time-budgeted, body-part-varied session from this library and plays it through the guided engine — or start from a one-click template below. Isometric work stays locked until the readiness check.",
+    "templates": [
+      {"id": "daily-starter", "name": "Daily starter", "desc": "Gentle full-body wake-up — no equipment.", "opts": {"lengthMin": 10, "sets": 2, "reps": 8, "equipment": "bodyweight", "focus": "full_body"}},
+      {"id": "strength-20", "name": "Strength 20", "desc": "Balanced strength using household objects.", "opts": {"lengthMin": 20, "sets": 3, "reps": 10, "equipment": "household", "focus": "full_body"}},
+      {"id": "steady-strong", "name": "Steady & strong", "desc": "Balance-first, for confident footing.", "opts": {"lengthMin": 15, "sets": 2, "reps": 8, "equipment": "bodyweight", "focus": "balance"}},
+      {"id": "desk-break", "name": "Desk break", "desc": "A five-minute movement snack.", "opts": {"lengthMin": 5, "sets": 1, "reps": 10, "equipment": "bodyweight", "focus": "full_body"}}
     ]
   },
   "bibliography": [
