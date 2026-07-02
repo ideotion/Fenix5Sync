@@ -5,6 +5,8 @@
   "movements": [
     {
       "id": "tc_gather_part_clouds",
+      "stage": "warmup",
+      "origin": "Qigong-style breathing preparation",
       "name": "Gather & Part the Clouds",
       "object": {
         "side": null,
@@ -199,6 +201,8 @@
     },
     {
       "id": "tc_ball_circles",
+      "stage": "warmup",
+      "origin": "Qigong-style preparation (holding the ball)",
       "name": "Ball-Holding Circles",
       "object": {
         "side": null,
@@ -399,6 +403,8 @@
     },
     {
       "id": "tc_spinal_twist",
+      "stage": "warmup",
+      "origin": "Gentle mobility preparation",
       "name": "Gentle Spinal Twist",
       "object": {
         "side": null,
@@ -593,6 +599,8 @@
     },
     {
       "id": "tc_weight_shift_fwd_back",
+      "stage": "warmup",
+      "origin": "Weight-shift foundation drill",
       "name": "Forward-Back Weight Shift",
       "object": {
         "side": null,
@@ -711,6 +719,8 @@
     },
     {
       "id": "tc_single_leg_supported",
+      "stage": "drill",
+      "origin": "Balance drill, shared with falls-prevention programs",
       "name": "Supported Single-Leg Stand",
       "object": {
         "side": null,
@@ -864,6 +874,8 @@
     },
     {
       "id": "tc_tandem_heel_toe",
+      "stage": "drill",
+      "origin": "Balance drill, shared with falls-prevention programs",
       "name": "Tandem (Heel-to-Toe) Stand",
       "object": {
         "side": null,
@@ -1016,6 +1028,8 @@
     },
     {
       "id": "tc_knee_raise_supported",
+      "stage": "drill",
+      "origin": "Balance and lower-limb drill",
       "name": "Knee Raises with Support",
       "object": {
         "side": "wall",
@@ -1133,6 +1147,8 @@
     },
     {
       "id": "tc_heel_toe_raises",
+      "stage": "drill",
+      "origin": "Ankle-strength drill",
       "name": "Heel & Toe Raises",
       "object": {
         "side": "wall",
@@ -1250,6 +1266,8 @@
     },
     {
       "id": "tc_commencement",
+      "stage": "form",
+      "origin": "Yang-style 24-form, movement 1 (Commencement) — simplified",
       "name": "Commencement",
       "object": {
         "side": null,
@@ -1390,6 +1408,8 @@
     },
     {
       "id": "tc_part_wild_horse",
+      "stage": "form",
+      "origin": "Yang-style 24-form, movement 2 (Part the Wild Horse's Mane) — simplified",
       "name": "Parting the Wild Horse's Mane",
       "object": {
         "side": null,
@@ -1507,6 +1527,8 @@
     },
     {
       "id": "tc_brush_knee_push",
+      "stage": "form",
+      "origin": "Yang-style 24-form, movement 4 (Brush Knee & Twist Step) — simplified",
       "name": "Brush Knee & Push",
       "object": {
         "side": null,
@@ -1624,6 +1646,8 @@
     },
     {
       "id": "tc_wave_hands_clouds",
+      "stage": "form",
+      "origin": "Yang-style 24-form, movement 10 (Wave Hands Like Clouds) — simplified",
       "name": "Wave Hands Like Clouds",
       "object": {
         "side": null,
@@ -1766,6 +1790,8 @@
     },
     {
       "id": "tc_repulse_monkey",
+      "stage": "form",
+      "origin": "Yang-style 24-form, movement 6 (Repulse the Monkey) — simplified",
       "name": "Repulse the Monkey",
       "object": {
         "side": null,
@@ -1883,6 +1909,8 @@
     },
     {
       "id": "tc_grasp_sparrows_tail",
+      "stage": "form",
+      "origin": "Yang-style 24-form, movements 7–8 (Grasp the Sparrow's Tail) — simplified",
       "name": "Grasp the Sparrow's Tail (Simplified)",
       "object": {
         "side": null,
@@ -2000,6 +2028,8 @@
     },
     {
       "id": "tc_golden_rooster_supported",
+      "stage": "form",
+      "origin": "Yang-style 24-form, movement 17 (Golden Rooster) — supported adaptation",
       "name": "Golden Rooster Stands on One Leg (Supported)",
       "object": {
         "side": "wall",
@@ -2129,6 +2159,8 @@
     },
     {
       "id": "tc_seated_cloud_hands",
+      "stage": "seated",
+      "origin": "Seated adaptation of Wave Hands Like Clouds",
       "name": "Seated Cloud Hands",
       "object": {
         "side": "chair",
@@ -2287,6 +2319,8 @@
     },
     {
       "id": "tc_seated_openings",
+      "stage": "seated",
+      "origin": "Seated arm-opening adaptation",
       "name": "Seated Arm Openings",
       "object": {
         "side": "chair",
@@ -2403,6 +2437,8 @@
     },
     {
       "id": "tc_seated_marching",
+      "stage": "seated",
+      "origin": "Seated lower-limb adaptation",
       "name": "Seated Marching",
       "object": {
         "side": "chair",
@@ -2519,6 +2555,8 @@
     },
     {
       "id": "tc_ankle_calf_pumps",
+      "stage": "seated",
+      "origin": "Seated circulation drill",
       "name": "Seated Ankle & Calf Pumps",
       "object": {
         "side": "chair",
@@ -2635,6 +2673,8 @@
     },
     {
       "id": "tc_gather_qi_close",
+      "stage": "closing",
+      "origin": "Closing form (Gathering Qi) — simplified",
       "name": "Gathering Qi to Close",
       "object": {
         "side": null,
@@ -2829,6 +2869,8 @@
     },
     {
       "id": "tc_arm_float_breathing",
+      "stage": "warmup",
+      "origin": "Breath pacer (arm float)",
       "name": "Slow Breathing with Arm Float",
       "object": {
         "side": null,

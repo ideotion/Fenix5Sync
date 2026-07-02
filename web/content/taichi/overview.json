@@ -43,9 +43,13 @@
     "note": "Trials across these conditions reported few or no serious adverse events when Tai Chi is taught and scaled appropriately. The default standing style is the higher-stance Sun-style to protect knees and balance."
   },
   "sessions": {
-    "status": "pending",
-    "note": "Guided sessions (movement library, daily rotation, and instructor-reviewed videos) are the next research deliverables. This page ships the evidence foundation that those build on.",
-    "planned": ["10–13 min daily sessions that rotate to cover the whole body", "Longer 20/30/45 min sessions for fitter users", "Per-movement instruction with front/side/mirror views and clear cues"]
+    "status": "shipped",
+    "note": "Guided flows are live: the builder sequences a length-adjustable flow from this library (opening and closing on the breath, balance always included at the chair/fragile level) and plays it through the pacer — or start from a one-click template below.",
+    "templates": [
+      {"id": "morning-flow", "name": "Morning flow", "desc": "Wake the joints and the breath.", "opts": {"lengthMin": 10, "level": "standing", "focus": "full"}},
+      {"id": "balance-builder", "name": "Balance builder", "desc": "Steadiness work with support nearby.", "opts": {"lengthMin": 15, "level": "supported", "focus": "balance"}},
+      {"id": "chair-session", "name": "Chair session", "desc": "Fully seated — circulation and calm.", "opts": {"lengthMin": 10, "level": "chair", "focus": "full"}}
+    ]
   },
   "bibliography": [
     {"ref_id": "R01", "authors": "Huang et al.", "year": 2017, "title": "Tai Chi for preventing falls in older adults (SR & meta-analysis; 18 trials, 3,824)", "source": "systematic review / meta-analysis", "url": "https://pubmed.ncbi.nlm.nih.gov/28167744/", "type": "meta-analysis", "grade": "Strong"},

@@ -109,18 +109,52 @@ const HomeView = (() => {
   function engineApi() { return getEngine() === "3d" && typeof FormModel3D !== "undefined" ? FormModel3D : FormModel; }
   function rebuildGuided() { if (guidedHost) drawGuided(guidedHost); }
 
+  const PATTERN_GROUPS = [
+    ["squat", "Squat"], ["hinge", "Hinge"], ["push", "Push"], ["pull", "Pull"],
+    ["carry", "Carry"], ["rotation", "Rotation"], ["balance", "Balance"],
+    ["aerobic", "Aerobic"], ["isometric", "Isometric holds"],
+  ];
+
   function drawGuided(host) {
     host.innerHTML = "";
     const exercises = (library.exercises || []);
     const locked = (ex) => ex.isometric && !isometricOk();
 
-    const picker = U.el("div", { class: "home-ex-picker" }, exercises.map((ex) => {
-      const lock = locked(ex);
-      return U.el("button", { class: "btn sm" + (currentEx === ex.id ? " active" : "") + (lock ? " home-ex-locked" : ""),
-        title: lock ? "Complete the readiness check to unlock isometric work" : ex.name,
-        onclick: () => { if (lock) { U.toast("Wall-sit (isometric) unlocks after the readiness check.", ""); return; } select(ex.id); } },
-        [document.createTextNode(ex.name + (lock ? " 🔒" : ""))]);
-    }));
+    // Filterable, pattern-grouped picker (uses the library's space metadata so
+    // anyone who can't get to the floor can hide floor work in one tap).
+    const search = U.el("input", { class: "input sm", type: "search", placeholder: "Search exercises…" });
+    const noFloor = U.el("input", { type: "checkbox" });
+    const picker = U.el("div");
+    search.oninput = () => paintPicker();
+    noFloor.onchange = () => paintPicker();
+
+    function paintPicker() {
+      const q = (search.value || "").trim().toLowerCase();
+      picker.innerHTML = "";
+      PATTERN_GROUPS.forEach(([pat, label]) => {
+        const group = exercises.filter((ex) => ex.pattern === pat
+          && (!q || ex.name.toLowerCase().includes(q))
+          && (!noFloor.checked || ex.space !== "floor"));
+        if (!group.length) return;
+        picker.appendChild(U.el("div", { class: "set-hint", style: "margin:6px 0 2px", text: label }));
+        picker.appendChild(U.el("div", { class: "home-ex-picker" }, group.map((ex) => {
+          const lock = locked(ex);
+          return U.el("button", { class: "btn sm" + (currentEx === ex.id ? " active" : "") + (lock ? " home-ex-locked" : ""),
+            title: lock ? "Complete the readiness check to unlock isometric work" : ex.name,
+            onclick: () => { if (lock) { U.toast("Isometric holds unlock after the readiness check.", ""); return; } select(ex.id); } },
+            [document.createTextNode(ex.name + (lock ? " 🔒" : ""))]);
+        })));
+      });
+      if (!picker.childNodes.length) picker.appendChild(U.el("div", { class: "set-hint", text: "No exercises match." }));
+    }
+
+    const filters = U.el("div", { style: "display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap;margin-bottom:4px" }, [
+      search,
+      U.el("label", { class: "set-hint", style: "display:flex;align-items:center;gap:6px;cursor:pointer" }, [
+        noFloor, document.createTextNode("Hide floor work"),
+      ]),
+    ]);
+    paintPicker();
 
     // 2-D / 3-D engine toggle (3-D is the new canvas renderer; offline, no WebGL).
     const engRow = U.el("div", { class: "home-engine-row" });
@@ -132,12 +166,17 @@ const HomeView = (() => {
 
     const stageHost = U.el("div", { class: "home-fm" });
     const infoHost = U.el("div", { class: "home-ex-info" });
-    host.append(picker, engRow, stageHost, infoHost);
+    host.append(filters, picker, engRow, stageHost, infoHost);
 
     function exInfo(ex) {
-      const tagline = [ex.pattern, ex.tier].filter(Boolean).join(" · ");
+      const tagline = [ex.pattern, ex.tier, ex.space].filter(Boolean).join(" · ");
       const rows = [];
       if (ex.primary_benefit) rows.push(U.el("div", { class: "sub", text: ex.primary_benefit }));
+      if (ex.dose) {
+        const r = ex.dose.reps ? `${ex.dose.reps[0]}–${ex.dose.reps[1]} reps` : `${ex.dose.seconds[0]}–${ex.dose.seconds[1]} s`;
+        rows.push(U.el("div", { class: "tc-met", style: "margin:2px 0", text: `Suggested start: ${ex.dose.sets} × ${r}${ex.dose.per_side ? " per side" : ""}` }));
+      }
+      if (ex.watch_for) rows.push(U.el("div", { class: "set-hint", text: "Watch for: " + ex.watch_for }));
       const prog = [];
       if (ex.default_object) prog.push(["Default", ex.default_object]);
       if (ex.regression_object) prog.push(["Easier", ex.regression_object]);
@@ -159,7 +198,7 @@ const HomeView = (() => {
       currentEx = id;
       if (player) player.destroy();
       const ex = exercises.find((e) => e.id === id);
-      Array.from(picker.children).forEach((b, i) => b.classList.toggle("active", exercises[i].id === id));
+      paintPicker();  // repaint so the active state follows the (filtered) buttons
       player = engineApi().create(stageHost, ex);
       infoHost.innerHTML = "";
       infoHost.appendChild(exInfo(ex));
@@ -260,9 +299,26 @@ const HomeView = (() => {
       preview.appendChild(sessionPreview(session, "Start session", () => startSession(session)));
     }
 
+    // One-click sessions from the content pack's shipped templates (the screen
+    // tier and isometric clearance still apply at build time).
+    const templates = ((data && data.sessions) || {}).templates || [];
+    const tplRow = !templates.length ? null : U.el("div", { style: "margin-bottom:var(--sp-3)" }, [
+      U.el("div", { class: "coach-field-l", text: "One-click sessions" }),
+      U.el("div", { class: "home-ex-picker", style: "margin-top:6px" }, templates.map((t) =>
+        U.el("button", { class: "btn sm", title: t.desc, text: t.name, onclick: () => {
+          const o = Object.assign({}, t.opts, {
+            tier: (getScreen() || {}).tier || "standing", cleared: isometricOk(), seed: nextSeed(),
+          });
+          const session = SessionBuilder.buildHome(library.exercises || [], o);
+          preview.innerHTML = "";
+          preview.appendChild(sessionPreview(session, "Start session", () => startSession(session)));
+        } }))),
+    ]);
+
     card.append(
       U.el("h3", { class: "tc-h", text: "Build a balanced session" }),
       U.el("div", { class: "sub", style: "margin-bottom:var(--sp-3)", text: "A time-budgeted session covering lower body, upper body and core (plus balance for fragile starters), warmed up and cooled down. Free weights swap in a dumbbell/kettlebell where it’s safe; isometrics stay locked until you pass the readiness check." }),
+      tplRow || document.createTextNode(""),
       U.el("div", { class: "coach-form" }, [
         field("Length", length), field("Sets", sets), field("Reps", reps),
         field("Equipment", equip), field("Focus", focus),
@@ -389,15 +445,6 @@ const HomeView = (() => {
         data.safety.population_guards ? U.el("div", { class: "sub", style: "margin-top:var(--sp-3)", text: "Population guards:" }) : null,
         data.safety.population_guards ? U.el("ul", { class: "tc-list muted" }, data.safety.population_guards.map((s) => U.el("li", { text: s }))) : null,
         U.el("div", { class: "sub muted", style: "margin-top:var(--sp-3)", text: data.safety.note }),
-      ]));
-    }
-
-    // Sessions coming soon.
-    if (data.sessions) {
-      root.appendChild(U.el("div", { class: "card pad", style: "margin-top:var(--sp-5)" }, [
-        U.el("h3", { class: "tc-h", text: "Guided sessions — coming soon" }),
-        U.el("div", { class: "sub", text: data.sessions.note }),
-        U.el("ul", { class: "tc-list" }, (data.sessions.planned || []).map((p) => U.el("li", { text: p }))),
       ]));
     }
 

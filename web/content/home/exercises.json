@@ -4,6 +4,9 @@
   "exercises": [
     {
       "id": "supported-squat",
+      "dose": {"sets": 2, "reps": [6, 10]},
+      "space": "chair",
+      "watch_for": "Knees drifting inward — track them over your toes.",
       "name": "Supported Squat",
       "pattern": "squat",
       "tier": "seated",
@@ -127,6 +130,9 @@
     },
     {
       "id": "bodyweight-squat",
+      "dose": {"sets": 2, "reps": [8, 12]},
+      "space": "standing",
+      "watch_for": "Heels lifting — sit back as if reaching for a chair.",
       "name": "Bodyweight Squat",
       "pattern": "squat",
       "tier": "standing",
@@ -250,6 +256,9 @@
     },
     {
       "id": "backpack-goblet-squat",
+      "dose": {"sets": 3, "reps": [6, 10]},
+      "space": "standing",
+      "watch_for": "Torso tipping forward — hug the pack tall against your chest.",
       "name": "Backpack Goblet Squat",
       "pattern": "squat",
       "tier": "loaded",
@@ -373,6 +382,9 @@
     },
     {
       "id": "split-squat",
+      "dose": {"sets": 2, "reps": [6, 10], "per_side": true},
+      "space": "standing",
+      "watch_for": "Front knee wobbling — shorten the stance until it steadies.",
       "name": "Split Squat",
       "pattern": "squat",
       "tier": "loaded",
@@ -497,6 +509,9 @@
     },
     {
       "id": "single-leg-sit-to-stand",
+      "dose": {"sets": 2, "reps": [3, 6], "per_side": true},
+      "space": "chair",
+      "watch_for": "Dropping into the seat — lower with control for a slow count.",
       "name": "Single-Leg Sit-to-Stand",
       "pattern": "squat",
       "tier": "loaded",
@@ -621,6 +636,9 @@
     },
     {
       "id": "hip-hinge-groove",
+      "dose": {"sets": 2, "reps": [8, 12]},
+      "space": "standing",
+      "watch_for": "Losing the stick's three contact points — push the hips back, don't bow the spine.",
       "name": "Hip-Hinge Groove (Broomstick)",
       "pattern": "hinge",
       "tier": "standing",
@@ -743,6 +761,9 @@
     },
     {
       "id": "bodyweight-hinge",
+      "dose": {"sets": 2, "reps": [8, 12]},
+      "space": "standing",
+      "watch_for": "Rounding the low back — soft knees, chest proud, hips travel backward.",
       "name": "Bodyweight Hip Hinge",
       "pattern": "hinge",
       "tier": "standing",
@@ -865,6 +886,9 @@
     },
     {
       "id": "backpack-rdl",
+      "dose": {"sets": 3, "reps": [6, 10]},
+      "space": "standing",
+      "watch_for": "Pack swinging away — keep it brushing your legs the whole way.",
       "name": "Backpack Romanian Deadlift",
       "pattern": "hinge",
       "tier": "loaded",
@@ -988,6 +1012,9 @@
     },
     {
       "id": "single-leg-hinge",
+      "dose": {"sets": 2, "reps": [5, 8], "per_side": true},
+      "space": "standing",
+      "watch_for": "Hips opening sideways — keep both hip points square to the floor.",
       "name": "Single-Leg Hinge",
       "pattern": "hinge",
       "tier": "loaded",
@@ -1112,6 +1139,9 @@
     },
     {
       "id": "towel-hamstring-slider",
+      "dose": {"sets": 2, "reps": [6, 10]},
+      "space": "floor",
+      "watch_for": "Hips sagging — keep the bridge up while the heels slide.",
       "name": "Towel Hamstring Slider",
       "pattern": "hinge",
       "tier": "loaded",
@@ -1234,6 +1264,9 @@
     },
     {
       "id": "wall-pushup",
+      "dose": {"sets": 2, "reps": [10, 15]},
+      "space": "wall",
+      "watch_for": "Head pecking forward — lead with the chest, body in one line.",
       "name": "Wall Push-Up",
       "pattern": "push",
       "tier": "seated",
@@ -1356,6 +1389,9 @@
     },
     {
       "id": "countertop-pushup",
+      "dose": {"sets": 2, "reps": [8, 12]},
+      "space": "counter",
+      "watch_for": "Hips sagging — brace as one plank from head to heel.",
       "name": "Countertop Push-Up",
       "pattern": "push",
       "tier": "standing",
@@ -1478,6 +1514,9 @@
     },
     {
       "id": "incline-pushup-chair",
+      "dose": {"sets": 2, "reps": [8, 12]},
+      "space": "chair",
+      "watch_for": "Chair sliding — back it against a wall first.",
       "name": "Incline Push-Up (Chair)",
       "pattern": "push",
       "tier": "loaded",
@@ -1600,6 +1639,9 @@
     },
     {
       "id": "knee-pushup",
+      "dose": {"sets": 2, "reps": [6, 12]},
+      "space": "floor",
+      "watch_for": "Hips piking up — one straight line from knees to head.",
       "name": "Knee Push-Up",
       "pattern": "push",
       "tier": "loaded",
@@ -1722,6 +1764,9 @@
     },
     {
       "id": "full-pushup",
+      "dose": {"sets": 2, "reps": [5, 12]},
+      "space": "floor",
+      "watch_for": "Elbows flaring wide — keep them about 45° from the body.",
       "name": "Full Push-Up",
       "pattern": "push",
       "tier": "loaded",
@@ -1844,6 +1889,9 @@
     },
     {
       "id": "wall-press-hold",
+      "dose": {"sets": 2, "seconds": [20, 40]},
+      "space": "wall",
+      "watch_for": "Holding the breath — press hard and keep breathing evenly.",
       "name": "Wall Press Hold",
       "pattern": "push",
       "tier": "standing",
@@ -1975,6 +2023,9 @@
     },
     {
       "id": "towel-iso-row",
+      "dose": {"sets": 2, "seconds": [20, 40]},
+      "space": "standing",
+      "watch_for": "Shrugging — draw the shoulder blades down and back, then pull.",
       "name": "Towel Isometric Row",
       "pattern": "pull",
       "tier": "seated",
@@ -2106,6 +2157,9 @@
     },
     {
       "id": "water-bottle-bent-row",
+      "dose": {"sets": 2, "reps": [10, 15]},
+      "space": "standing",
+      "watch_for": "Torso bouncing to swing the weight — the hinge stays still; the elbow draws past the ribs.",
       "name": "Water-Bottle Bent-Over Row",
       "pattern": "pull",
       "tier": "loaded",
@@ -2229,6 +2283,9 @@
     },
     {
       "id": "backpack-row",
+      "dose": {"sets": 3, "reps": [8, 12]},
+      "space": "standing",
+      "watch_for": "Rounding the back — re-set the hinge before each pull.",
       "name": "Backpack Bent-Over Row",
       "pattern": "pull",
       "tier": "loaded",
@@ -2352,6 +2409,9 @@
     },
     {
       "id": "inverted-row-table",
+      "dose": {"sets": 2, "reps": [5, 10]},
+      "space": "table",
+      "watch_for": "Hips sagging — squeeze the glutes; test the table's sturdiness first.",
       "name": "Inverted Row (Sturdy Table)",
       "pattern": "pull",
       "tier": "loaded",
@@ -2474,6 +2534,9 @@
     },
     {
       "id": "prone-ytw",
+      "dose": {"sets": 2, "reps": [5, 8]},
+      "space": "floor",
+      "watch_for": "Neck craning — eyes to the floor, thumbs lead upward.",
       "name": "Prone Y-T-W Raise",
       "pattern": "pull",
       "tier": "loaded",
@@ -2596,6 +2659,9 @@
     },
     {
       "id": "water-bottle-carry",
+      "dose": {"sets": 2, "seconds": [30, 60]},
+      "space": "standing",
+      "watch_for": "Leaning away from the load — walk tall, as if between two walls.",
       "name": "Water-Bottle Farmer Carry",
       "pattern": "carry",
       "tier": "conditioning",
@@ -2743,6 +2809,9 @@
     },
     {
       "id": "backpack-carry",
+      "dose": {"sets": 2, "seconds": [30, 60]},
+      "space": "standing",
+      "watch_for": "Rushing — slow, deliberate knee lifts with the pack snug.",
       "name": "Backpack March",
       "pattern": "carry",
       "tier": "conditioning",
@@ -2890,6 +2959,9 @@
     },
     {
       "id": "suitcase-carry",
+      "dose": {"sets": 2, "seconds": [20, 40], "per_side": true},
+      "space": "standing",
+      "watch_for": "Hip jutting sideways — keep the pelvis level and ribs stacked.",
       "name": "Suitcase (Single-Side) Carry",
       "pattern": "carry",
       "tier": "conditioning",
@@ -3036,6 +3108,9 @@
     },
     {
       "id": "bottle-wood-chop",
+      "dose": {"sets": 2, "reps": [8, 12], "per_side": true},
+      "space": "standing",
+      "watch_for": "Twisting from the low back — pivot the back foot and turn from the hips.",
       "name": "Bottle Wood-Chop",
       "pattern": "rotation",
       "tier": "loaded",
@@ -3182,6 +3257,9 @@
     },
     {
       "id": "anti-rotation-press",
+      "dose": {"sets": 2, "seconds": [20, 30], "per_side": true},
+      "space": "standing",
+      "watch_for": "Torso turning toward the anchor — press slowly and stay square.",
       "name": "Anti-Rotation Press (Pallof)",
       "pattern": "rotation",
       "tier": "standing",
@@ -3337,6 +3415,9 @@
     },
     {
       "id": "supported-single-leg-stand",
+      "dose": {"sets": 2, "seconds": [20, 40], "per_side": true},
+      "space": "chair",
+      "watch_for": "Gripping the support hard — lighten to fingertips as balance improves.",
       "name": "Supported Single-Leg Stand",
       "pattern": "balance",
       "tier": "standing",
@@ -3491,6 +3572,9 @@
     },
     {
       "id": "tandem-stand",
+      "dose": {"sets": 2, "seconds": [20, 40]},
+      "space": "standing",
+      "watch_for": "Staring at your feet — fix a point ahead at eye level.",
       "name": "Tandem (Heel-to-Toe) Stand",
       "pattern": "balance",
       "tier": "standing",
@@ -3645,6 +3729,9 @@
     },
     {
       "id": "heel-to-toe-walk",
+      "dose": {"sets": 2, "reps": [8, 12]},
+      "space": "standing",
+      "watch_for": "Arms pinned to your sides — let them float out for balance, near a wall.",
       "name": "Heel-to-Toe Walk",
       "pattern": "balance",
       "tier": "conditioning",
@@ -3790,6 +3877,9 @@
     },
     {
       "id": "step-up-chair",
+      "dose": {"sets": 2, "reps": [5, 10], "per_side": true},
+      "space": "stairs",
+      "watch_for": "Pushing off the bottom foot — drive through the heel on the step.",
       "name": "Step-Up (Step or Sturdy Chair)",
       "pattern": "balance",
       "tier": "loaded",
@@ -3913,6 +4003,9 @@
     },
     {
       "id": "marching-in-place",
+      "dose": {"sets": 1, "seconds": [60, 120]},
+      "space": "standing",
+      "watch_for": "Holding the breath — march to a beat you could talk over.",
       "name": "Marching in Place",
       "pattern": "aerobic",
       "tier": "conditioning",
@@ -4060,6 +4153,9 @@
     },
     {
       "id": "sit-to-stand-intervals",
+      "dose": {"sets": 3, "seconds": [20, 30]},
+      "space": "chair",
+      "watch_for": "Plopping down — control the descent on every rep.",
       "name": "Sit-to-Stand Intervals",
       "pattern": "aerobic",
       "tier": "conditioning",
@@ -4184,6 +4280,9 @@
     },
     {
       "id": "stair-snack",
+      "dose": {"sets": 1, "seconds": [60, 180]},
+      "space": "stairs",
+      "watch_for": "Skipping the handrail when tired — use it, and stop before wobbling.",
       "name": "Stair-Climbing Snack",
       "pattern": "aerobic",
       "tier": "conditioning",
@@ -4308,6 +4407,9 @@
     },
     {
       "id": "knee-plank",
+      "dose": {"sets": 2, "seconds": [15, 30]},
+      "space": "floor",
+      "watch_for": "Hips dropping — squeeze the glutes and tuck the ribs.",
       "name": "Knee Plank",
       "pattern": "isometric",
       "tier": "standing",
@@ -4439,6 +4541,9 @@
     },
     {
       "id": "full-plank",
+      "dose": {"sets": 2, "seconds": [20, 40]},
+      "space": "floor",
+      "watch_for": "Head sagging — reach the crown long, one line heel to head.",
       "name": "Full Plank",
       "pattern": "isometric",
       "tier": "loaded",
