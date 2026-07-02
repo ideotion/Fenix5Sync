@@ -152,3 +152,43 @@ def test_coach_plan_ics_download(client: TestClient):
 def test_coach_plan_rejects_bad_distance(client: TestClient):
     r = client.post("/api/coach/plan", json={"goal_distance": "ultra"})
     assert r.status_code == 422
+
+
+def test_coach_state_endpoint_empty_store(client: TestClient):
+    # No history: an honest empty state (never a 404), with the onboarding note.
+    r = client.get("/api/coach/state")
+    assert r.status_code == 200
+    s = r.json()
+    assert s["history_days"] == 0 and s["ctl"] is None and s["readiness"] is None
+    assert any("import history" in n for n in s["notes"])
+
+
+def test_coach_state_reads_run_variants_and_wellness(client: TestClient, tmp_config):
+    import datetime as dt
+
+    from core.models import Activity
+    from core.store import Store
+
+    today = dt.datetime.now(dt.timezone.utc).date()
+    with Store(tmp_config.storage.db_file) as store:
+        # A trail run must count toward coach state (not only plain "running").
+        store.add_activity(Activity(
+            sport="trail_running",
+            start_time=dt.datetime.combine(today - dt.timedelta(days=2), dt.time(8, 0)),
+            total_timer_time=3600.0,
+        ))
+        # A week of resting-HR 50 baseline, then today spikes to 58 (+8 bpm).
+        store.add_wellness_days(
+            [{"date": (today - dt.timedelta(days=i)).isoformat(), "steps": None,
+              "resting_hr": 50, "avg_hr": None, "max_hr": None,
+              "avg_stress": 20, "stress_samples": 4} for i in range(1, 8)]
+            + [{"date": today.isoformat(), "steps": None, "resting_hr": 58,
+                "avg_hr": None, "max_hr": None, "avg_stress": 45, "stress_samples": 4}]
+        )
+
+    s = client.get("/api/coach/state").json()
+    assert s["as_of"] == today.isoformat()
+    assert s["history_days"] >= 3 and s["ctl"] is not None  # the trail run counted
+    ready = s["readiness"]
+    assert ready is not None and ready["fresh"] is False
+    assert ready["rhr_delta"] == 8.0 and ready["baseline_resting_hr"] == 50.0
