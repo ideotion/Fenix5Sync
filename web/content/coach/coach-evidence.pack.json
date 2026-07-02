@@ -1,0 +1,75 @@
+{
+  "schema": "fenix5sync.coach.evidence.v1",
+  "generated": "2026-07-02",
+  "summary": "Evidence anchoring for the dynamic coach's SENSOR-side interpretive thresholds (core/coach_state.py, with two controller constants in core/coach_plan.py). The load/recovery formulas are settled; this pack cites the numbers behind the bands and records the honest caveats. The research confirmed the provisional values rather than overturning them, so no engine value changed — what changed is provenance plus a drift guard (tests/test_coach_evidence.py asserts every 'constants' value here still equals the code). Grades: E1 strong (meta/RCT), E2 moderate, E3 practice-based, E4 contested. ACWR is E4-adjacent: surfaced as one signal with its critiques attached, never a verdict.",
+  "parameters": {
+    "acwr": {
+      "recommended": {"acute_days": 7, "chronic_days": 28, "undertraining_below": 0.8, "sweet_spot_high": 1.3, "caution_high": 1.5},
+      "grade": "E2_contested",
+      "module": "coach_state",
+      "constants": {"ACWR_ACUTE_DAYS": 7, "ACWR_CHRONIC_DAYS": 28, "ACWR_UNDERTRAINING_BELOW": 0.8, "ACWR_SWEET_SPOT_HIGH": 1.3, "ACWR_CAUTION_HIGH": 1.5},
+      "caveat": "The 0.8–1.3 'sweet spot' / >1.5 'danger zone' is Gabbett's popularised model. It is genuinely contested: Lolli et al. show the conventional coupled ratio is mathematically coupled (acute is part of chronic), producing spurious correlation; Impellizzeri et al. argue there is no established causal basis for manipulating ACWR to reduce injury. We report it as one contextual signal with this caveat, never as a gate or a guarantee.",
+      "citations": ["gabbett2016", "lolli2019", "impellizzeri2020"]
+    },
+    "ctl_ramp_rate": {
+      "recommended": {"safe_low_per_week": 3.0, "safe_high_per_week": 7.0, "unit": "CTL/week", "note": "3–5/week is the more conservative band for running (higher impact-injury risk); 8+ is where most athletes start breaking down."},
+      "grade": "E3",
+      "module": "coach_plan",
+      "constants": {"RAMP_SAFE_HIGH": 7.0},
+      "caveat": "Practice-based (TrainingPeaks / practitioner consensus), not an RCT-backed constant. Individual tolerance varies with training history and injury proclivity; treated as a ceiling on build-goal targets, not a target.",
+      "citations": ["trainingpeaks_ramp", "couzens_ramp"]
+    },
+    "tsb_bands": {
+      "recommended": {"base_building": [-10, 5], "hard_week": [-15, 0], "recovery_week": [5, 15], "overreach_below": -30.0, "race_ready_min": 5},
+      "grade": "E3",
+      "module": "coach_plan",
+      "constants": {"_TSB_OVERREACH": -30.0},
+      "caveat": "Form (TSB) interpretation bands are practitioner convention from the Performance Management Chart, not validated cut-offs. The coach uses the deep-negative floor to force recovery today; the other bands are advisory context.",
+      "citations": ["trainingpeaks_pmc"]
+    },
+    "readiness_rhr": {
+      "recommended": {"elevated_bpm_over_baseline": 5, "baseline_days": 7},
+      "grade": "E3_approach_E2",
+      "module": "coach_state",
+      "constants": {"READINESS_RHR_ELEVATED": 5, "READINESS_BASELINE_DAYS": 7},
+      "caveat": "Resting/submaximal heart rate is a validated fatigue-monitoring signal (Buchheit); the specific +5 bpm-over-baseline cut-off is a practice default. Ideally the threshold is the athlete's own smallest-worthwhile-change from a rolling baseline, not a fixed number.",
+      "citations": ["buchheit2014"]
+    },
+    "monotony_strain": {
+      "recommended": {"monotony": "mean(7d daily load) / SD(7d daily load), rest days included", "strain": "weekly load sum x monotony", "elevated_monotony_flag": 2.0},
+      "grade": "E3",
+      "module": "coach_state",
+      "constants": {},
+      "caveat": "Foster's monotony/strain are reported by the sensor, not yet gated on. High monotony (commonly flagged around >2) combined with high load is the classic overtraining/illness pattern; the flag value is practitioner convention, not a hard threshold in Foster's original.",
+      "citations": ["foster1998"]
+    },
+    "hard_day": {
+      "recommended": {"load_ratio_of_ctl": 1.5, "min_load": 50.0},
+      "grade": "E3_practice",
+      "module": "coach_state",
+      "constants": {"HARD_DAY_LOAD_RATIO": 1.5, "HARD_DAY_MIN_LOAD": 50.0},
+      "caveat": "A pragmatic definition with no direct citation: a day whose load is clearly above habitual fitness (≥ 1.5× CTL), floored so early-history days (tiny CTL) don't all read as hard. Used only to protect hard/easy spacing.",
+      "citations": []
+    },
+    "maintenance_dose": {
+      "recommended": {"min_frequency_pct_of_original": 80, "intensity": "maintain", "volume": "may_reduce_markedly", "detraining_onset_days": 14},
+      "grade": "E2",
+      "module": null,
+      "constants": {},
+      "caveat": "Informational — not yet a code constant. Fitness (VO2max) is largely held when intensity is maintained and frequency stays above ~80% of habitual, even as volume drops; measurable VO2max decline appears from ~2 weeks of training cessation (blood/plasma volume first). Intended to inform a future 'maintain' goal and detraining/return logic.",
+      "citations": ["mujika2000a", "mujika2000b"]
+    }
+  },
+  "bibliography": {
+    "gabbett2016": {"authors": "Gabbett TJ", "year": 2016, "title": "The training—injury prevention paradox: should athletes be training smarter and harder?", "venue": "British Journal of Sports Medicine 50(5):273–280", "doi": "10.1136/bjsports-2015-095788"},
+    "lolli2019": {"authors": "Lolli L, Batterham AM, Hawkins R, et al.", "year": 2019, "title": "Mathematical coupling causes spurious correlation within the conventional acute-to-chronic workload ratio calculations", "venue": "British Journal of Sports Medicine 53(15):921–922", "doi": "10.1136/bjsports-2017-098110"},
+    "impellizzeri2020": {"authors": "Impellizzeri FM, Tenan MS, Kempton T, Novak A, Coutts AJ", "year": 2020, "title": "Acute:Chronic Workload Ratio: Conceptual Issues and Fundamental Pitfalls", "venue": "International Journal of Sports Physiology and Performance 15(6):907–913", "doi": "10.1123/ijspp.2019-0864"},
+    "foster1998": {"authors": "Foster C", "year": 1998, "title": "Monitoring training in athletes with reference to overtraining syndrome", "venue": "Medicine & Science in Sports & Exercise 30(7):1164–1168", "doi": "10.1097/00005768-199807000-00023"},
+    "buchheit2014": {"authors": "Buchheit M", "year": 2014, "title": "Monitoring training status with HR measures: do all roads lead to Rome?", "venue": "Frontiers in Physiology 5:73", "doi": "10.3389/fphys.2014.00073"},
+    "mujika2000a": {"authors": "Mujika I, Padilla S", "year": 2000, "title": "Detraining: loss of training-induced physiological and performance adaptations. Part I: short term insufficient training stimulus", "venue": "Sports Medicine 30(2):79–87", "doi": "10.2165/00007256-200030020-00002"},
+    "mujika2000b": {"authors": "Mujika I, Padilla S", "year": 2000, "title": "Detraining: loss of training-induced physiological and performance adaptations. Part II: long term insufficient training stimulus", "venue": "Sports Medicine 30(3):145–154", "doi": "10.2165/00007256-200030030-00001"},
+    "trainingpeaks_ramp": {"authors": "TrainingPeaks", "year": 2023, "title": "Understanding Ramp Rate in TrainingPeaks", "venue": "TrainingPeaks Blog (practitioner)", "url": "https://www.trainingpeaks.com/blog/understanding-trainingpeaks-ramp-rate-for-better-coaching/"},
+    "couzens_ramp": {"authors": "Couzens A", "year": 2016, "title": "CTL Ramp Rates, TSB floors & Loading Patterns", "venue": "alancouzens.com (practitioner)", "url": "https://www.alancouzens.com/blog/CTLramp.html"},
+    "trainingpeaks_pmc": {"authors": "TrainingPeaks", "year": 2023, "title": "A Coach's Guide to ATL, CTL & TSB", "venue": "TrainingPeaks Coach Blog (practitioner)", "url": "https://www.trainingpeaks.com/coach-blog/a-coachs-guide-to-atl-ctl-tsb/"}
+  }
+}

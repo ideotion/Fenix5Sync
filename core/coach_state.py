@@ -37,13 +37,14 @@ Signals
   versus its recent baseline plus the day's stress: a light freshness check the
   recovery gate can read.
 
-PROVISIONAL THRESHOLDS
-----------------------
-The interpretive bands (ramp, ACWR, "hard day", readiness) are collected as named
-constants at the top of this module and are deliberately isolated so the evidence
-pass (``docs/coach/dynamic-coach-research-brief.md``) can replace the numbers in
-one place without touching the logic. The *formulas* are settled; only the
-*thresholds* await citation.
+THRESHOLDS & EVIDENCE
+---------------------
+The interpretive bands (ACWR, "hard day", readiness) are named constants at the
+top of this module. They are anchored by the evidence pass and cited against
+``web/content/coach/coach-evidence.pack.json``; ``tests/test_coach_evidence.py``
+asserts the numbers here still equal the pack, so citations and code cannot drift.
+The *formulas* are settled; the interpretive *bands* carry their sources and
+honest caveats (ACWR especially -- one signal, not a verdict).
 """
 
 from __future__ import annotations
@@ -58,12 +59,19 @@ from .models import Activity
 from .training_load import compute_training_load
 from .wellness import DayWellness
 
-# --- interpretive thresholds (PROVISIONAL -- anchored by the evidence pass) --- #
+# --- interpretive thresholds ------------------------------------------------- #
+# Anchored by the evidence pass; every value here is cross-checked against
+# web/content/coach/coach-evidence.pack.json by tests/test_coach_evidence.py, so
+# the citations and the numbers cannot drift apart. The research confirmed the
+# provisional values rather than overturning them.
 
-# Acute:Chronic Workload Ratio windows and bands (Gabbett). A coupled
-# rolling-average ACWR: acute = the last ACWR_ACUTE_DAYS of load; chronic = the
-# average ACWR_ACUTE_DAYS-block over the last ACWR_CHRONIC_DAYS. Contested model
-# (Lolli/Impellizzeri) -- treated as one signal, see the module docstring.
+# Acute:Chronic Workload Ratio windows and bands (Gabbett 2016, doi
+# 10.1136/bjsports-2015-095788): the 0.8-1.3 "sweet spot" and >1.5 "danger zone".
+# A coupled rolling-average ACWR: acute = the last ACWR_ACUTE_DAYS of load;
+# chronic = the average ACWR_ACUTE_DAYS-block over the last ACWR_CHRONIC_DAYS.
+# Genuinely contested -- Lolli 2019 (mathematical coupling) and Impellizzeri 2020
+# (no causal basis) -- so we surface it as ONE signal with that caveat in
+# ``notes``, never a verdict. See the evidence pack for full citations.
 ACWR_ACUTE_DAYS = 7
 ACWR_CHRONIC_DAYS = 28
 ACWR_UNDERTRAINING_BELOW = 0.8   # below this: very fresh / detraining drift
@@ -71,13 +79,17 @@ ACWR_SWEET_SPOT_HIGH = 1.3       # 0.8..1.3 = the productive "sweet spot"
 ACWR_CAUTION_HIGH = 1.5          # 1.3..1.5 = caution; above = elevated risk
 
 # A day counts as "hard" once its training load reaches this multiple of current
-# fitness (CTL) -- i.e. clearly above what you are used to...
+# fitness (CTL) -- i.e. clearly above what you are used to... (practice-based
+# definition, no direct citation; used only to protect hard/easy spacing.)
 HARD_DAY_LOAD_RATIO = 1.5
 # ...but never below this absolute load, so early-history days (when CTL is still
 # tiny) don't all read as "hard".
 HARD_DAY_MIN_LOAD = 50.0
 
 # Resting-HR elevation (bpm over the recent baseline) that reads as "not fresh".
+# Resting/submaximal HR is a validated fatigue signal (Buchheit 2014, doi
+# 10.3389/fphys.2014.00073); the exact +5 bpm cut-off is a practice default
+# (ideally the athlete's own smallest worthwhile change from a rolling baseline).
 READINESS_RHR_ELEVATED = 5
 # Days of wellness history used as the resting-HR baseline.
 READINESS_BASELINE_DAYS = 7
