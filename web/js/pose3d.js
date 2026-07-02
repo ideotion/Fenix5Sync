@@ -129,21 +129,27 @@
   const GROUND_Y = 0; // world height of the floor (rest feet sit here)
 
   // ---- joint limits --------------------------------------------------------
-  // Per-bone maximum SWING (degrees) of the local rotation away from its rest
-  // direction — a cone limit that keeps frames out of clearly-impossible ranges.
-  // PROVISIONAL & deliberately generous: the elbow/knee/hip/shoulder bounds catch
-  // impossibilities (e.g. a 177-degree elbow) while the spine and ankle stay wide
-  // because the single rigid spine has to rotate the whole body for floor/prone
-  // poses (push-ups, planks). True anatomical hinge limits await the segmented
-  // spine (later PR) and the biomechanics ROM appendix; the clamp infra is here.
+  // Per-bone maximum SWING (degrees) of the local rotation from its rest
+  // direction, used as a hard clamp. Ceilings are the AAOS clinical max/normal
+  // values (Greene & Heckman, "The Clinical Measurement of Joint Motion", AAOS
+  // 1994; cross-checked vs the public-domain VA/DSHS goniometry charts), set at
+  // the high end of the cited ranges so valid deep squats/holds are untouched —
+  // the clamp only catches clearly-impossible frames (e.g. a 177-degree elbow).
+  // Knee/elbow are hinges: this caps the fold; the bend DIRECTION (no
+  // hyperextension) is fixed by the IK pole, not here. Hip/shoulder are cones.
+  // The spine stays wide because the single rigid spine bone must rotate the
+  // whole body for floor/prone poses (push-ups, planks); true segmented
+  // cervical/thoracic/lumbar limits (Apti 2023) arrive with the segmented-spine
+  // PR. The tighter FUNCTIONAL ranges feed animation defaults + the plausibility
+  // test (PR5/PR7), not these hard clamps.
   const _RAD = Math.PI / 180;
   const JOINT_LIMITS = {
-    spine: 140, head: 80,
-    upperArmL: 175, upperArmR: 175,   // shoulder: highly mobile
-    forearmL: 160, forearmR: 160,     // elbow flexion (no 180 fold)
-    thighL: 130, thighR: 130,         // hip flexion cone
-    shinL: 160, shinR: 160,           // knee flexion
-    footL: 140, footR: 140,           // ankle (wide: floor poses)
+    spine: 140, head: 70,             // cervical ~45-60; wide for the single spine bone
+    upperArmL: 180, upperArmR: 180,   // shoulder flexion/abduction 0-180 (AAOS)
+    forearmL: 150, forearmR: 150,     // elbow flexion 0-150 (AAOS)
+    thighL: 130, thighR: 130,         // hip flexion 0-120 (to ~140 knee-bent)
+    shinL: 150, shinR: 150,           // knee flexion 0-135..150 (AAOS range)
+    footL: 140, footR: 140,           // wide: floor/prone whole-body rotation
   };
 
   // Rotation angle of a unit quaternion (radians), double-cover safe.
