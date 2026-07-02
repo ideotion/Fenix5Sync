@@ -96,8 +96,11 @@ _MICROCYCLE = {0: "easy", 1: "quality", 2: "endurance", 3: "quality",
                4: "rest", 5: "easy", 6: "long"}
 _WEEKDAY_NAMES = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
-# --- plan parameters (PROVISIONAL) -------------------------------------------- #
-# Safe upper weekly CTL ramp (Coggan): a ceiling applied to build-goal targets.
+# --- plan parameters ---------------------------------------------------------- #
+# Safe upper weekly CTL ramp: a ceiling on build-goal targets. Practice-based
+# (3-7 CTL/week; 3-5 is more conservative for running). Cited in the evidence
+# pack (web/content/coach/coach-evidence.pack.json) and drift-checked by
+# tests/test_coach_evidence.py; not an RCT-backed constant.
 RAMP_SAFE_HIGH = 7.0
 _RAMP_BY_GOAL = {
     "build": 5.0,        # mid of the safe band
@@ -112,7 +115,7 @@ _TAPER_DAYS = 14          # length of the pre-event taper
 _TAPER_MIN = 0.5          # weekly load floor at the bottom of the taper (x build)
 _MESO_WEEKS = 4           # 3 build : 1 deload
 _DELOAD_SCALE = 0.6       # weekly load on a deload week (x build)
-_TSB_OVERREACH = -30.0    # form below this forces recovery today
+_TSB_OVERREACH = -30.0    # form below this forces recovery today (PMC convention; evidence pack: tsb_bands)
 _STARTER_CTL = 25.0       # sizing baseline when there is no history yet
 _RECOVERY_MINUTES = 30    # duration of a gated recovery day
 _DEFAULT_ROLLING_HORIZON = 14
