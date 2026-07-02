@@ -311,6 +311,63 @@ test("PR4: slerpPose interpolates twist linearly", () => {
   assert.ok(Math.abs(mid.__twist.spine - 0.5) < 1e-9, "twist midpoint should be the average");
 });
 
+// --------------------------- PR5: timing + life ----------------------------- //
+test("PR5: easingFor defaults to the historical cubic and honors names", () => {
+  const cubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  for (const t of [0, 0.2, 0.5, 0.8, 1]) {
+    assert.strictEqual(P.easingFor(undefined)(t), cubic(t), "absent name = historical default");
+    assert.strictEqual(P.easingFor("no-such-curve")(t), cubic(t), "unknown name = default");
+    assert.strictEqual(P.easingFor("linear")(t), t);
+  }
+  assert.ok(P.easingFor("in")(0.25) < 0.25 && P.easingFor("out")(0.25) > 0.25);
+  for (const name of Object.keys(P.EASINGS)) {
+    assert.strictEqual(P.EASINGS[name](0), 0);
+    assert.ok(Math.abs(P.EASINGS[name](1) - 1) < 1e-12);
+  }
+});
+
+test("PR5: breath wave is periodic with a faster inhale than exhale", () => {
+  const rate = 15, period = 60000 / rate;
+  assert.ok(Math.abs(P.breathWave(0, rate) - P.breathWave(period, rate)) < 1e-9, "periodic");
+  // The wave rises from -1 to +1 within the inhale fraction (< half the cycle).
+  const fi = P.LIFE_DEFAULTS.inhaleFrac;
+  assert.ok(fi < 0.5, "inhale is the shorter half");
+  assert.ok(Math.abs(P.breathWave(period * fi, rate) - 1) < 1e-9, "peak at end of inhale");
+  assert.ok(Math.abs(P.breathWave(0, rate) + 1) < 1e-9, "trough at cycle start");
+});
+
+test("PR5: applyLife is bounded even under absurd overrides", () => {
+  const base = identityPose();
+  const maxRad = P.LIFE_MAX.breathAmpDeg * Math.PI / 180 + 1e-9;
+  for (let tMs = 0; tMs <= 60000; tMs += 97) {
+    const p = P.applyLife(base, tMs, { breath: 1, sway: 1, breathAmpDeg: 999, swayAP: 999, swayML: 999 });
+    assert.ok(P.swingAngle(p.spine) <= maxRad, `breath over bound at ${tMs}`);
+    assert.ok(Math.abs(p.__root[0] - P.REST.hips[0]) <= P.LIFE_MAX.sway + 1e-9, `ML sway over bound at ${tMs}`);
+    assert.ok(Math.abs(p.__root[2] - P.REST.hips[2]) <= P.LIFE_MAX.sway + 1e-9, `AP sway over bound at ${tMs}`);
+    assert.strictEqual(p.__root[1], P.REST.hips[1], "sway never changes height");
+  }
+});
+
+test("PR5: applyLife is deterministic, pure, and a no-op at zero scale", () => {
+  const base = identityPose();
+  const spineBefore = base.spine;
+  const a = P.applyLife(base, 1234, { breath: 1, sway: 1 });
+  const b = P.applyLife(base, 1234, { breath: 1, sway: 1 });
+  assert.deepStrictEqual(a, b, "same t -> same output");
+  assert.strictEqual(base.spine, spineBefore, "input pose not mutated");
+  assert.strictEqual(P.applyLife(base, 1234, { breath: 0, sway: 0 }), base, "zero scales -> same object");
+  // And it actually moves something at some time.
+  const moved = P.applyLife(base, 900, { breath: 1, sway: 1 });
+  assert.ok(P.swingAngle(moved.spine) > 1e-4 || Math.abs(moved.__root[2] - P.REST.hips[2]) > 1e-4);
+});
+
+test("PR5: default life amplitudes sit in the cited few-mm / small-degree range", () => {
+  // 1 world unit ~ 9 mm at our stature; defaults must stay small and gentle.
+  assert.ok(P.LIFE_DEFAULTS.breathAmpDeg <= P.LIFE_MAX.breathAmpDeg);
+  assert.ok(P.LIFE_DEFAULTS.swayAP <= 1.2 && P.LIFE_DEFAULTS.swayML <= P.LIFE_DEFAULTS.swayAP,
+    "AP sway larger than ML, both under ~10 mm equivalent");
+});
+
 test("slerpPose blends two poses per bone and stays normalized", () => {
   const a = P.adaptPose({ side: { stand: { hip: [116, 178], sh: [118, 98], head: [120, 70], knee: [114, 248], ankle: [112, 312], toe: [140, 312], elb: [136, 134], hand: [150, 170] } } }, "stand");
   const b = P.adaptPose({ side: { sit: { hip: [150, 236], sh: [138, 170], head: [140, 150], knee: [112, 242], ankle: [112, 312], toe: [140, 312], elb: [170, 196], hand: [150, 224] } } }, "sit");
